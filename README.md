@@ -125,7 +125,7 @@ which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` on
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
 
 By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATT can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
-`E[CATT(W)|Z] = beta^T V(Z)`
+`E[CATE(W)|Z, A=1] = beta^T V(Z)`
 then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation). 
 
 ### Robust nonparametric inference for the conditional TSM
