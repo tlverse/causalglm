@@ -84,7 +84,7 @@ where log RR(W) is parametric and E[Y|A=0,W] is the background/placebo outcome m
 
 
 
-## Robust nonparametric inference for generalized linear models with causalRobustGLM: CATE, CATT, and OR
+## Robust nonparametric inference for generalized linear models with causalRobustGLM: CATE, CATT, TSM, RR, and OR
 Rather than assuming a semiparametric model, we can instead make no assumptions (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
 
 This nonparametric view is implemented in the function `causalRobustGLM`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimand are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. For the most part, you can interpret the estimates in the same way you interpret the estimates given by `causalGLM`. We now will define the actual 
