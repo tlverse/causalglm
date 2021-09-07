@@ -156,6 +156,40 @@ summary(causal_fit)
  
 ```
 
+
+
+## Robust conditional treatment-specific mean (TSM) estimation
+```{r}
+set.seed(1500)
+data_list <- sim.CATE(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_TSM <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalRobustGLM(formula = formula_TSM, data = data, W  = W, A = A, Y = Y,  estimand = "TSM", learning_method = "HAL")
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model is actually a nonparametric estimate of the ATE
+summary(causal_fit)
+
+ 
+```
+
+
 ## Robust CATT estimation
 ```{r}
 set.seed(1500)

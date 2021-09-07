@@ -14,7 +14,7 @@
 #' @param A A character name for the treatment assignment variable contained in \code{data}
 #' @param Y A character name for the outcome variable contained in \code{data} (outcome can be continuous, nonnegative or binary depending on method)
 #' @param learning_method Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
-#' "SuperLearner: A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
+#' "SuperLearner": A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
 #' "HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001} Good for most sample sizes when propertly tuned. See arguments \code{max_degree_Y0W} and \code{num_knots_Y0W}.
 #' "glm": Fit nuisances with parametric model. Best for smaller sample sizes (e.g. n =30-100). See arguments \code{glm_formula_A}, \code{glm_formula_Y} and \code{glm_formula_Y0}.
 #' "glmnet": Learn using lasso with glmnet. Best for smaller sample sizes (e.g. n =30-100)
@@ -25,13 +25,16 @@
 #' We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
 #' Note speed can vary significantly depending on learner choice! 
 #' @param estimand Estimand/parameter to estimate. Choices are:
-#' CATE: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
+#' `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect). 
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model.
-#' CATT: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
+#' `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated). 
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
-#' OR: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
+#' `TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=1,W]`.
+#' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean). 
+#' Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
+#' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
 #' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
@@ -66,7 +69,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR) 
 #' @export 
-causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "OR"),   learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_Y = NULL,    weights = NULL,   formula_Y = formula(paste0("~ . + . *", A)),  formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15,10,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.1, verbose = TRUE, ... ){
+causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR"),   learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  levels_A = sort(unique(data[[A]])),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_Y = NULL,    weights = NULL,   formula_Y = formula(paste0("~ . + . *", A)),  formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15,10,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.1, verbose = TRUE, ... ){
   estimand <- match.arg(estimand)
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -103,7 +106,7 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
     }
   }
   
-  tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand , delta_epsilon = delta_epsilon, verbose = verbose )
+  tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand , delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = levels_A )
   learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
   node_list <- list(weights = "weights", W = W, A = A, Y = Y)
   tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list,  learner_list = learner_list)
