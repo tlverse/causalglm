@@ -25,16 +25,16 @@
 #' We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
 #' Note speed can vary significantly depending on learner choice! 
 #' @param estimand Estimand/parameter to estimate. Choices are:
-#' `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
+#' `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect). 
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model.
-#' `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
+#' `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated). 
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
 #' `TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=a,W]` for `a` in \code{levels_A}.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean). 
 #' Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
-#' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
+#' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} using the parametric model \code{formula}.
 #' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
 #' `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
 #' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``). 
