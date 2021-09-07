@@ -16,7 +16,7 @@ causalRobustGLM(
   W,
   A,
   Y,
-  estimand = c("CATE", "CATT", "TSM", "OR"),
+  estimand = c("CATE", "CATT", "TSM", "OR", "RR"),
   learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger",
     "xgboost"),
   levels_A = sort(unique(data[[A]])),
@@ -28,7 +28,7 @@ causalRobustGLM(
   formula_HAL_Y = paste0("~ . + h(.,", A, ")"),
   HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)),
   HAL_fit_control = list(parallel = F),
-  delta_epsilon = 0.1,
+  delta_epsilon = 0.025,
   verbose = TRUE,
   ...
 )
@@ -39,7 +39,7 @@ causalRobustGLM(
   W,
   A,
   Y,
-  estimand = c("CATE", "CATT", "TSM", "OR"),
+  estimand = c("CATE", "CATT", "TSM", "OR", "RR"),
   learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger",
     "xgboost"),
   levels_A = sort(unique(data[[A]])),
@@ -51,7 +51,7 @@ causalRobustGLM(
   formula_HAL_Y = paste0("~ . + h(.,", A, ")"),
   HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)),
   HAL_fit_control = list(parallel = F),
-  delta_epsilon = 0.1,
+  delta_epsilon = 0.025,
   verbose = TRUE,
   ...
 )
@@ -78,7 +78,9 @@ Specifically, this estimand is the least-squares projection of the true CATE ont
 Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean). 
 Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
 `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
-Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.}
+Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
+`RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
+Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``).}
 
 \item{learning_method}{Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 "SuperLearner": A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.

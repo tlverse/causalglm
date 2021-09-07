@@ -36,6 +36,8 @@
 #' Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
 #' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
 #' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
+#' `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
+#' Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``). 
 #' @param levels_A Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
@@ -70,7 +72,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR) 
 #' @export 
-causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR"),   learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  levels_A = sort(unique(data[[A]])),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_Y = NULL,    weights = NULL,   formula_Y = formula(paste0("~ . + . *", A)),  formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15,10,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.1, verbose = TRUE, ... ){
+causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"),   learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  levels_A = sort(unique(data[[A]])),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_Y = NULL,    weights = NULL,   formula_Y = formula(paste0("~ . + . *", A)),  formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15,10,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ... ){
   estimand <- match.arg(estimand)
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -86,6 +88,7 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
       sl3_Learner_A <- Lrnr_cv$new(sl3_Learner_A)
     }
   }
+  binary <- all(Y %in% c(0,1))
   if(is.null(sl3_Learner_Y)) {
     if(learning_method == "HAL") {
       wrap_in_Lrnr_glm_sp <- FALSE 
@@ -95,6 +98,13 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
                                         max_degree = HAL_args_Y$max_degree,
                                         num_knots = HAL_args_Y$num_knots, fit_control = HAL_fit_control)
       
+    } else if(estimand == RR && !binary){
+      superlearner_RR <- make_learner(Pipeline, Lrnr_cv$new(list(  Lrnr_glmnet$new(family = "poisson", formula = formula_Y),  Lrnr_glm$new(family = poisson(), formula = formula_Y), Lrnr_gam$new(family = poisson(), formula = formula_Y),  
+                                                                   Lrnr_xgboost$new(verbose=0,max_depth =3 , objective = "count:poisson"), Lrnr_xgboost$new(verbose=0,max_depth =4, objective = "count:poisson" ), Lrnr_xgboost$new(verbose=0,max_depth =5,  objective = "count:poisson") ) , full_fit = TRUE), Lrnr_cv_selector$new(loss_function_least_squares))
+      
+      learner_list_Y0W_RR = list(SuperLearner = superlearner_RR, glmnet =  Lrnr_glmnet$new(formula = formula_Y, family = "poisson"), glm = Lrnr_glm$new(formula = formula_Y, family = poisson()), gam = Lrnr_gam$new(formula = formula_Y, family = poisson()), 
+                                 xgboost = make_learner(Pipeline, Lrnr_cv$new( Stack$new(  Lrnr_xgboost$new(verbose=0,max_depth =3,  objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose=0,max_depth =4, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose=0,max_depth =5, objective = "count:poisson", eval_metric = "error") ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error)))
+      sl3_Learner_Y <- learner_list_Y0W_RR[[learning_method]]
     } else {
       superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(list(  Lrnr_glmnet$new(formula = formula_Y),  Lrnr_glm$new(formula = formula_Y), Lrnr_gam$new(formula = formula_Y), Lrnr_earth$new(formula = formula_Y) ,
                                                                         Lrnr_ranger$new() ,  Lrnr_xgboost$new(verbose=0,max_depth =3 ), Lrnr_xgboost$new(verbose=0,max_depth =4 ), Lrnr_xgboost$new(verbose=0,verbose=0,max_depth =5) ) ), Lrnr_cv_selector$new(loss_function_least_squares))
@@ -121,4 +131,3 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
 
 
 
- 
