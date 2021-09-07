@@ -42,7 +42,7 @@ The main function `causalGLM` implements semiparametric estimators for the CATE,
 
 ### Conditional average treatment effect and partially-linear least-squares regression
 `causalGLM` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
-E[Y|A,W] = A CATE(W) + E[Y|A=0,W] where CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Using the `formula` argument of `causalGLM`, one can learn the following CATE models:
+`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Using the `formula` argument of `causalGLM`, one can learn the following CATE models:
 
 1. Constant CATE: `formula = ~ 1`
 This formula encodes the model `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] = a` for some constant coefficient `a`.
