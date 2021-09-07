@@ -11,7 +11,8 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression)
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with causalRobustGLM)
-5. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
+5. Conditional average treatment effect among the treated (Only supported nonparametrically with causalRobustGLM)
+6. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`causalGLM` and `causalGLMnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`causalRobustGLM`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
@@ -95,6 +96,8 @@ We critically note that the semiparametric estimates given by `causalGLM` are (u
 
 
 ### Robust nonparametric inference for the CATE
+This method is useful for assessing heterogenity in the additive treatment effect across all individuals.
+
 Let V := V(W) be the random vector obtained by applying the user-specified formula mapping to W (i.e. V = model.matrix(formula, W)). 
 
 Consider the oracle least-squares risk function:
@@ -112,6 +115,8 @@ By specifying a formula of a lower dimensional feature `Z` of `W`, marginal stru
 then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation).
 
 ### Robust nonparametric inference for the CATT
+This method is useful for assessing heterogenity in the additive treatment effect among the treated.
+
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
 Consider the oracle least-squares risk function:
@@ -132,6 +137,8 @@ By specifying a formula of a lower dimensional feature `Z` of `W`, marginal stru
 then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation). 
 
 ### Robust nonparametric inference for the conditional TSM
+This method is useful for assessing heterogeniety in the average outcome across all individuals for a given treatment intervention.
+
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
 Consider the oracle least-squares risk function:
@@ -144,6 +151,8 @@ Our estimand of interest is the risk minimizer, which is the least-squares proje
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean `E_WE[Y|A=a,W]`, which may be of independent interest.  
 
 ### Robust nonparametric inference for the OR
+This method is useful for assessing heterogeniety in the odds ratio.
+
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
 Consider the logistic working submodel:
@@ -154,6 +163,8 @@ Our estimand of interest `beta'` corresponds with the coefficient vector of the 
 
 
 ### Robust nonparametric inference for the RR
+This method is useful for assessing heterogenity in the relative treatment effect.
+
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
 Consider the poisson log likelihood type risk function:
