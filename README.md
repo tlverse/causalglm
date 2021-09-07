@@ -10,6 +10,8 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 1. Conditional average treatment effect (CATE) estimation. (Causal semiparametric linear regression)
 2. Conditional odds ratio (OR) estimation between two binary variables]. (Causal semiparametric logistic regression)
 3. Conditional relative risk (RR) regression for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
+4. Conditional treatment-specific mean (TSM) estimation for categorical treatments. (Only supported nonparametrically with causalRobustGLM)
+5. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
 
 
 Noticable features supported:
@@ -82,7 +84,7 @@ where log RR(W) is parametric and E[Y|A=0,W] is the background/placebo outcome m
 
 
 
-## Robust nonparametric inference for generalized linear models with causalRobustGLM: CATE, CATT, and OR
+## Robust nonparametric inference for generalized linear models with causalRobustGLM: CATE, CATT, TSM, RR, and OR
 Rather than assuming a semiparametric model, we can instead make no assumptions (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
 
 This nonparametric view is implemented in the function `causalRobustGLM`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimand are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. For the most part, you can interpret the estimates in the same way you interpret the estimates given by `causalGLM`. We now will define the actual 
@@ -100,6 +102,10 @@ In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta 
 
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATE, which may be of independent interest.
 
+By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATE can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
+`E[CATE(W)|Z] = beta^T V(Z)`
+then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation).
+
 ### Robust nonparametric inference for the CATT
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
@@ -116,6 +122,21 @@ which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` on
 
 Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
 
+By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATT can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
+`E[CATT(W)|Z] = beta^T V(Z)`
+then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation). 
+
+### Robust nonparametric inference for the conditional TSM
+Let V be the random vector obtained by applying the user-specified formula mapping to W. 
+
+Consider the oracle least-squares risk function:
+
+`R(beta) = E(E[Y|A=a,W] -  beta^T * V )^2`,
+
+which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model beta^T * V. Our estimand of interest is the risk minimizer.
+
+
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean E_WE[Y|A=a,W], which may be of independent interest.  
 
 ### Robust nonparametric inference for the OR
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -125,6 +146,21 @@ Consider the logistic working submodel:
 `P_approx(Y=1|A,W) = expit{A * beta^T * V + logit(P(Y=1|A=0,W))}`.
 
 Our estimand of interest beta' corresponds with the coefficient vector of the log-likelihood projection of the true distribution P(Y=1|A,W) onto the working submodel P_approx(Y=1|A,W).
+
+
+### Robust nonparametric inference for the RR
+Let V be the random vector obtained by applying the user-specified formula mapping to W. 
+
+Consider the poisson log likelihood type risk function:
+
+`R(beta) := E{E[Y|A=0,W] exp(beta^T V) - E[Y|A=1,W] beta^T V}`.
+
+Our estimand of interest beta' corresponds with risk minimizer of the above risk function, which can be viewed as a log-linear projection of the relative risk onto the working model.
+
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the log of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly the log of E_W E[Y|A=1,W] / E_W E[Y|A=0,W]. 
+
+More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z) where Z is a subset of W and V is obtained from a formula that only depends on Z, then the coefficients can be learned by applying causalRobustGLM with the formula that gave V(Z). This is true because, by conditioning, the risk function can be rewritten as
+`R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
 For high dimensional W, you can use the wrapper function `causalGLMnet` which runs `causalGLM` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, but still allow for asymptotically correct post-selection inference. 
