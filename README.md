@@ -27,7 +27,7 @@ The functions are designed to be easy to use (any feedback will be greatly appre
 1. A formula object for the `CATE`, `OR`, or `RR` (or `TSM`, `CATT` for `causalRobustGLM`)
 2. A data.frame containing the data
 3. Variable names: `W`, `A`, `Y` are character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
-4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (OR `TSM, `CATT` for `causalRobustGLM`)
+4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (or `TSM`, `CATT` for `causalRobustGLM`)
 
 That's it! Feel free to customize the machine-learning routines available using the "learning_method" argument. Built in options are: SuperLearner, HAL, glm, glmnet, gam, earth (MARS), CV-autotuned-xgboost. Cross-fitting is performed automatically. If you want to make your own learner, use the sl3_Learner argument and the tlverse/sl3 package.
 
