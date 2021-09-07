@@ -14,12 +14,12 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 
 Noticable features supported:
 1. Interpretable semiparametric estimates and inference even with adaptive estimation and variable selection.
-2. High dimensional covariates and variable selection for confounders (with the wrapper function causalGLMnet).
+2. High dimensional covariates and variable selection for confounders (with the wrapper function `causalGLMnet`).
 3. General machine-learning tools with the tlverse/sl3 ecosystem.
 4. Built-in machine-learning routines for diverse settings and immediate use.
 
 ### User-friendly interface
-The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the causalGLM/causalRobustGLM/causalGLMnet functions. Check out the vignette to see how to use it! The necessary arguments are: 
+The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `causalGLM/causalRobustGLM/causalGLMnet` functions. Check out the vignette to see how to use it! The necessary arguments are: 
 1. A formula object for the CATE, OR, or RR
 2. A data.frame containing the data
 3. Character vectors: W, A, Y that store the variable names for the baseline variables, treatment variable and outcome variable.
@@ -37,8 +37,8 @@ Outputs include:
 The main function `causalGLM` implements semiparametric estimators for the CATE, OR and RR, which are each identified by some partially-linear generalized-linear model. We will utilize the statistical data-structure `O=(W,A,Y)` where `W` represents a vector of baseline variables, `A` is a binary treatment variable, and `Y` is some outcome.
 
 ### Conditional average treatment effect and partially-linear least-squares regression
-causalGLM with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
-E[Y|A,W] = A CATE(W) + E[Y|A=0,W] where CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Using the `formula` argument of causalGLM, one can learn the following CATE models:
+`causalGLM` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
+E[Y|A,W] = A CATE(W) + E[Y|A=0,W] where CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Using the `formula` argument of `causalGLM`, one can learn the following CATE models:
 
 1. Constant CATE: `formula = ~ 1`
 This formula encodes the model `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] = a` for some constant coefficient `a`.
@@ -98,7 +98,7 @@ Our estimand of interest beta' is defined as the minimizer of the above risk fun
 
 In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta := E[CATE(W)] = E[E[Y|A=1,W] - E[Y|A=0,W]] = AT`E, which is exactly the average treatment effect. Thus, this nonparametric working-model-based estimator does capture nonparametric causal additive treatment effects.
 
-Notably, if `formula = ~1` is passed to causalRobustGLM then the coefficient is an efficient nonparametric estimator of the ATE, which may be of independent interest.
+Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATE, which may be of independent interest.
 
 ### Robust nonparametric inference for the CATT
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -114,7 +114,7 @@ This is equivalent to minimizing the risk function:
 
 which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` onto the parametric working model beta^T * V using only observations with A = 1 (among the treated). In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta := E[CATE(W)|A=1] = E[E[Y|A=1,W] - E[Y|A=0,W]|A=1] = ATT`, which is exactly the average treatment effect among the treated. For this reason, we call this estimand the conditional average treatment-effect among the treated (CATT), since it is the best working-model approximation/predictor of the true CATE among the treated. This general working-model-based estimand can still be interpreted as a measure for the CATE, and be be preferred over the CATE method when there are positivity issues.
 
-Notably, if formula = ~1 is passed to causalRobustGLM then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
 
 
 ### Robust nonparametric inference for the OR
