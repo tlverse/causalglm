@@ -172,3 +172,34 @@ Any confusion? Questions? Don't know which method to use? None of the methods ha
 
 Just send me a message. I would enjoy connecting with you and be happy to develop and implement a new method to add to this package.
 
+## References:
+To be completed. 
+
+
+These semiparametric models have a rich history and their theory goes back a long time. These references are very incomplete and and further references will be added in the future.
+
+Most methods are based on theory and pseudo-code provided in the working paper van der Laan (2009), some of which is also published in journals: https://core.ac.uk/download/pdf/61320177.pdf (Page 600, 621, ish)
+
+
+The relative risk method is treated in Targeted Maximum Likelihood Estimation of Conditional Relative Risk in a Semi-parametric Regression Model, Tuglus et al. (2011): https://biostats.bepress.com/ucbbiostat/paper283/.
+The CATE method is treated in Statistical Inference for Variable Importance, van der Laan (2006): https://biostats.bepress.com/ucbbiostat/paper188/
+For machine-learnng, the package tlverse/hal9001 and tlverse/sl3 are used: https://github.com/tlverse/hal9001
+
+See also:
+
+Estimation of a non-parametric variable importance measure of a continuous exposure, Chambaz et al. (2012): https://projecteuclid.org/journals/electronic-journal-Nonparametricof-statistics/volume-6/issue-none/Estimation-of-a-non-parametric-variable-importance-measure-of-a/10.1214/12-EJS703.full
+
+Causal effects based on marginal structural models, Neugebauer, van der Laan (2007): 
+https://www.researchgate.net/publication/222318646_Nonparametric_causal_effects_based_on_marginal_structural_models  
+
+Related R packages: 
+
+https://github.com/ck37/varimpact/tree/master/R
+https://academic.oup.com/bioinformatics/article/31/18/3054/241218
+https://cran.case.edu/web/packages/tmle.npvi/tmle.npvi.pdf
+
+For fully nonparametric ATE-type methods, see the tmle package: https://cran.r-project.org/web/packages/tmle/index.html
+Or tlverse/tmle3: https://tlverse.org
+
+
+ 
