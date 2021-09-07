@@ -126,6 +126,21 @@ Consider the logistic working submodel:
 
 Our estimand of interest beta' corresponds with the coefficient vector of the log-likelihood projection of the true distribution P(Y=1|A,W) onto the working submodel P_approx(Y=1|A,W).
 
+
+### Robust nonparametric inference for the RR
+Let V be the random vector obtained by applying the user-specified formula mapping to W. 
+
+Consider the poisson log likelihood type risk function:
+
+`R(beta) := E{E[Y|A=0,W] exp(beta^T V) - E[Y|A=1,W] beta^T V}`.
+
+Our estimand of interest beta' corresponds with risk minimizer of the above risk function, which can be viewed as a log-linear projection of the relative risk onto the working model.
+
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly E_W E[Y|A=1,W] / E_W E[Y|A=0,W]. 
+
+More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model E[E[Y|A=a,W]|Z] = beta^T V(Z) where Z is a subset of W and V is obtained from a formula that only depends on Z, then the coefficients can be learned by applying causalRobustGLM with the formula that gave V(Z). This is true because, by conditioning, the risk function can be rewritten as
+`R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
+
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
 For high dimensional W, you can use the wrapper function `causalGLMnet` which runs `causalGLM` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, but still allow for asymptotically correct post-selection inference. 
 
