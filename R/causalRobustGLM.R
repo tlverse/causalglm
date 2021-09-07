@@ -128,8 +128,7 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
   tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand , delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = levels_A )
   learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
   node_list <- list(weights = "weights", W = W, A = A, Y = Y)
-  print(node_list)
-  print(data)
+ 
   tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list,  learner_list = learner_list)
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
   
