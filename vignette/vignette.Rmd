@@ -269,14 +269,7 @@ summary(causal_fit)
  
 ## Robust RR estimation
 
-```{r}
-causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm", formula_Y = ~.^2)
-# We got pretty close!
-coefs <- causal_fit$coefs
-
-causal_fit$tmle3_fit$likelihood$factor_list$Y$learner$process_formula(causal_fit$tmle3_fit$tmle_task$get_regression_task("Y"))$data
-
-```
+ 
 
 ```{r}
 set.seed(1500)
@@ -298,7 +291,7 @@ formula_RR <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm", formula_Y = ~.^2)
+causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm" )
 # We got pretty close!
 coefs <- causal_fit$coefs
 
