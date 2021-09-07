@@ -98,7 +98,7 @@ Consider the oracle least-squares risk function:
 
 Our estimand of interest beta' is defined as the minimizer of the above risk function. In other words, we are interested in the coefficients of the least-squares projection onto the linear parametric working-model.
 
-In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta := E[CATE(W)] = E[E[Y|A=1,W] - E[Y|A=0,W]] = AT`E, which is exactly the average treatment effect. Thus, this nonparametric working-model-based estimator does capture nonparametric causal additive treatment effects.
+In particular, if V = 1 (i.e. `formula = ~1`) then the solution is equal to `beta := E[CATE(W)] = E[E[Y|A=1,W] - E[Y|A=0,W]] = AT`E, which is exactly the average treatment effect. Thus, this nonparametric working-model-based estimator does capture nonparametric causal additive treatment effects.
 
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATE, which may be of independent interest.
 
@@ -113,14 +113,14 @@ Consider the oracle least-squares risk function:
 
 `R(beta) = E(E[Y|A,W] - A * beta^T * V - E[Y|A=0,W])^2`,
 
-where beta is a candidate coefficient vector for the best approximation of the true CATE. The minimizer beta' of the risk function R(beta) is our desired estimand.
+where beta is a candidate coefficient vector for the best approximation of the true CATE. The minimizer beta' of the risk function `R(beta)` is our desired estimand.
 This is equivalent to minimizing the risk function:
 
 `R'(beta) = E[A * (CATE(W) - beta^T * V)]^2`,
 
-which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` onto the parametric working model beta^T * V using only observations with A = 1 (among the treated). In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta := E[CATE(W)|A=1] = E[E[Y|A=1,W] - E[Y|A=0,W]|A=1] = ATT`, which is exactly the average treatment effect among the treated. For this reason, we call this estimand the conditional average treatment-effect among the treated (CATT), since it is the best working-model approximation/predictor of the true CATE among the treated. This general working-model-based estimand can still be interpreted as a measure for the CATE, and be be preferred over the CATE method when there are positivity issues.
+which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` onto the parametric working model `beta^T * V` using only observations with `A = 1` (among the treated). In particular, if `V = 1` (i.e. `formula = ~1`) then the solution is equal to `beta := E[CATE(W)|A=1] = E[E[Y|A=1,W] - E[Y|A=0,W]|A=1] = ATT`, which is exactly the average treatment effect among the treated. For this reason, we call this estimand the conditional average treatment-effect among the treated (CATT), since it is the best working-model approximation/predictor of the true CATE among the treated. This general working-model-based estimand can still be interpreted as a measure for the CATE, and be be preferred over the CATE method when there are positivity issues.
 
-Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
+Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
 
 By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATT can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
 `E[CATT(W)|Z] = beta^T V(Z)`
@@ -133,10 +133,10 @@ Consider the oracle least-squares risk function:
 
 `R(beta) = E(E[Y|A=a,W] -  beta^T * V )^2`,
 
-which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model beta^T * V. Our estimand of interest is the risk minimizer.
+which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model `beta^T * V`. Our estimand of interest is the risk minimizer.
 
 
-Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean E_WE[Y|A=a,W], which may be of independent interest.  
+Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean `E_WE[Y|A=a,W]`, which may be of independent interest.  
 
 ### Robust nonparametric inference for the OR
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -145,7 +145,7 @@ Consider the logistic working submodel:
 
 `P_approx(Y=1|A,W) = expit{A * beta^T * V + logit(P(Y=1|A=0,W))}`.
 
-Our estimand of interest beta' corresponds with the coefficient vector of the log-likelihood projection of the true distribution P(Y=1|A,W) onto the working submodel P_approx(Y=1|A,W).
+Our estimand of interest `beta'` corresponds with the coefficient vector of the log-likelihood projection of the true distribution `P(Y=1|A,W)` onto the working submodel `P_approx(Y=1|A,W)`.
 
 
 ### Robust nonparametric inference for the RR
@@ -157,9 +157,9 @@ Consider the poisson log likelihood type risk function:
 
 Our estimand of interest beta' corresponds with risk minimizer of the above risk function, which can be viewed as a log-linear projection of the relative risk onto the working model.
 
-Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the log of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly the log of E_W E[Y|A=1,W] / E_W E[Y|A=0,W]. 
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the log of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly the log of `E_W E[Y|A=1,W] / E_W E[Y|A=0,W]`. 
 
-More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z) where Z is a subset of W and V is obtained from a formula that only depends on Z, then the coefficients can be learned by applying causalRobustGLM with the formula that gave V(Z). This is true because, by conditioning, the risk function can be rewritten as
+More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model `log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z)` where `Z` is a subset of `W` and `V` is obtained from a formula that only depends on `Z`, then the coefficients can be learned by applying `causalRobustGLM` with the formula that gave `V(Z)`. This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
