@@ -74,7 +74,7 @@ Specifically, this estimand is the least-squares projection of the true CATE ont
 `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} assuming it satisfies parametric model \code{formula}.
 Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated). 
 Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
-`TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=1,W]`.
+`TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=a,W]` for `a` in \code{levels_A}.
 Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean). 
 Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
 `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} assuming it satisfies parametric model \code{formula}.
@@ -91,6 +91,8 @@ Specifically, this estimand is the log-likelihood projection of the true conditi
 "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7. Good for medium-to-large sample sizes.
 We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
 Note speed can vary significantly depending on learner choice!}
+
+\item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}
 
 \item{cross_fit}{Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner} is provided.
 learning_method = `SuperLearner` is always cross-fitted (default).
