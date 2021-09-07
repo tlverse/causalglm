@@ -18,7 +18,7 @@ Each estimand can be modeled with a user-specified parametric model that is eith
 
 Noticable features supported:
 1. All methods utilize the powerful tlverse/tmle3 generalized targeted learning framework.
-2. Interpretable semiparametric estimates and inference even with adaptive estimation and variable selection.
+2. Interpretable semiparametric estimates and efficient inference even with adaptive estimation and variable selection.
 3. High dimensional covariates and variable selection for confounders (with the wrapper function `causalGLMnet`).
 4. General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem.
 5. Built-in machine-learning routines for diverse settings and immediate use.
@@ -92,7 +92,7 @@ Rather than assuming a semiparametric model, we can instead make no assumptions 
 
 This nonparametric view is implemented in the function `causalRobustGLM`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimand are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. For the most part, you can interpret the estimates in the same way you interpret the estimates given by `causalGLM`. 
 
-We critically note that the semiparametric estimates given by `causalGLM` are (usually) not asyptotically equivalent to those given by`causalRobustGLM` when the parametric model is incorrect. The latter method can truly be viewed as a best causal approximation, while the former is not necessarily so. Therefore, `causalRobustGLM` does not only give nonparametrically correct inference but also provides estimates for a nonparametric estimand that is more interpretable than the coefficients of the misspecified semiparametric model given by `causalGLM`. There is a usually slight increase in confidence interval width for the nonparametric methods relative to the semiparametric methods. Noticably, the intercept model for causalRobustGLM often corresponds with estimation of a nonparametric marginal causal parameter (like the ATE, ATT, marginal TSM, or marginal relative risk). This feature generalizes to marginal structural models for a number of the estimands. This is not true for the semiparametric methods implemented in `causalGLM`.
+We critically note that the semiparametric estimates given by `causalGLM` are (usually) not asymptotically equivalent to those given by`causalRobustGLM` when the parametric model is incorrect. The latter method can truly be viewed as an estimator for the best causal approximation, while the former is not necessarily so. Therefore, `causalRobustGLM` does not only give nonparametrically correct inference but also provides estimates for a nonparametric estimand that is more interpretable than the coefficients of the misspecified semiparametric model given by `causalGLM`. Notably, the intercept model for causalRobustGLM often corresponds with estimation of a nonparametric marginal causal parameter (like the ATE, ATT, marginal TSM, or marginal relative risk). This feature generalizes to marginal structural models for a number of the estimands. This is not true for the semiparametric methods implemented in `causalGLM`. There is a usually slight increase in confidence interval width for the nonparametric methods relative to the semiparametric methods.
 
 
 ### Robust nonparametric inference for the CATE
