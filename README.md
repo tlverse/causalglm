@@ -127,7 +127,7 @@ Consider the logistic working submodel:
 Our estimand of interest beta' corresponds with the coefficient vector of the log-likelihood projection of the true distribution P(Y=1|A,W) onto the working submodel P_approx(Y=1|A,W).
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
-For high dimensional W, you can use the wrapper function "causalGLMnet" which runs "causalGLM" using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, but still allow for asymptotically correct post-selection inference. 
+For high dimensional W, you can use the wrapper function `causalGLMnet` which runs `causalGLM` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, but still allow for asymptotically correct post-selection inference. 
 
 
 ## Need a new or specialized method?
