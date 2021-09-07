@@ -183,6 +183,8 @@ Just send me a message. I would enjoy connecting with you and be happy to develo
 2. Outcome missingness support
 3. General link functions (mainly the poisson-link for the conditional TSM)
 4. P-values and prediction confidence intervals.
+5. Instrumental variable parameters
+6. Survival parameters
 
 If any of the above features is urgently needed (or just needed), let me know.
 
