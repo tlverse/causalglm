@@ -131,9 +131,12 @@ Let V be the random vector obtained by applying the user-specified formula mappi
 
 Consider the oracle least-squares risk function:
 
-`R(beta) = E(E[Y|A=a,W] - A * beta^T * V )^2`,
+`R(beta) = E(E[Y|A=a,W] -  beta^T * V )^2`,
 
-which is the least-squares projection of `TSM(W) := E[Y|A=1,W]` onto the parametric working model beta^T * V.
+which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model beta^T * V. Our estimand of interest is the risk minimizer.
+
+
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean E_WE[Y|A=a,W], which may be of independent interest.  
 
 ### Robust nonparametric inference for the OR
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
