@@ -49,15 +49,15 @@ Y <-  rnorm(n, W + A , sd = 0.3)
 data <- data.table(W,A,Y)
  
 out <- causalRobustGLM(~1, estimand = "CATE",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
-out$tmle3_fit
+out$coefs
 
 Y <-   rnorm(n, W + A , sd = 0.3)
 data <- data.table(W,A,Y)
 out <- causalRobustGLM(~1, estimand = "CATT",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
-out$tmle3_fit
+out$coefs
 
 Y <-   rbinom(n, size = 1, prob =  plogis(A + W))
 data <- data.table(W,A,Y)
 out <- causalRobustGLM(~1, estimand = "OR",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
-out$tmle3_fit
+out$coefs
 ```

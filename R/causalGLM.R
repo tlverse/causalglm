@@ -115,7 +115,7 @@ causalGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), 
   tmle3_input <- list(tmle_spec_sp = tmle_spec_sp, data = data, node_list = node_list,  learner_list = learner_list)
   tmle3_fit <- suppressWarnings(tmle3(tmle_spec_sp, data, node_list, learner_list))
  
-  output <- list(tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
+  output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
   return(output)
 }
 
@@ -229,7 +229,7 @@ causalRobustGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT",
   tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list,  learner_list = learner_list)
   tmle3_fit <- suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list))
   
-  output <- list(tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
+  output <- list(coefs = tmle3_fit$summary,   tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
   return(output)
 }
 
