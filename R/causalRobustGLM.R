@@ -2,7 +2,7 @@
 
 
 #' causalRobustGLM
-#' Nonparametric robust generalized linear models for causal inference
+#' Nonparametric robust generalized linear models for causal inference and marginal structural models (for some estimands).
 #' Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation, 
 #' ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
 #' Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct. 
