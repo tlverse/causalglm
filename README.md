@@ -15,10 +15,11 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 
 
 Noticable features supported:
-1. Interpretable semiparametric estimates and inference even with adaptive estimation and variable selection.
-2. High dimensional covariates and variable selection for confounders (with the wrapper function `causalGLMnet`).
-3. General machine-learning tools with the tlverse/sl3 ecosystem.
-4. Built-in machine-learning routines for diverse settings and immediate use.
+1. All methods utilize the powerful tlverse/tmle3 generalized targeted learning framework.
+2. Interpretable semiparametric estimates and inference even with adaptive estimation and variable selection.
+3. High dimensional covariates and variable selection for confounders (with the wrapper function `causalGLMnet`).
+4. General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem.
+5. Built-in machine-learning routines for diverse settings and immediate use.
 
 ### User-friendly interface
 The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `causalGLM/causalRobustGLM/causalGLMnet` functions. Check out the vignette to see how to use it! The necessary arguments are: 
