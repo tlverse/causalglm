@@ -172,6 +172,15 @@ Any confusion? Questions? Don't know which method to use? None of the methods ha
 
 Just send me a message. I would enjoy connecting with you and be happy to develop and implement a new method to add to this package.
 
+## Future features to add
+
+1. Categorical treatments (already supported by TSM)
+2. Outcome missingness support
+3. General link functions (mainly the poisson-link for the conditional TSM)
+4. P-values and prediction confidence intervals.
+
+If any of the above features is urgently needed (or just needed), let me know.
+
 ## References:
 To be completed. 
 
