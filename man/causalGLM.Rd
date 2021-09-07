@@ -25,6 +25,8 @@ causalGLM(
   HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)),
   HAL_fit_control = list(parallel = F),
   sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"),
+  delta_epsilon = 0.1,
+  verbose = TRUE,
   ...
 )
 }
@@ -104,6 +106,9 @@ num_knots_Y0W = c(10,5,1) generates same basis functions as above and also the t
 
 \item{sl3_Learner_var_Y}{A \code{sl3}-Learner for the conditional variance of `Y`. Only used if `estimand = "CATE"` and by default is estimated using Poisson-link LASSO regression with `Lrnr_glmnet`.
 If conditional variance is constant, set `sl3_Learner_var_Y = Lrnr_mean$new()`.}
+
+\item{delta_epsilon}{Step size of iterative targeted maximum likelihood estimator. `delta_epsilon = 1 ` leads to large step sizes and fast convergence. `delta_epsilon = 0.005` leads to slower convergence but possibly better performance.
+Useful to set to a large value in high dimensions.}
 
 \item{...}{Other arguments to pass to main routine (spCATE, spOR, spRR)}
 }

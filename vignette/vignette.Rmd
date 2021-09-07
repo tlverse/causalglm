@@ -1,0 +1,324 @@
+---
+title: "vignette"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# causalGLM user-guide
+
+## CATE estimation
+```{r}
+set.seed(1500)
+data_list <- sim.CATE(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_CATE <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "HAL", verbose = FALSE)
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+summary(causal_fit)
+
+ 
+```
+
+```{r}
+# We can also use generalized additive models.
+causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "gam", estimand = "CATE")
+summary(causal_fit)
+
+# We can also use lasso (glmnet). This is useful for very high dimensional models. (By default, it is cross-fitted to reduce bias).
+# It is amazing that we can get valid inference using the LASSO.
+causal_fit <-causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "glmnet", estimand = "CATE")
+summary(causal_fit)
+
+
+# We can also use cross-fitted and CV-tuned xgboost. (glmnet is included in the cross-validation selection library/ensemble as well.)
+# Xgboost is black-box. But, we can still get inference!
+causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y, learning_method = "xgboost", estimand = "CATE")
+summary(causal_fit)
+
+```
+
+
+
+## OR estimation
+
+```{r}
+set.seed(1500)
+data_list <- sim.OR(500, 2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+truelogOR <- data_list$logOR
+# True log OR of data (is constant)
+print(truelogOR)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the OR
+formula_logOR <- ~ 1
+
+# Let use MARS (multivariate adaptive regression splines) using the "earth" package.
+# It is amazing that we can get valid inference using the greedy selection algorithms like MARS!
+causal_fit <- causalGLM(formula = formula_logOR, data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "mars")
+# We got pretty close!
+
+
+summary(causal_fit)
+
+```
+
+
+
+
+## RR estimation
+
+
+```{r}
+ 
+data_list <- sim.RR(500, 2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+
+ 
+# True log RR of data (is constant)
+print(data_list$logRR)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a less constant model for the RR (only first coefficient is nonzero)
+formula_logRR <- ~ 1 + W1 + W2 
+
+# This will take a few seconds. 
+causal_fit <- causalGLM(formula = formula_logRR, data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "xgboost"  )
+# We got pretty close!
+ 
+ summary(causal_fit) 
+ 
+```
+
+
+# causalRobustGLM user-guide
+ 
+## Robust CATE estimation
+```{r}
+set.seed(1500)
+data_list <- sim.CATE(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_CATE <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "HAL")
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model is actually a nonparametric estimate of the ATE
+summary(causal_fit)
+
+ 
+```
+
+## Robust CATT estimation
+```{r}
+set.seed(1500)
+data_list <- sim.CATE(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_CATE <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATT", learning_method = "HAL")
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model is actually a nonparametric estimate of the ATT
+summary(causal_fit)
+
+ 
+```
+
+
+
+## Robust OR estimation
+```{r}
+set.seed(1500)
+data_list <- sim.OR(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_CATE <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "glmnet")
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model can be interpreted as a population-average of the conditional odds ratio.
+summary(causal_fit)
+
+ 
+```
+ 
+ 
+ 
+# causalGLMnet User-guide: causalGLM in high dimensions with glmnet (the LASSO)
+
+ 
+## CATE estimation in high dimensions
+```{r}
+set.seed(1500)
+data_list <- sim.CATE(n=200, p=1000)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueCATE <- data_list$beta_CATE
+# True treatment effect of data (is constant)
+print(trueCATE)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_CATE <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+doMC::registerDoMC(5)
+causal_fit <- causalGLMnet(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", cross_fit = TRUE, constant_variance_CATE = TRUE, parallel = TRUE)
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model is actually a nonparametric estimate of the ATE
+summary(causal_fit)
+
+ 
+```
+ 
+
+ 
+
+##  OR estimation in high dimensions
+```{r}
+set.seed(1500)
+data_list <- sim.OR(n=200, p=1000)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+trueOR <- data_list$beta_logRR
+# True conditional OR of data (is constant)
+print(trueOR)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the OR
+formula_OR <- ~ 1
+
+
+doMC::registerDoMC(5)
+causal_fit <- causalGLMnet(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "OR", cross_fit = TRUE, constant_variance_CATE = TRUE, parallel = TRUE)
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model can be interpreted as a population-average of the conditional odds ratio.
+summary(causal_fit)
+
+ 
+```
+
+
+## RR estimation in high dimensions
+```{r}
+set.seed(1500)
+
+data_list <- sim.RR(200, 500)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+
+ 
+# True log RR of data (is constant)
+print(data_list$logRR)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a less constant model for the RR (only first coefficient is nonzero)
+formula_logRR <- ~ 1 + W1 + W2 
+doMC::registerDoMC(5)
+# This will take a few seconds. 
+causal_fit <- causalGLMnet(formula = formula_logRR, data, W  = W, A = A, Y = Y,  estimand = "RR", parallel = TRUE, verbose = TRUE   )
+# We got pretty close!
+ 
+ summary(causal_fit) 
+
+ 
+```
+ 

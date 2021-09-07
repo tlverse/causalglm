@@ -75,6 +75,7 @@ Other Learners:
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="predict">}\href{../../sl3/html/Lrnr_base.html#method-predict}{\code{sl3::Lrnr_base$predict()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="predict_fold">}\href{../../sl3/html/Lrnr_base.html#method-predict_fold}{\code{sl3::Lrnr_base$predict_fold()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="print">}\href{../../sl3/html/Lrnr_base.html#method-print}{\code{sl3::Lrnr_base$print()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="process_formula">}\href{../../sl3/html/Lrnr_base.html#method-process_formula}{\code{sl3::Lrnr_base$process_formula()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="reparameterize">}\href{../../sl3/html/Lrnr_base.html#method-reparameterize}{\code{sl3::Lrnr_base$reparameterize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="retrain">}\href{../../sl3/html/Lrnr_base.html#method-retrain}{\code{sl3::Lrnr_base$retrain()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sl3" data-topic="Lrnr_base" data-id="sample">}\href{../../sl3/html/Lrnr_base.html#method-sample}{\code{sl3::Lrnr_base$sample()}}\out{</span>}
