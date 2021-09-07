@@ -12,7 +12,7 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with causalRobustGLM)
 5. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
-
+where each estimand can be modelled with a user-specified parametric model that is either assumed correct (`causalGLM` and `causalGLMnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`causalRobustGLM`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
 Noticable features supported:
 1. All methods utilize the powerful tlverse/tmle3 generalized targeted learning framework.
