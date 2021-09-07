@@ -10,6 +10,8 @@ This package supports (semiparametric and nonparametric versions of) the estiman
 1. Conditional average treatment effect (CATE) estimation. (Causal semiparametric linear regression)
 2. Conditional odds ratio (OR) estimation between two binary variables]. (Causal semiparametric logistic regression)
 3. Conditional relative risk (RR) regression for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
+4. Conditional treatment-specific mean (TSM) estimation for categorical treatments. (Only supported nonparametrically with causalRobustGLM)
+5. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
 
 
 Noticable features supported:
@@ -100,6 +102,10 @@ In particular, if V = 1 (i.e. formula = ~1) then the solution is equal to `beta 
 
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATE, which may be of independent interest.
 
+By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATE can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
+`E[CATE(W)|Z] = beta^T V(Z)`
+then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation).
+
 ### Robust nonparametric inference for the CATT
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
 
@@ -116,6 +122,18 @@ which is the least-squares projection of `CATE(W) := E[Y|A=1,W] - E[Y|A=0,W]` on
 
 Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the ATT, which may be of independent interest.
 
+By specifying a formula of a lower dimensional feature `Z` of `W`, marginal structural models for the CATT can also be learned with this function. Specifically, if V(Z) is the design matrix obtained from the formula and one assumes
+`E[CATT(W)|Z] = beta^T V(Z)`
+then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation). 
+
+### Robust nonparametric inference for the conditional TSM
+Let V be the random vector obtained by applying the user-specified formula mapping to W. 
+
+Consider the oracle least-squares risk function:
+
+`R(beta) = E(E[Y|A=a,W] - A * beta^T * V )^2`,
+
+which is the least-squares projection of `TSM(W) := E[Y|A=1,W]` onto the parametric working model beta^T * V.
 
 ### Robust nonparametric inference for the OR
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -136,9 +154,9 @@ Consider the poisson log likelihood type risk function:
 
 Our estimand of interest beta' corresponds with risk minimizer of the above risk function, which can be viewed as a log-linear projection of the relative risk onto the working model.
 
-Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly E_W E[Y|A=1,W] / E_W E[Y|A=0,W]. 
+Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the log of the marginal relative risk, which may be of independent interest. That is, the estimand is exactly the log of E_W E[Y|A=1,W] / E_W E[Y|A=0,W]. 
 
-More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model E[E[Y|A=a,W]|Z] = beta^T V(Z) where Z is a subset of W and V is obtained from a formula that only depends on Z, then the coefficients can be learned by applying causalRobustGLM with the formula that gave V(Z). This is true because, by conditioning, the risk function can be rewritten as
+More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z) where Z is a subset of W and V is obtained from a formula that only depends on Z, then the coefficients can be learned by applying causalRobustGLM with the formula that gave V(Z). This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
