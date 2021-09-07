@@ -70,7 +70,7 @@ where P(Y=1|A=0,W) is unspecified and learned using machine-learning.
 
 Just like with the CATE, you can specify arbitrary parametric forms of the conditional odds ratio (at the log-scale).
 
-### Conditional relative risk/treatment-effect and partially-linear log-linear/link regression
+### Conditional relative risk/treatment-effect and partially-linear log-linear regression
 When Y is binary, a count, or more generally nonnegative, the relative risk of Y with respect to A can be estimated. Use the function `causalGLM` with `estimand = "RR"`.
 
 The model used is the so-called "partially-linear log-linear/poisson regression model" which *only* assumes
