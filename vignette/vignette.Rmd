@@ -7,6 +7,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(causalGLM)
+
+```
+
+
 # causalGLM user-guide
 
 ## CATE estimation
@@ -121,13 +127,14 @@ causal_fit <- causalGLM(formula = formula_logRR, data, W  = W, A = A, Y = Y,  es
  summary(causal_fit) 
  
 ```
+ 
 
 
 # causalRobustGLM user-guide
  
 ## Robust CATE estimation
 ```{r}
-set.seed(1500)
+#set.seed(1500)
 data_list <- sim.CATE(n=500, p=2)
 # Confounders
 W <- data_list$W
@@ -137,6 +144,10 @@ A <- data_list$A
 Y <- data_list$Y
 data <- data_list$data
 trueCATE <- data_list$beta_CATE
+task <- sl3_Task$new(data, c("W1", "W2", "A"), "Y")
+
+ 
+
 # True treatment effect of data (is constant)
 print(trueCATE)
 
@@ -146,7 +157,8 @@ formula_CATE <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "HAL")
+data
+causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "glmnet")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -251,6 +263,55 @@ coefs <- causal_fit$coefs
 # The intercept model can be interpreted as a population-average of the conditional odds ratio.
 summary(causal_fit)
 
+ 
+```
+ 
+ 
+## Robust RR estimation
+
+```{r}
+causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm", formula_Y = ~.^2)
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+causal_fit$tmle3_fit$likelihood$factor_list$Y$learner$process_formula(causal_fit$tmle3_fit$tmle_task$get_regression_task("Y"))$data
+
+```
+
+```{r}
+set.seed(1500)
+data_list <- sim.RR(n=500, p=2)
+# Confounders
+W <- data_list$W
+# Binary treatment
+A <- data_list$A
+# Outcome (binary in this case)
+Y <- data_list$Y
+data <- data_list$data
+beta_logRR <- data_list$beta_logRR
+# True treatment effect of data (is constant)
+print(beta_logRR)
+
+# Let's learn it using semiparametric methods.
+# Lets specify a constant model for the CATE
+formula_RR <- ~ 1
+
+# This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
+# 
+causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm", formula_Y = ~.^2)
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model can be interpreted as a population-average of the conditional odds ratio.
+summary(causal_fit)
+
+
+causal_fit <- causalGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm")
+# We got pretty close!
+coefs <- causal_fit$coefs
+
+# The intercept model can be interpreted as a population-average of the conditional odds ratio.
+summary(causal_fit)
  
 ```
  

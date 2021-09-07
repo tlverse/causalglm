@@ -9,8 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-devtools::install_github("tlverse/tmle3", ref = "general_submodels_devel")
-
+devtools::install_github("tlverse/tmle3", ref = "general_submodels_devel" )
+devtools::install_github("tlverse/sl3", ref = "Larsvanderlaan-formula_fix")
 ```
 
 
