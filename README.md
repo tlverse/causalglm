@@ -138,7 +138,7 @@ Consider the oracle least-squares risk function:
 
 `R(beta) = E(E[Y|A=a,W] -  beta^T * V )^2`,
 
-which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model `beta^T * V`. Our estimand of interest is the risk minimizer.
+Our estimand of interest is the risk minimizer, which is the least-squares projection of `TSM(W) := E[Y|A=a,W]` onto the parametric working model `beta^T * V`.  
 
 
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean `E_WE[Y|A=a,W]`, which may be of independent interest.  
