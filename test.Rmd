@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+devtools::install_github("tlverse/tmle3", ref = "general_submodels_devel")
+
+```
+
+
+```{r}
+devtools::document()
+
+```
+
+```{r}
+n <- 250
+W <- runif(n, -1, 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <-  rnorm(n, W + A , sd = 0.3)
+data <- data.table(W,A,Y)
+ 
+out <- causalGLM(~1, estimand = "CATE",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+
+Y <-  rbinom(n, size = 1, prob =   plogis(A + W))
+data <- data.table(W,A,Y)
+out <- causalGLM(~1, estimand = "OR",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+
+Y <-  rpois(n, exp(A+W))
+data <- data.table(W,A,Y)
+out <- causalGLM(~1, estimand = "RR",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+```
+
+
+```{r}
+n <- 250
+W <- runif(n, -1, 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <-  rnorm(n, W + A , sd = 0.3)
+data <- data.table(W,A,Y)
+ 
+out <- causalRobustGLM(~1, estimand = "CATE",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+
+Y <-   rnorm(n, W + A , sd = 0.3)
+data <- data.table(W,A,Y)
+out <- causalRobustGLM(~1, estimand = "CATT",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+
+Y <-   rbinom(n, size = 1, prob =  plogis(A + W))
+data <- data.table(W,A,Y)
+out <- causalRobustGLM(~1, estimand = "OR",  learning_method = "glm", data = data, W = "W", A = "A", Y = "Y")
+out$tmle3_fit
+```
