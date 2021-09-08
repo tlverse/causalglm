@@ -190,7 +190,7 @@ The function `causalRobustCOXph` allows you to estimate the parameters of a user
 
 where f(W,t) is a user-specified vector-valued parametric function that depends on `W` and the time `t`. The coefficient vector `beta` is estimated by projecting a nonparametric estimator of the conditional hazard `P(T=t| T \geq t, A, W)` onto the exponential working model
 
-`P_working(T=t| T \geq t, A, W) := exp(beta^T f(W,t)) P(T=t| T \geq t, A=0, W). 
+`P_working(T=t| T \geq t, A, W) := exp(beta^T f(W,t)) P(T=t| T \geq t, A=0, W)`. 
 
 This working model is the proportional hazards model except only for the treatment interaction term. There are no restrictions made on the placebo arm conditional hazard `P(T=t| T \geq t, A=0, W)`. The projection is obtained by minimizing the log-linear risk function:
 
