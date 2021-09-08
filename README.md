@@ -94,12 +94,12 @@ where log RR(W) is parametric and E[Y|A=0,W] is the background/placebo outcome m
 ## Robust nonparametric inference for generalized linear models with causalRobustGLM: CATE, CATT, TSM, RR, and OR
 Rather than assuming a semiparametric model, we can instead make no assumptions (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
 
-This nonparametric view is implemented in the function `causalRobustGLM`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimand are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. For the most part, you can interpret the estimates in the same way you interpret the estimates given by `causalGLM`. 
+This nonparametric view is implemented in the function `causalRobustGLM`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimands are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. For the most part, you can interpret the estimates in the same way you interpret the estimates given by `causalGLM`. 
 
 We critically note that the semiparametric estimates given by `causalGLM` are (usually) not asymptotically equivalent to those given by`causalRobustGLM` when the parametric model is incorrect. The latter method can truly be viewed as an estimator for the best causal approximation, while the former is not necessarily so. Therefore, `causalRobustGLM` does not only give nonparametrically correct inference but also provides estimates for a nonparametric estimand that is more interpretable than the coefficients of the misspecified semiparametric model given by `causalGLM`. Notably, the intercept model for causalRobustGLM often corresponds with estimation of a nonparametric marginal causal parameter (like the ATE, ATT, marginal TSM, or marginal relative risk). This feature generalizes to marginal structural models for a number of the estimands. This is not true for the semiparametric methods implemented in `causalGLM`. There is a usually slight increase in confidence interval width for the nonparametric methods relative to the semiparametric methods.
 
 
-### Robust nonparametric inference for the CATE
+### Robust nonparametric inference for the CATE (conditional treatment effect)
 This method is useful for assessing heterogenity in the additive treatment effect across all individuals.
 
 Let V := V(W) be the random vector obtained by applying the user-specified formula mapping to W (i.e. V = model.matrix(formula, W)). 
@@ -118,7 +118,7 @@ By specifying a formula of a lower dimensional feature `Z` of `W`, marginal stru
 `E[CATE(W)|Z] = beta^T V(Z)`
 then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation).
 
-### Robust nonparametric inference for the CATT
+### Robust nonparametric inference for the CATT (conditional treatment effect among the treated)
 This method is useful for assessing heterogenity in the additive treatment effect among the treated.
 
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -140,7 +140,7 @@ By specifying a formula of a lower dimensional feature `Z` of `W`, marginal stru
 `E[CATE(W)|Z, A=1] = beta^T V(Z)`
 then robustCausalGLM wil actually return estimates of the above beta (if the model is incorrect it can still be viewed as a working model approximation). 
 
-### Robust nonparametric inference for the conditional TSM
+### Robust nonparametric inference for the conditional TSM (conditional treatment-specific mean)
 This method is useful for assessing heterogeniety in the average outcome across all individuals for a given treatment intervention.
 
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -154,7 +154,7 @@ Our estimand of interest is the risk minimizer, which is the least-squares proje
 
 Notably, if `formula = ~1` is passed to `causalRobustGLM` then the coefficient is an efficient nonparametric estimator of the marginal treatment specific mean `E_WE[Y|A=a,W]`, which may be of independent interest.  
 
-### Robust nonparametric inference for the OR
+### Robust nonparametric inference for the OR (conditional odds ratio)
 This method is useful for assessing heterogeniety in the odds ratio.
 
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -166,7 +166,7 @@ Consider the logistic working submodel:
 Our estimand of interest `beta'` corresponds with the coefficient vector of the log-likelihood projection of the true distribution `P(Y=1|A,W)` onto the working submodel `P_approx(Y=1|A,W)`.
 
 
-### Robust nonparametric inference for the RR
+### Robust nonparametric inference for the RR (conditional relative-risk)
 This method is useful for assessing heterogenity in the relative treatment effect.
 
 Let V be the random vector obtained by applying the user-specified formula mapping to W. 
@@ -182,7 +182,7 @@ Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is 
 More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model `log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z)` where `Z` is a subset of `W` and `V` is obtained from a formula that only depends on `Z`, then the coefficients can be learned by applying `causalRobustGLM` with the formula that gave `V(Z)`. This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
-## Interpretable nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data
+## Interpretable nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data (assumption-lean COXph)
 
 The function `causalRobustCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
