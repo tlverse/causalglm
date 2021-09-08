@@ -15,7 +15,7 @@ This package supports (semiparametric and nonparametric versions of) the followi
 6. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
 
 This package also supports the following survival estimands:
-1. Treatment-specific conditional hazard ratio with causalRobustCOXph.
+1. Conditional hazard ratio between two treatments with `causalRobustCOXph`.
 
 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`causalGLM` and `causalGLMnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`causalRobustGLM`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
@@ -182,7 +182,7 @@ Notably, if formula = ~1 is passed to `causalRobustGLM` then the coefficient is 
 More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model `log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z)` where `Z` is a subset of `W` and `V` is obtained from a formula that only depends on `Z`, then the coefficients can be learned by applying `causalRobustGLM` with the formula that gave `V(Z)`. This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
-## Nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data
+## Interpretable nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data
 
 The function `causalRobustCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
