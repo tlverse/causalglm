@@ -131,7 +131,7 @@ causalRobustCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 2
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
   
   output <- list(coefs = tmle3_fit$summary,   tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
-  class(output) <- c("causalRobustCOXph", "causalGLM")
+  class(output) <- c("RobustCOXph", "causalGLM")
   return(output)
 }
 
