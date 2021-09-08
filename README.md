@@ -198,10 +198,6 @@ This working model is the proportional hazards model except only for the treatme
 
 which is essentially the same risk function used in the previous section for robust estimation of the relative risk.
 
-When there is censoring, the risk function can be identified from the observed data by the IPCW risk function:
-
-`E[sum_{t=1,t_0} (Delta / P(C >= t|A,W)) * P(Ttilde=t| Ttilde \geq t, A=0, W, Delta=1) * exp{beta^T f(W,t)} -  (Delta / P(C >= t|A,W)) * P(Ttilde=t| Ttilde \geq t, A=1, W, Delta=1) * beta^T f(W,t)]`.
-
 By specifying lower dimensional formulas, marginal structural models for the hazard ratio can also be learned.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
