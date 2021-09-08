@@ -1,4 +1,4 @@
-# causalGLM (in development, not really tested yet, but can be used with caution)
+# causalGLM (Recently started development, very new, not really tested yet, don't use yet.)
 ## Semiparametric and nonparametric generalized linear models for causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
@@ -15,7 +15,7 @@ This package supports (semiparametric and nonparametric versions of) the followi
 6. Using causalRobustGLM with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
 
 This package also supports the following survival estimands:
-1. Conditional hazard ratio between two treatments with `causalRobustCOXph`.
+1. Conditional hazard ratio between two treatments with `RobustCOXph`.
 
 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`causalGLM` and `causalGLMnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`causalRobustGLM`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
@@ -184,7 +184,7 @@ More generally, this method can be used to learn marginal structural model param
 
 ## Interpretable nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data (assumption-lean COXph)
 
-The function `causalRobustCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
+The function `RobustCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
 `log[P(T=t| T \geq t, A=1, W)/P(T=t| T \geq t, A=0, W)] = beta^T f(W,t)`
 
@@ -199,6 +199,8 @@ This working model is analagous to the proportional hazards model except only fo
 which is essentially the same risk function used in the previous section for robust estimation of the relative risk.
 
 By specifying lower dimensional formulas, marginal structural models for the hazard ratio can also be learned.
+
+We note the causal interpretation of this hazard is questionable.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
 For high dimensional W, you can use the wrapper function `causalGLMnet` which runs `causalGLM` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, while still allowing for asymptotically correct post-selection inference. 
@@ -241,9 +243,9 @@ Estimation of a non-parametric variable importance measure of a continuous expos
 Causal effects based on marginal structural models, Neugebauer, van der Laan (2007): 
 https://www.researchgate.net/publication/222318646_Nonparametric_causal_effects_based_on_marginal_structural_models  
 
-
 Not implemented here but an alternative practical nonparametric working model CATE estimator:
 Vansteelandt et al., https://arxiv.org/pdf/2006.08402.pdf
+
 Related R packages: 
 
 https://github.com/ck37/varimpact/tree/master/R
