@@ -187,12 +187,19 @@ More generally, this method can be used to learn marginal structural model param
 The function `causalRobustCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
 `log[P(T=t| T \geq t, A=1, W)/P(T=t| T \geq t, A=0, W)] = beta^T f(W,t)`
-where f(W,t) is a user-specified vector-valued parametric function that depends on `W` and the time `t`. The coefficient vector `beta` is estimated by projecting a nonparametric estimator of the conditional hazard `P(T=t| T \geq t, A, W)` onto the exponential working model `P_working(T=t| T \geq t, A, W) := exp(beta^T f(W,t)) P(T=t| T \geq t, A=0, W). This working model is the proportional hazards model except only for the treatment interaction term. There are no restrictions made on the placebo arm conditional hazard P(T=t| T \geq t, A=0, W). The projection is obtained by minimizing the log-linear risk function:
+
+where f(W,t) is a user-specified vector-valued parametric function that depends on `W` and the time `t`. The coefficient vector `beta` is estimated by projecting a nonparametric estimator of the conditional hazard `P(T=t| T \geq t, A, W)` onto the exponential working model
+
+`P_working(T=t| T \geq t, A, W) := exp(beta^T f(W,t)) P(T=t| T \geq t, A=0, W). 
+
+This working model is the proportional hazards model except only for the treatment interaction term. There are no restrictions made on the placebo arm conditional hazard `P(T=t| T \geq t, A=0, W)`. The projection is obtained by minimizing the log-linear risk function:
 
 `E[sum_{t=1,t_0} P(T=t| T \geq t, A=0, W) * exp{beta^T f(W,t)} - P(T=t| T \geq t, A=1, W) * beta^T f(W,t)]`,
+
 which is essentially the same risk function used in the previous section for robust estimation of the relative risk.
 
 When there is censoring, the risk function can be identified from the observed data by the IPCW risk function:
+
 `E[sum_{t=1,t_0} (Delta / P(C >= t|A,W)) * P(Ttilde=t| Ttilde \geq t, A=0, W, Delta=1) * exp{beta^T f(W,t)} -  (Delta / P(C >= t|A,W)) * P(Ttilde=t| Ttilde \geq t, A=1, W, Delta=1) * beta^T f(W,t)]`.
 
 By specifying lower dimensional formulas, marginal structural models for the hazard ratio can also be learned.
