@@ -20,6 +20,51 @@ devtools::document()
 ```
 
 ```{r}
+
+library(simcausal)
+D <- DAG.empty()
+D <- D + node("W1", distr = "runif",  min = -1, max = 1) + 
+  node("W2", distr = "runif",  min = -1, max = 1) + 
+   node("A", distr = "rbinom",  size = 1, prob = plogis(W1 + W2 )) +
+  node("dNt", t = 1:10, EFU = TRUE , distr = "rbinom",  size = 1, prob = exp(0.5*A)*0.1*plogis(W1 + W2 + t)) +
+  node("dCt", t = 1:10, EFU = TRUE,  distr = "rbinom",  size = 1, prob = 0.1*plogis(W1 + W2 + t)) 
+D <- set.DAG(D)
+data <- sim(D, n = 500)
+data
+apply(data,1, function(row) {
+  
+})
+```
+
+```{r}
+n <- 1500
+W <- replicate(3, runif(n, -1, 1))
+A <- rbinom(n, 1, plogis(rowSums(W)))
+T <- pmin(ceiling(rexp(n,  rate = exp(-1+A + rowMeans(W)))),10)
+C <- pmin(ceiling(rexp(n,  rate = exp(-1.5+A + rowMeans(W)))),10)
+Ttilde <- pmin(T,C)
+Delta <- as.numeric(T <= C)
+data <- data.table(W,A,Ttilde, Delta)
+data
+out <- causalRobustCOXph(~1, data, learning_method = "xgboost", W = c("V1", "V2", "V3"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_Y = ~ . )
+out
+```
+
+
+```{R}
+vet_data <- read.csv("https://raw.githubusercontent.com/tlverse/deming2019-workshop/master/data/veteran.csv")
+vet_data$trt <- vet_data$trt - 1
+vet_data$time <- ceiling(vet_data$time / 20)
+node_list <- list(
+  W = c("celltype", "karno", "diagtime", "age", "prior"), A = "trt", T_tilde = "time", Delta = "status",
+  time = "t", N = "N", A_c = "A_c", id = "X", pre_failure = "pre_failure"
+)
+
+out <- causalRobustCOXph(~1, vet_data, learning_method = "mars", W = "celltype", "A" = "trt", Ttilde = "time", Delta = "status")
+out
+```
+
+```{r}
 n <- 250
 W <- runif(n, -1, 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
