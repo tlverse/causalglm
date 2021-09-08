@@ -192,7 +192,7 @@ where f(W,t) is a user-specified vector-valued parametric function that depends 
 
 `P_working(T=t| T \geq t, A=1, W) := exp(beta^T f(W,t)) P(T=t| T \geq t, A=0, W)`. 
 
-This working model is the proportional hazards model except only for the treatment interaction term. There are no restrictions made on the placebo arm conditional hazard `P(T=t| T \geq t, A=0, W)`. The projection is obtained by minimizing the log-linear risk function:
+This working model is analagous to the proportional hazards model except only for treatment component of the hazard function, thereby significantly reducing the number of assumptions relative to typical implementations of coxph. There are no restrictions made on the placebo arm conditional hazard `P(T=t| T \geq t, A=0, W)`. The projection is obtained by minimizing the log-linear risk function:
 
 `E[sum_{t=1,t_0} P(T=t| T \geq t, A=0, W) * exp{beta^T f(W,t)} - P(T=t| T \geq t, A=1, W) * beta^T f(W,t)]`,
 
