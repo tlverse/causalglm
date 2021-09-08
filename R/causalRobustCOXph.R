@@ -56,7 +56,7 @@
 #' By default, `formula_T = . + A*.` so that additive learners still model treatment interactions.
 #' @param formula_HAL_T A HAL formula string to be passed to \code{\link[hal9001]{fit_hal}}). See the `formula` argument of \code{\link[hal9001]{fit_hal}}) for syntax and example use.
 #' @param weights An optional vector of weights to use in procedure.
-#' @param HAL_args_Y A list of parameters for the semiparametric Highly Adaptive Lasso estimator for E[Y|A,W].
+#' @param HAL_args_T A list of parameters for the semiparametric Highly Adaptive Lasso estimator for E[Y|A,W].
 #' Possible parameters are: 
 #' 1. `smoothness_orders`: Smoothness order for HAL estimator of E[Y|A,W] (see \code{\link[hal9001]{fit_hal}})
 #' smoothness_order_Y0W = 1 is piece-wise linear. smoothness_order_Y0W = 0 is piece-wise constant.
@@ -72,7 +72,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR) 
 #' @export 
-causalRobustCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20,  learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_T = NULL, sl3_Learner_C = NULL,     formula_T = as.formula(paste0("~ . + . *", A)),  formula_HAL_T = paste0("~ . + h(.,", A, ") + h(.,t)"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(10,5,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ... ){
+causalRobustCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20,  learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_T = NULL, sl3_Learner_C = NULL,     formula_T = as.formula(paste0("~ . + . *", A)),  formula_HAL_T = paste0("~ . + h(.,", A, ") + h(.,t)"), HAL_args_T = list(smoothness_orders = 1, max_degree = 2, num_knots = c(10,5,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ... ){
    
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -99,9 +99,9 @@ causalRobustCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 2
     if(learning_method == "HAL") {
        
       sl3_Learner_T <- Lrnr_hal9001$new(formula_HAL = formula_HAL_T, family = "binomial", 
-                                        smoothness_orders = HAL_args_Y$smoothness_orders,
-                                        max_degree = HAL_args_Y$max_degree,
-                                        num_knots = HAL_args_Y$num_knots, fit_control = HAL_fit_control)
+                                        smoothness_orders = HAL_args_T$smoothness_orders,
+                                        max_degree = HAL_args_T$max_degree,
+                                        num_knots = HAL_args_T$num_knots, fit_control = HAL_fit_control)
       
     }  else {
       superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(list(  Lrnr_glmnet$new(formula = formula_T),  Lrnr_glm$new(formula = formula_T), Lrnr_gam$new(), Lrnr_earth$new(formula = formula_T) ,
