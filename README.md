@@ -200,7 +200,7 @@ which is essentially the same risk function used in the previous section for rob
 
 By specifying lower dimensional formulas, marginal structural models for the hazard ratio can also be learned.
 
-We note the causal interpretation of this hazard is questionable.
+We note the causal interpretation of this hazard estimand may be questionable. See the discussion paper, "The Hazard of Hazard Ratios", Hernan, 2010: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3653612/.
 
 ## Semiparametric inference for high dimensional generalized linear models with causalGLMnet (the LASSO): CATE, OR, and RR
 For high dimensional W, you can use the wrapper function `causalGLMnet` which runs `causalGLM` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, while still allowing for asymptotically correct post-selection inference. 
