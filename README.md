@@ -241,6 +241,9 @@ Estimation of a non-parametric variable importance measure of a continuous expos
 Causal effects based on marginal structural models, Neugebauer, van der Laan (2007): 
 https://www.researchgate.net/publication/222318646_Nonparametric_causal_effects_based_on_marginal_structural_models  
 
+
+Not implemented here but an alternative practical nonparametric working model CATE estimator:
+Vansteelandt et al., https://arxiv.org/pdf/2006.08402.pdf
 Related R packages: 
 
 https://github.com/ck37/varimpact/tree/master/R
