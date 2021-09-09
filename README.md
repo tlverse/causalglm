@@ -1,4 +1,9 @@
-# causalGLM (Recently started development, very new, not really tested yet, don't use yet.)
+# causalGLM (Actively being developed.)
+
+Basic simulations have been run to test the 95% CI coverage of the methods. Simulations suggest that the methods work. However, more extensive testing is needed to ensure there are no bugs.
+
+Use with caution.
+
 ## Semiparametric and nonparametric generalized linear models for causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
