@@ -111,6 +111,51 @@ for(i in 1:nsims){
 ```
 
  
+# Simulations 95% CI coverage RobustCOXph
 
+
+```{r}
+passes<-c()
+require(simcausal)
+for(i in 1:200){
+D <- DAG.empty()
+D <- D + node("W1", distr = "runif",  min = -1, max = 1) + 
+  node("W2", distr = "runif",  min = -1, max = 1) + 
+   node("A", distr = "rbinom",  size = 1, prob = plogis(W1 + W2 )) +
+  node("dNt", t = 1:10, EFU = TRUE , distr = "rbinom",  size = 1, prob = exp(0.5*A)*0.1*plogis(W1 + W2 + t)) +
+  node("dCt", t = 1:10, EFU = TRUE,  distr = "rbinom",  size = 1, prob = 0.1*plogis(W1 + W2 + t)) 
+D <- set.DAG(D)
+data <- sim(D, n = 500)
+data
+data_N <- data[, grep("[d][N].+", colnames(data))]
+data_C <- data[, grep("[d][C].+", colnames(data))]
+
+data_surv <-  as.data.frame(do.call(rbind, lapply(1:nrow(data), function(i) {
+  rowN <- data_N[i,]
+  rowC <- data_C[i,]
+  t <- which(rowN==1)
+  tc <- which(rowC==1)
+  if(length(tc)==0){
+    tc <- 10
+  }
+  if(length(t)==0){
+    t <- 12
+  }
+  Ttilde <- min(t,tc)
+  Delta <- t <= tc
+  return(matrix(c(Ttilde,Delta), nrow=1))
+})))
+colnames(data_surv) <- c("Ttilde", "Delta")
+data$Ttilde <- data_surv$Ttilde
+ data$Delta <- data_surv$Delta
+ data <-  data[, -grep("[d][C].+", colnames(data))]
+ data <-  data[, -grep("[d][N].+", colnames(data))]
+  data
+  
+  out <- causalRobustCOXph(~1, data, learning_method = "gam", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ . )
+  passes <- c(passes, out$coefs$lower <= 0.5  & out$coefs$upper >= 0.5 )
+  print(mean(passes))
+}
+```
 
 

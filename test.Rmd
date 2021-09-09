@@ -20,8 +20,9 @@ devtools::document()
 ```
 
 ```{r}
-
-library(simcausal)
+passes<-c()
+require(simcausal)
+for(i in 1:200){
 D <- DAG.empty()
 D <- D + node("W1", distr = "runif",  min = -1, max = 1) + 
   node("W2", distr = "runif",  min = -1, max = 1) + 
@@ -31,9 +32,42 @@ D <- D + node("W1", distr = "runif",  min = -1, max = 1) +
 D <- set.DAG(D)
 data <- sim(D, n = 500)
 data
-apply(data,1, function(row) {
+data_N <- data[, grep("[d][N].+", colnames(data))]
+data_C <- data[, grep("[d][C].+", colnames(data))]
+
+data_surv <-  as.data.frame(do.call(rbind, lapply(1:nrow(data), function(i) {
+  rowN <- data_N[i,]
+  rowC <- data_C[i,]
+  t <- which(rowN==1)
+  tc <- which(rowC==1)
+  if(length(tc)==0){
+    tc <- 10
+  }
+  if(length(t)==0){
+    t <- 12
+  }
+  Ttilde <- min(t,tc)
+  Delta <- t <= tc
+  return(matrix(c(Ttilde,Delta), nrow=1))
+})))
+colnames(data_surv) <- c("Ttilde", "Delta")
+data$Ttilde <- data_surv$Ttilde
+ data$Delta <- data_surv$Delta
+ data <-  data[, -grep("[d][C].+", colnames(data))]
+ data <-  data[, -grep("[d][N].+", colnames(data))]
+  data
   
-})
+  out <- causalRobustCOXph(~1, data, learning_method = "xgboost", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ . )
+  passes <- c(passes, out$coefs$lower <= 0.5  & out$coefs$upper >= 0.5 )
+  print(mean(passes))
+}
+```
+
+
+
+
+```{r}
+ 
 ```
 
 ```{r}
