@@ -73,7 +73,7 @@
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR) 
 #' @export 
 causalRobustCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20,  learning_method = c(  "HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE,  sl3_Learner_A = NULL, sl3_Learner_T = NULL, sl3_Learner_C = NULL,     formula_T = as.formula(paste0("~ . + . *", A)),  formula_HAL_T = paste0("~ . + h(.,", A, ") + h(.,t)"), HAL_args_T = list(smoothness_orders = 1, max_degree = 2, num_knots = c(10,5,1)),  HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ... ){
-   
+   stop("This function is not yet available. ")
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
   # if(!is.null(weights)) {

@@ -118,15 +118,17 @@ for(i in 1:nsims){
 passes<-c()
 require(simcausal)
 for(i in 1:200){
+  print(i)
 D <- DAG.empty()
 D <- D + node("W1", distr = "runif",  min = -1, max = 1) + 
   node("W2", distr = "runif",  min = -1, max = 1) + 
    node("A", distr = "rbinom",  size = 1, prob = plogis(W1 + W2 )) +
-  node("dNt", t = 1:10, EFU = TRUE , distr = "rbinom",  size = 1, prob = exp(0.5*A)*0.1*plogis(W1 + W2 + t)) +
-  node("dCt", t = 1:10, EFU = TRUE,  distr = "rbinom",  size = 1, prob = 0.1*plogis(W1 + W2 + t)) 
+  node("dNt", t = 1:10, EFU = TRUE , distr = "rbinom",  size = 1, prob = exp(0.5*A)*0.35*plogis(W1 + W2 )) +
+  node("dCt", t = 1:10, EFU = TRUE,  distr = "rbinom",  size = 1, prob = 0*plogis(W1 + W2 + t)) 
 D <- set.DAG(D)
-data <- sim(D, n = 500)
+data <- sim(D, n = 800)
 data
+ 
 data_N <- data[, grep("[d][N].+", colnames(data))]
 data_C <- data[, grep("[d][C].+", colnames(data))]
 
@@ -152,7 +154,12 @@ data$Ttilde <- data_surv$Ttilde
  data <-  data[, -grep("[d][N].+", colnames(data))]
   data
   
-  out <- causalRobustCOXph(~1, data, learning_method = "gam", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ . )
+  print(table(data$Ttilde))
+print(table(data$Delta))
+
+  doMC::registerDoMC(10)
+  out <- causalRobustCOXph(~1, data, learning_method = "HAL", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ ., formula_HAL_T = NULL, HAL_args_T = list(max_degree = 2, smoothness_orders  =1, num_knots = c(10,5)), HAL_fit_control = list(parallel = TRUE) )
+  print(out$coefs)
   passes <- c(passes, out$coefs$lower <= 0.5  & out$coefs$upper >= 0.5 )
   print(mean(passes))
 }
