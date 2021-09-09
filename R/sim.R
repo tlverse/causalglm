@@ -138,9 +138,9 @@ sim.OR <- function(n=1500, p=2, prop_active = 1, formula_estimand =~1, formula_A
   }
   
   logOR <- V%*%betalogOR 
-  Q <- plogis( 0.5*( A*logOR  +  XY %*% beta_Y))
-  Q1 <- plogis(  0.5*(  1*logOR  +  XY %*% beta_Y))
-  Q0 <- plogis( 0.5*(  XY %*% beta_Y))
+  Q <- plogis( ( A*logOR  +  XY %*% beta_Y))
+  Q1 <- plogis(   (  1*logOR  +  XY %*% beta_Y))
+  Q0 <- plogis( (  XY %*% beta_Y))
   Y <- rbinom(n, size = 1, prob = Q) 
   
   data <- data.frame(W, A=A, Y=Y, pA1 = g1, pY = Q , pY1 = Q1, pY0 = Q0, OR = exp(logOR))

@@ -124,7 +124,7 @@ causalGLM <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), 
     }
   }
   
-  tmle_spec_sp <- tmle3_Spec_spCausalGLM$new(formula = formula, estimand = estimand, append_interaction_matrix = append_interaction_matrix, wrap_in_Lrnr_glm_sp = wrap_in_Lrnr_glm_sp , binary_outcome = binary_outcome, delta_epsilon = delta_epsilon, verbose = verbose )
+  tmle_spec_sp <- tmle3_Spec_spCausalGLM$new(formula = formula, estimand = estimand, append_interaction_matrix = append_interaction_matrix, wrap_in_Lrnr_glm_sp = wrap_in_Lrnr_glm_sp , binary_outcome = F, delta_epsilon = delta_epsilon, verbose = verbose )
   learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
   if(estimand == "CATE") {
     learner_list$var_Y <- sl3_Learner_var_Y

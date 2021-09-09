@@ -1,0 +1,116 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+ 
+n <- 750
+nsims <- 200
+```
+
+# Simulation 95% CI coverage test for semiparametric and nonparametric CATE and CATT
+```{r}
+ 
+
+ passes <- c()
+  passes1 <- c()
+  passes2 <- c()
+for(i in 1:nsims){
+  print(i)
+  formula <- ~ 1 + W1
+  data_list <- sim.CATE(n=n, p=3,  sigma = NULL, formula_estimand = formula, formula_A = ~., formula_Y0W = ~ ., beta = c(1,0.5), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(1,1,1,1)) 
+  
+  data <- data_list$data
+  W <- data_list$W
+  A <- data_list$A
+  Y <- data_list$Y
+  beta0 <- data_list$beta_CATE
+  
+  out <- causalGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "mars", verbose = F)
+  passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  print(out$coefs)
+  out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "mars", verbose = F)
+    passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+
+    print(out$coefs)
+   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATT", learning_method = "mars", verbose = F)
+    print(out$coefs)
+  passes2 <- cbind(passes2, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  
+  print(rowMeans(passes))
+    print(rowMeans(passes1))
+     print(rowMeans(passes2))
+}
+
+```
+
+ 
+
+# Simulation 95% CI coverage test for semiparametric and nonparametric OR
+```{r}
+
+
+ passes <- c()
+passes1 <- c()
+for(i in 1:nsims){
+  print(i)
+  formula <- ~ 1 + W1
+  data_list <- sim.OR(n=n, p=2, formula_estimand = formula, formula_A = ~., formula_Y0W = ~., beta = c(1,0.5), beta_A =0.5 * c(0,1,1) , beta_Y = c(0,1,1)) 
+  
+  data <- data_list$data
+  W <- data_list$W
+  A <- data_list$A
+  Y <- data_list$Y
+  beta0 <- data_list$beta_logOR
+  
+  out <- causalGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glmnet", verbose = FALSE, delta_epsilon = 0.05)
+ 
+  passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  print(rowMeans(passes))
+  
+    out <- causalRobustGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glmnet", verbose = FALSE, delta_epsilon = 0.05)
+ 
+  passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  print(rowMeans(passes1))
+}
+```
+
+# Simulation 95% CI coverage test for semiparametric and nonparametric RR
+```{r}
+
+ passes <- c()
+passes1 <- c()
+for(i in 1:nsims){
+  print(i)
+  formula <- ~ 1 + W1
+  data_list <- sim.RR(n=n, p=3,   formula_estimand = formula, formula_A = ~., formula_Y0W = ~., beta = c(1,1), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(0,1,1,1)) 
+  
+  data <- data_list$data
+  W <- data_list$W
+  A <- data_list$A
+  Y <- data_list$Y
+  beta0 <- data_list$beta_logRR
+  
+  out <- causalGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glmnet", verbose = FALSE)
+  
+  passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  
+   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glmnet", verbose = FALSE)
+  
+  passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
+  print(rowMeans(passes))
+  print(rowMeans(passes1))
+}
+
+```
+
+ 
+
+
+
