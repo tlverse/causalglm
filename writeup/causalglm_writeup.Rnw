@@ -1,0 +1,664 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pxfonts}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{url}
+\usepackage[unicode=true,pdfusetitle,
+bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+{hyperref}
+\hypersetup{
+pdfstartview={XYZ null null 1}}
+\usepackage{breakurl}
+
+
+
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\expit}{expit}
+
+\usepackage{natbib}
+\bibliographystyle{apalike}
+
+
+\title{causalglm}
+\author{vanderlaanlars }
+\date{September 2021}
+
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+
+
+\section{Introduction to causalglm}
+\subsection{Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions}
+
+
+It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
+
+In this package, we utilize targeted machine-learning to generalize the parametric generalized linear models commonly used for treatment effect estimation (e.g. the R package glm) to the world of semi and nonparametric models. There is little-to-no loss in precision/p-values/confidence-interval-widths with these semiparametric methods relative to parametric generalized linear models, but the bias reduction from these methods can be substantial! Simulations suggest that these methods can work well with small sample sizes. We employ ensemble machine-learning (Super-Learning) that adapts the aggressiveness of the ML algorithms with sample size, thereby allowing for robust and correct inference in a diverse range of settings. All methods utilize targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011).\nocite{vanderLaanRose2011}
+
+Each estimand considered in this package can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
+
+By default, the Highly Adaptive Lasso (HAL) and its semiparametric variants are used for estimation. See Benkeser et al. (2016) for an overview of HAL and its statistical performance. For the theoretical analysis of HAL including its fast rate of convergence in high dimensions, see Bibaut et al. (2019) and van der Laan (2017) \nocite{bibaut2019fast}\nocite{HAL2016}\nocite{vanderlaanGenerlaTMLE}. We implement the HAL estimators using the R package hal9001 (Coyle et al., 2021).\nocite{hal1}\nocite{hal2} 
+\nocite{vanderlaanGenerlaTMLE} 
+
+Noticable features supported:
+\begin{itemize}
+\item Efficent semiparametric and nonparametric inference for user-specified parametric working-models of conditional treatment-effect functions with `spglm` and `npglm`.
+\item  Efficient nonparametric inference for marginal structural models for the CATE, CATT, TSM and RR with `npglm`.
+\item  General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem (Coyle et al., 2021).\nocite{coyle2021sl3}
+\item  High dimensional covariates and variable selection for confounders with the wrapper function `causalglmnet`.
+\item  Interpretable semiparametric and nonparametric estimates and efficient inference even with adaptive estimation and variable selection.
+\item  Designed-easy-to-use interface and built-in machine-learning routines for diverse settings and immediate use.
+\end{itemize}
+
+\subsection{spglm: semiparametric causal inference for generalized linear models}
+
+This function supports semiparametric efficient estimation of following point-treatment estimands:
+
+\begin{itemize}
+\item Conditional average treatment effect (CATE). (Causal semiparametric linear regression)
+\item Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression)
+\item Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
+
+\end{itemize}
+
+
+
+\subsection{npglm: nonparametric causal inference for generalized linear models}
+
+The function npglm supports nonparametric efficient working-model-based estimation of following point-treatment estimands:
+
+\begin{itemize}
+\item Conditional average treatment effect (CATE).
+\item Conditional average treatment effect among the treated (CATT)
+\item Conditional treatment-specific mean (TSM)
+\item Conditional odds ratio (OR) between two binary variables. 
+\item Conditional relative risk (RR) for nonnegative outcomes and a binary treatment.  
+\end{itemize}
+
+This function also automatically supports marginal structural models by specifying lower dimensional formulas/working-models for the following estimands
+\begin{itemize}
+\item Marginal structural models for the conditional average treatment effect (CATE).
+\item Marginal structural models for the conditional average treatment effect among the treated (CATT).
+\item Marginal structural models for the conditional treatment-specific mean (TSM).
+\item Marginal structural models for the conditional relative risk (RR). 
+\end{itemize}
+
+
+\subsection{causalglmnet: high dimensional causal inference for generalized linear models}
+The function causalglmnet supports causal inference with high dimensional confounders for the following estimands:
+\begin{itemize}
+\item Conditional average treatment effect (CATE). 
+\item Conditional odds ratio (OR) between two binary variables. 
+\item Conditional relative risk (RR) for nonnegative outcomes and a binary treatment.  
+\end{itemize}
+Note that the function causalglmnet is a custom wrapper function around the function spglm.
+
+\subsection{npcoxph: assumption-lean inference for the conditional hazard ratio}
+The function npcoxph supports the following survival estimands:
+1. Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npcoxph`.
+2. The estimands supported by `npcoxph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
+
+
+
+
+
+
+\section{Data-Structure and treatment-effect estimands}
+We will mainly consider the point-treatment data-structure $O = (W,A,Y)$ where $W$ represents a vector of baseline covariates (i.e. possible confounders), $A$ is a binary treatment assignment, and $Y$ is some outcome variable. As an example, for a given observation $O$, $W$ could be measurements: age, sex, a risk-score, location, income; $A$ could take the value $1$ if the individual receives the treatment and $0$ if they do not receive the treatment; and $Y$ is a binary or continuous variable that captures the effect of the treatment.
+
+For the goal of assessing heterogeneity of the treatment effect, there are a number of popular estimands:
+
+\noindent The conditional average treatment effect (CATE):
+\begin{equation}
+CATE(w) := E[Y|A=1,W=w] - E[Y|A=0, W=w],
+\end{equation}
+which is an additive measure of the effect of the treatment ($A=1$) relative to no treatment $(A=0)$.
+
+\noindent The conditional odds ratio (OR) for when $Y$ is binary:
+\begin{equation}
+OR(w) := \frac{P(Y=1|A=1,W=w)P(Y=0|A=1,W=w)}{P(Y=1|A=0,W=w)P(Y=0|A=0,W=w)}
+\end{equation}
+
+\noindent The conditional relative risk (RR) for when $Y$ is nonnegative (e.g. a binary or count variable):
+\begin{equation}
+RR(w) := \frac{E[Y|A=1,W=w]}{E[Y|A=0,W=w]},
+\end{equation}
+which is a relative measure of the effect of the treatment ($A=1$) relative to no treatment $(A=0)$.
+
+In some application, non-contrast measures like the conditional treatment-specific mean (TSM) may be of interest:
+\begin{equation}
+TSM_a(w) := E[Y|A=a,W].
+\end{equation}
+
+\subsection{Conventional estimators using parametric generalized linear models}
+In order to estimate the estimands of the previous section, parametric generalized linear models are often employed (e.g. the R package \textit{glm}). For the CATE,the following linear regression model is often used:
+$$E[Y|A, W=w] = \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+This model is equivalent to assuming both the nuisance linear model
+$$E[Y|A=0,W=w] =  \beta_1^T W$$
+and target linear model
+$$CATE(w) = \beta_0 + \beta_1^T W.$$
+Thus, the coefficient in front of the treatment interactions can be directly interpreted as a measure of the conditional average treatment effect when the parametric model is correct. However, we see that very strong parametric assumptions are made on the orthogonal nuisance function $w \mapsto E[Y|A=0,W=w]$, which has little to do with the CATE.
+
+Next, for the conditional odds ratio, the following logistic regression model is often used
+$$\logit \left\{P(Y=1|A,W) \right\} =  \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+This model is equivalent to assuming both the nuisance logistic model
+$$\logit\left\{P(Y=0|A=0,W) \right\} =   \beta_2^T W$$
+and the target logistic model
+$$\log OR(w) =  \beta_0  +  \beta_1^T W. $$
+Once again, we see that the conventional logistic regression model makes strong parametric assumptions on the orthogonal nuisance parameter $P(Y=0|A=0,W=w).$
+
+Finally, for the conditional relative-risk, the poisson or log-linear regression model is a well-known approach:
+$$\log \left\{E[Y|A,W] \right\} =  \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+This is equivalent to assuming the nuisance log-linear model
+$$\log \left\{E[Y|A=0,W] \right\} = \beta_2^T W$$
+and the target log-linear model
+$$\log \left\{RR(W) \right\} =  \beta_0  +  \beta_1^T W. $$
+Besides the strong parametric assumptions on the nuisance parameter $E[Y|A=0,W=w]$, another issue with this approach is that conventional methods only provide inference when the outcome is Poisson distributed, which is not useful if the outcome is binary. Log-link binomial generalized-linear-models are one way to overcome this limitation. 
+
+Under the parametric assumptions, standard generalize linear model software can be used to obtain estimates and inference for the coefficients in the above models for the treatment-effect estimands. However, these methods make much stronger assumptions than are needed. In particular, the parametric assumptions on $E[Y|A=0,W]$ provides little-to-no benefit in interpretability since we are interested in the coefficients for the treatment interaction terms, and it comes at a possibly substantial cost in bias due to model misspecification. Additionally, these methods do not allow for any adaptive estimation of $E[Y|A=0,W]$ (e.g. using the LASSO, variable selection, or machine-learning) and therefore do not perform well in both estimation and inference in high dimensions. In the next section, we consider a partial relaxation of the parametric models through so-called partially-linear generalized linear models.
+
+
+
+
+\section{Semiparametric generalized linear models for treatment effect estimation  with spglm}
+
+In this section, we give an overview of semiparametric treatment-effect estimation in partially-linear generalized linear models which allows for adaptive estimation of nuisance parameters of the data-generating distribution that are not directly relevant for the problem at end. Semiparametric models are statistical models in which one component of the data-generating distribution is parametric and the remaining components are nonparametric. For background on semiparametric models and estimators in causal inference, we refer to Bickel et al. (1993) and van der Laan, Robins (2003).\nocite{vanderlaanunified}\nocite{bickel1993efficient}
+
+
+
+These methods allow for:
+\begin{enumerate}
+\item Interpretable (coefficient-based) inference for user-specified parametric models for conditional treatment effect estimands.
+\item Adaptive machine-learning and variable selection methods including generalized additive models, LASSO, MARS and gradient-boosting can be used to estimate nuisance parameters nonparametrically, thereby substantially relaxing assumptions for valid inference although still assuming a parametric model for the conditional estimand of interest.
+\end{enumerate}
+
+\subsection{Conditional average treatment effect (CATE) and partially-linear least-squares regression}
+The partially-linear least-squares model is of the form:
+$$E[Y|A,W] = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
+where $ h_0(W) := E[Y|A=0,W]$ is an unspecified nuisance function that is to be learned from the data nonparametrically. The parametric component of the model is the coefficient vector $(\beta_0, \beta_1)$. This model is equivalent to \textit{only} assuming:
+$$CATE(w) = \beta_0 + \beta_1^T w.$$
+Thus, this semiparametric model only makes assumptions that directly relate the estimand of interest!
+
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "CATE"`. We employ machine-learning for initial estimation of the relevant components of the data-generating distribution and then use targeted maximum likelihood estimation for bias-correction, thereby allowing for valid efficient inference.
+
+The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
+
+\subsection{Conditional odds ratio (OR) and partially-linear logistic regression}
+The partially-linear logistic model is of the form:
+$$\logit\left\{E[Y|A,W]\right\} = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
+where $ h_0(W) := \logit\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
+$$\log OR(w) = \beta_0 + \beta_1^T w.$$
+
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "OR"`. 
+
+The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
+For a similar estimator based on estimating equations and additional background on the semiparametric logistic regression model, see Tchetgen Tchetgen (2010). \nocite{TchetgenOddsRatio}
+
+
+
+\subsection{Conditional relative-risk (RR) and partially-linear log-linear regression}
+The partially-linear log-linear model is of the form:
+$$\log\left\{E[Y|A,W]\right\} = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
+where $ h_0(W) := \log\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
+$$\log RR(w) = \beta_0 + \beta_1^T w.$$
+
+
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "RR"`.  
+
+The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, Tuglus et al. (2011).\nocite{TMLERR} 
+
+\subsection{spglm in practice}
+
+Let us generate a mock dataset that has a constant CATE of value 1.
+<<a>>=
+library(causalglm)
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rnorm(n, mean = A + W, sd = 0.3)
+data <- data.frame(W,A,Y)
+@
+
+We specify the parametric form of the CATE through the formula argument. In this case, we will use the intercept-only formula which is equivalent to assuming the CATE is constant.  The output consists of:
+a coefficient estimate for the intercept, lower and upper confidence intervals, an asymptotic standard error estimate for the estimator, a Z-score and p-value. The argument `W` should be a character vector of variable names in data for which to adjust, `A` should be the name of a treatment variable, and `Y` should be the name of an outcome variable. We set the argument `estimand = "CATE"` to estimate the conditional average treatment effect.
+<<b>>=
+formula <- ~ 1
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    verbose = FALSE
+  )
+summary(output) 
+@
+We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
+<<b>>=
+Y <-
+  rnorm(n,
+        mean = A * W + A + poly(W, degree = 3) + sin(4 * W),
+        sd = 0.4)
+data <- data.frame(W, A, Y)
+formula <- ~ 1 + W
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    verbose = FALSE
+  )
+summary(output) 
+@
+
+
+Currently, the nonparametric learning is performed using the partially-linear first-order Highly Adaptive Lasso (HAL) implemented using the R package tlverse/hal9001. HAL is an adaptive piece-wise linear regression spline estimator and the custom implementation performs the risk minimization entirely within the semiparametric model. It is implemented using LASSO regression with the parametric treatment interactions (as specified by the formula argument) unpenalized and a rich penalized spline basis for the nonparametric component of the model. This method performs risk minimization entirely within the semiparametric model.
+
+There are a number of other built-in learning options: c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost")
+
+<<c>>=
+Y <- rnorm(n, mean = A * W + A + W, sd = 0.4)
+data <- data.frame(W, A, Y)
+# generalized additive models:
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "gam",
+    verbose = FALSE
+  )
+summary(output)
+# multivariate adaptive regression splines:
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "mars",
+    verbose = FALSE
+  )
+summary(output)
+# gradient-boosting with xgboost: :
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "xgboost",
+    verbose = FALSE
+  )
+summary(output) 
+@
+
+
+The default learning algorithm "HAL" can be customized with the HAL\_args\_Y0W argument (see the arguments in hal9001 for more description). `max\_degree` = 1 corresponds with estimating the nuisance function $E[Y|A=0,W]$ with an additive model. `num\_knots` specifies for each interaction degree how many variable knot points are used to generate the tensor product interaction basis functions. 
+
+<<>>=
+HAL_args_Y0W <-
+  list(
+    smoothness_orders = 1,
+    max_degree = 2,
+    num_knots = c(10, 5, 1)
+  )
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "HAL",
+    HAL_args_Y0W = HAL_args_Y0W,
+    verbose = FALSE
+  )
+summary(output) 
+@
+
+It is also possible to employ custom learners using the tlverse/sl3 framework and the sl3\_Learner\_Y (to estimate $E[Y|A=1,W]$ and $E[Y|A=0,W]$) and sl3\_Learner\_A (to estimate $P(A=1|W)$) argument.
+Take a look at the argument append\_interaction\_matrix to understand the design matrix that is given as input to the learner sl3\_Learner\_Y. In particular, it is important to note that sl3\_Learner\_Y will be sent to Lrnr\_glm\_semiparametric.
+
+<<>>=
+library(sl3)
+lrnr_glmnet <- Lrnr_glmnet$new()
+lrnr_xgboost <- Lrnr_xgboost$new(max_depth = 4)
+lrnr_earth <- Lrnr_earth$new()
+lrnr_stack <-
+  make_learner(Stack, lrnr_glmnet, lrnr_xgboost, lrnr_earth)
+lrnr_cv <- Lrnr_cv$new(lrnr_stack, full_fit = TRUE)
+# A custom superlearner
+lrnr_sl <- make_learner(Pipeline, lrnr_cv, Lrnr_cv_selector$new())
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    sl3_Learner_A = lrnr_sl  ,
+    sl3_Learner_Y = lrnr_sl ,
+    verbose = FALSE
+  )
+summary(output) 
+@
+
+
+
+That's all there is to it! spglm also supports the RR and OR estimands which are run in a completely analagous way. Use the option `estimand = "OR"` to estimate the conditional odds ratio, and use the option `estimand = "rR"` to estimate the conditional relative risk. Note that the parametric model specified by formula is actually for the log odds ratio and log relative risk (i.e. at the log scale). Thus, the coefficients returned are for the log-transformed OR and RR. We also provide the exponential-transformed coefficients and confidence intervals, which may be more interpretable as measures of the OR and RR.
+
+<<>>=
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+# OR
+Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "OR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+# RR
+Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+@
+
+\section{Robust nonparametric generalized linear models for treatment effect estimation  with npglm}
+In the previous section, we considered semiparametric generalized linear models where the data distribution component of interest (the estimand) is modeled parametrically and nuisance components are modeled nonparametrically. While this is much more robust than typical parametric methods, the parametric assumption on the estimand of interest can still be quite strong. It is therefore of interest to develop fully nonparametric methods that provide correct and interpretable estimates and inference under no parametric assumptions. To do so, we will still utilize user-specified parametric models for the estimand of interest, however, we will not assume that these parametric models are correct. We will treat these parametric models as interpretable approximations of the true nonparametric estimand. That is, we utilize the parametric model as a "working-model" that is only used to derive an interesting nonparametric estimand.
+
+It turns out that many of these working models have desirable properties. In particular, by specifying parametric models/formulas that depend on $V \subset W$ where $V$ is a subvector of baseline covariates, we can actually learn marginal structural models. Notably, the intercept working model that approximates the true estimand by a constant often corresponds with a marginal causal estimand like the average treatment effect (ATE or ATT), the marginal treatment-specific mean, or the marginal relative risk. For these reasons, these nonparametrics method allow for the estimation of an even more rich class of parameters than the analagous semiparametric methods.
+
+Nonparametric working-model based estimators for the estimands are implemented in the function `npglm`. These methods have:
+
+\begin{itemize}
+\item Interpretable coefficient-based estimates and inference
+\item Nonparametric and causal estimates and inference even when the parametric model is incorrect
+\item Many of the estimands correspond with marginal structural models when lower dimensional working-models are used.
+\end{itemize}
+
+We refer to van der Laan, Robins (2003), Neugebauer, van der Laan (2008), and Robins et al. (1994) for  background on marginal structural models. See also the working paper, van der Laan (2009), for more on marginal structural models in the context of TMLE.
+
+\nocite{NEUGEBAUER2007419}
+\nocite{vanderlaanunified}
+\nocite{laan_rubin_2006}
+\nocite{robinsCausal}
+
+\subsection{Conditional average treatment effect (CATE) estimation with a linear working-model}
+The following estimator and estimand is inspired by Chambaz et al. (2012) and is based on discussions with Prof. Mark van der Laan.\nocite{ChambazLaanVarimp}
+
+To define a nonparametric approximation of the true CATE with a parametric linear-working model, we utilize the least-squares projection. Let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
+
+Define the risk function,
+$$R_{CATE}(\beta) = E \left\{CATE(W) - \beta^T \underline{f}(W)\right\}^2$$
+Our estimand of interest is given by $(\beta_0^*, \beta_1^*)$ which is defined as the minimizer of $R_{CATE}$.
+
+Consider the simple working model $\beta^T\underline{f}(W) := \beta_0 + \beta_1^T W$. The risk function then reduces to
+$$R_{CATE}(\beta_0, \beta_1) = E \left\{CATE(W) - \beta_0 - \beta_1^T W\right\}^2$$
+which can be viewed as the ordinary least-squares regression of the true estimand $CATE(W)$ onto $W$.
+
+By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+$$R_{CATE}(\beta_0, \beta_1) = E \left\{E[CATE(W)|V] - \beta_0 - \beta_1^T V\right\}^2.$$
+The risk minimizer is now the least-squares projection of the true marginal structural CATE model $E[CATE(W)|V]$ onto the linear working model. Note if $E[CATE(W)|V] =  \beta_0 + \beta_1^T V$, so that the working model is correct, then this estimand can be directly interpreted as a marginal structural CATE function.
+
+If we use the intercept model then the risk function reduces to
+$$R_{CATE}(\beta_0) = E \left\{E[CATE(W)] - \beta_0 \right\}^2.$$
+and the risk minimizer is exactly given by the nonparametric ATE $E[CATE(W)]$! Thus, the intercept model can be used for marginal ATE estimation.
+
+Quite remarkably, this estimands based on such least-squares working model projections automatically reduce to marginal structural model parameters when lower dimensional working models are used. No user or developer intervention is needed for this to happen!
+
+\subsection{Conditional average treatment effect among the treated (CATT) estimation with a linear working-model}
+The following estimator and estimand is directly due to Chambaz et al. (2012).\nocite{ChambazLaanVarimp}
+
+We now define an alternative working model for the CATE that focuses on the treatment effect among the treated. Again, let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
+
+Define the risk function,
+$$R_{CATT}(\beta) = E \left\{E[Y|A,W] - A \cdot \beta^T \underline{f}(W) - E[Y|A=0,W]\right\}^2$$
+Our estimand of interest is $\beta^*$ which is defined as the minimizer of $R_{CATT}$. This working model can be viewed as the least-squares regression of the true conditional mean $E[Y|A,W]$ onto the interaction model $A \cdot \beta^T \underline{f}(W) $ using as offset the true placebo conditional mean $E[Y|A=0,W]$. It turns out that we can rewrite this risk function as 
+$$R_{CATT}(\beta) = E \left\{A \left[CATE(W) - \beta^T \underline{f}(W)  \right]  \right\}^2,$$
+which is the least-squares projection of the true CATE onto the linear working model using only the observations with $A=1$ (the treated). Because of this, we call estimands based on this risk function measures of the conditional average treatment effect among the treated (CATT).
+
+This method can also be used to estimate marginal structural models for treatment effects among the treated.
+
+By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+$$R_{CATT}(\beta_0, \beta_1) = E \left\{A\left[E[CATE(W)|V,A=1] - \beta_0 - \beta_1^T V\right]^2 \right\}.$$
+The risk minimizer is now the least-squares projection of the true marginal structural CATT model $E[CATE(W)|V, A=1]$ onto the linear working model.
+
+
+If we use the intercept model then the risk function reduces to
+$$R_{CATT}(\beta_0) = E \left\{ A\cdot \left[E[CATE(W)|A=1] - \beta_0 \right]^2 \right\}.$$
+and the risk minimizer is exactly given by the nonparametric ATT $E[CATE(W)|A=1]$! Thus, the intercept model can be used for marginal ATT estimation.
+
+
+
+
+\subsection{Conditional treatment-specific mean (TSM) estimation with a linear working-model}
+The following estimator and estimand is inspired by Chambaz et al. (2012) and is based on discussions with .Prof. Mark van der Laan.
+
+
+
+A similar working model-based estimand can be constructed for the conditional treatment specific mean. Let $a$ be a level of a categorical treatment assignment $A$. Again, let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
+
+Define the risk function,
+$$R_{TSM}(\beta) = E \left\{E[Y|A=a,W] -  \beta^T \underline{f}(W) \right\}^2$$
+Our estimand of interest is $\beta^*$ which is defined as the minimizer of $R_{TSM}$. This estimand corresponds with the least-squares projection of $E[Y|A=a,W]$ onto the linear working model.
+
+By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+$$R_{TSM}(\beta_0, \beta_1) = E \left\{E[E[Y|A=a,W]|V] - \beta_0 - \beta_1^T V \right\}^2.$$
+The risk minimizer is now the least-squares projection of the true marginal structural TSM model E[E[Y|A=a,W]|V] onto the linear working model.
+
+
+If we use the intercept model then the risk function reduces to
+$$R_{TSM}(\beta_0) = E \left\{E[E[Y|A=a,W]] - \beta_0  \right\}^2.$$
+and the risk minimizer is exactly given by the nonparametric TSM $E[E[Y|A=a,W]]$! Thus, the intercept model can be used for marginal TSM estimation.
+
+
+\subsection{Conditional odds-ratio (OR) estimation with a logistic working-model}
+Define the working model
+$$P_{\beta}(Y=1|A,W) := \expit\left\{A \cdot \beta^T \underline{f}(W) + \logit(P(Y=0|A,W))\right\},$$
+which is not assumed correct.
+
+Consider the log-likelihood projection risk function
+$$R_{OR}(\beta) = E \left\{P(Y=1|A,W)\log(P_{\beta}(Y=1|A,W)) + P(Y=0|A,W)\log(P_{\beta}(Y=0|A,W)) \right\}.$$
+We define the nonparametric OR estimand as the risk minimizer $\beta^*$ of $R_{OR}$. This estimand unfortnately does not reduce to a marginal structural model estimand when $\underline{f}(W)$ lower dimensional.
+
+\subsection{Conditional relative-risk regression (RR) with a log-linear working-model}
+Define the log-linear multiplicative working model
+$$E_{\beta}[Y|A=1,W] := \exp\left\{\beta^T \underline{f}(W) \right\}E[Y|A=0,W],$$
+which is not assumed correct and $E_{\beta}[Y|A=0,W] := E[Y|A=0,W]$ is left correctly specified. We define the projection using the log-linear generalized linear model,
+$$R_{RR}(\beta) = E \left\{E[Y|A=0,W] \exp\left\{ \beta^T \underline{f}(W)\right\}  -  E[Y|A=1,W]  \beta^T \underline{f}(W)\right\}.$$
+We define the nonparametric RR estimand as the risk minimizer $\beta^*$ of $R_{RR}$. 
+
+By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+$$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]|V] \exp\left\{ \beta^T V\right\}  -  E[E[Y|A=1,W]|V]  \beta^T V\right\}.$$
+The risk minimizer is now the projection of the true marginal structural RR model $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$ onto the log-linear working model. Thus, if the working model is correctly specified, the estimand is $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$.
+
+
+If we use the intercept model then the risk function reduces to
+$$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]] \exp\left\{ \beta \right\}  -  E[E[Y|A=1,W]]  \beta\right\}.$$
+and the risk minimizer is exactly given by the nonparametric marginal relative risk $\frac{E[E[Y|A=1,W]]}{E[E[Y|A=0,W]]}$! Thus, the intercept model can be used for marginal RR estimation.
+
+
+\subsection{npglm in action}
+npglm operates in almost exactly the same way as spglm (with a few less optional arguments). The main difference is that it supports new estimands like the CATT and TSM. All previous discussion on learner customization operates in the exact same way but it should be noted that nuisance functions are now estimated nonparametrically (and no longer semiparametrically) so it is important to use learners that include interactions. The following block of the code runs npglm for each supported estimand.
+
+<<>>=
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+
+# CATE
+Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+# Use the formula_Y argument to specify the design matrix for glm, glmnet or mars (not supported for other learners). It is important to include treatment interactions (default).
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE" ,
+    learning_method = "glm",
+    formula_Y = ~ . + .*A,
+    verbose = FALSE
+  )
+summary(output)
+# CATT
+Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATT" ,
+    verbose = FALSE
+  )
+summary(output)
+
+# TSM
+Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATT" ,
+    learning_method = "mars",
+    formula_Y = ~ . + .*A,
+    verbose = FALSE
+  )
+summary(output)
+
+# OR
+Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "OR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+# RR
+Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula ~ 1 + W
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+@
+
+
+\section{High dimensional semiparametric generalized linear models for treatment effect estimation using the LASSO with causalglmnet}
+In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression (Tibshirani, 1994) to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalglmnet is a specialized wrapper for spglm that uses the lasso implementation provided by the state-of-the-art R package glmnet (Friedman, 2010) for estimation of all nuisance parameters.\nocite{Friedman2010}\nocite{Tibshirani94regressionshrinkage} Its use is exactly the same as spglm except learners no longer need to be specified.
+
+<<eval=FALSE>>=
+n <- 200
+W <- replicate(100,runif(n, min = -1,  max = 1))
+colnames(W) <- paste0("W", 1:100)
+beta <- runif(10, -1, 1)/20
+A <- rbinom(n, size = 1, prob = plogis(W[,10*(1:10)] %*% beta))
+
+# CATE
+Y <- rnorm(n, mean = A + W[,10*(1:10)] %*% beta, sd = 0.5)
+data <- data.frame(W, A, Y)
+formula = ~ 1  
+output <-
+  causalglmnet(
+    formula,
+    data,
+    W = colnames(W), A = "A", Y = "Y",
+    estimand = "CATE" ,
+    verbose = FALSE
+  )
+summary(output)
+
+
+# OR
+Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %*% beta))
+data <- data.frame(W, A, Y)
+formula  = ~ 1  
+output <-
+  causalglmnet(
+    formula,
+    data,
+    W = colnames(W), A = "A", Y = "Y",
+    estimand = "OR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+# RR
+Y <- rpois(n, lambda = exp( A + W[,10*(1:10)] %*% beta))
+data <- data.frame(W, A, Y)
+formula  = ~ 1  
+output <-
+  causalglmnet(
+    formula,
+    data,
+    W = colnames(W), A = "A", Y = "Y",
+    estimand = "RR" ,
+    verbose = FALSE
+  )
+summary(output)
+
+@
+
+
+
+\section{Robust nonparametric inference for the hazard ratio with npcoxph}
+This is in development. \nocite{vanderLaanetal2007}
+
+
+\bibliography{ref}
+
+\end{document}
