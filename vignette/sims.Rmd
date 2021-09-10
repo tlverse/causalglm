@@ -9,14 +9,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
- 
-n <- 800
-nsims <- 100
+library(causalGLM)
+n <- 1500 # n large enough to be in (deep) asymptotic regime
+nsims <- 1000 # There is quite a lot of randomness in coverage. Large sim numbers gives more correct coverage probabilities
+learning_method <- "HAL" # Recommended machine-learning algorithm (barring computational constraints)
 ```
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric CATE and CATT
 ```{r}
- 
+require(doMC)
+  doMC::registerDoMC(10)
 
  passes <- c()
   passes1 <- c()
@@ -24,23 +26,23 @@ nsims <- 100
 for(i in 1:nsims){
   print(i)
   formula <- ~ 1 + W1
-  data_list <- sim.CATE(n=n, p=3,  sigma = NULL, formula_estimand = formula, formula_A = ~., formula_Y0W = ~ ., beta = c(1,0.5), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(1,1,1,1)) 
+  data_list <- sim.CATE(n=n, p=3,  sigma = NULL, formula_estimand = formula, formula_A = ~., formula_Y0W = ~ ., beta = c(1,1), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(1,1,1,1)) 
   
   data <- data_list$data
   W <- data_list$W
   A <- data_list$A
   Y <- data_list$Y
   beta0 <- data_list$beta_CATE
-  doMC::registerDoMC(10)
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "CATE", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
+  
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
-  print(out$coefs)
-  out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATE", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
+   
+  out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
     passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
 
-    print(out$coefs)
-   out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATT", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
-    print(out$coefs)
+ 
+   out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATT", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
+ 
   passes2 <- cbind(passes2, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
   print(rowMeans(passes))
@@ -50,11 +52,7 @@ for(i in 1:nsims){
 
 ```
 
-```{r}
-bins <-  quantile(ceiling(T), seq(0,1, length = 20))
-as.vector(bins[findInterval(T, bins, all.inside = TRUE)])
-
-```
+ 
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric OR
 ```{r}
@@ -73,12 +71,12 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logOR
   
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
-  print(rowMeans(passes))
+  print(rowMeans(passes), HAL_fit_control = list(parallel = TRUE))
   
-    out <- causalGLMnp(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
+    out <- causalGLMnp(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes1))
@@ -87,13 +85,13 @@ for(i in 1:nsims){
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric RR
 ```{r}
-
+learning_method <- "glm"
  passes <- c()
 passes1 <- c()
 for(i in 1:nsims){
   print(i)
   formula <- ~ 1 + W1
-  data_list <- sim.RR(n=n, p=3,   formula_estimand = formula, formula_A = ~., formula_Y0W = ~., beta = c(1,1), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(0,1,1,1)) 
+  data_list <- sim.RR(n=2500, p=3,   formula_estimand = formula, formula_A = ~., formula_Y0W = ~., beta = c(1,1), beta_A = 0.5*c(0,1,1,1), beta_Y = 0.5*c(0,1,1,1)) 
   
   data <- data_list$data
   W <- data_list$W
@@ -101,11 +99,11 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logRR
   
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
   
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
-   out <- causalGLMnp(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
+   out <- causalGLMnp(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
   
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))

@@ -4,9 +4,9 @@
 \alias{npCOXph}
 \title{npCOXph
 Nonparametric robust generalized linear models for causal inference and marginal structural models (for some estimands).
-Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation, 
+Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation,
 ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
-Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct. 
+Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct.
 The estimates and inference obtained by `causalRobustGLM` are robust and nonparametrically correct, which comes at a small cost in confidence interval width relative to `causalGLM`.
 Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.}
 \usage{
@@ -57,17 +57,17 @@ Note speed can vary significantly depending on learner choice!}
 \item{cross_fit}{Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner} is provided.
 learning_method = `SuperLearner` is always cross-fitted (default).
  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}
- All other learning_methods are only cross-fitted if `cross_fit=TRUE`. 
+ All other learning_methods are only cross-fitted if `cross_fit=TRUE`.
  Note, it is not necessary to cross-fit glm, glmnet, gam or mars as long as the dimension of W is not too high.
  In smaller samples and lower dimensions, it may fact hurt to cross-fit.}
 
 \item{sl3_Learner_A}{A \code{sl3} Learner object to use to estimate nuisance function P(A=1|W) with machine-learning.
-Note, \code{cross_fit} is automatically set to FALSE if this argument is provided. 
+Note, \code{cross_fit} is automatically set to FALSE if this argument is provided.
 If you wish to cross-fit the learner \code{sl3_Learner} then do: sl3_Learner <- Lrnr_cv$new(sl3_Learner).
 Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.}
 
 \item{sl3_Learner_T}{A \code{sl3} Learner object to use to nonparametrically [Y|A,W] with machine-learning.
-Note, \code{cross_fit} is automatically set to FALSE if this argument is provided. 
+Note, \code{cross_fit} is automatically set to FALSE if this argument is provided.
 Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.}
 
 \item{formula_T}{Only used if `learning_method %in% c("glm", "earth", "gam", "glmnet")`. A R \code{formula} object that specifies the design matrix to be passed to the Learner specified by learning_method: "glm", "earth", "gam", "glmnet".
@@ -76,7 +76,7 @@ By default, `formula_T = . + A*.` so that additive learners still model treatmen
 \item{formula_HAL_T}{A HAL formula string to be passed to \code{\link[hal9001]{fit_hal}}). See the `formula` argument of \code{\link[hal9001]{fit_hal}}) for syntax and example use.}
 
 \item{HAL_args_T}{A list of parameters for the semiparametric Highly Adaptive Lasso estimator for E[Y|A,W].
-Possible parameters are: 
+Possible parameters are:
 1. `smoothness_orders`: Smoothness order for HAL estimator of E[Y|A,W] (see \code{\link[hal9001]{fit_hal}})
 smoothness_order_Y0W = 1 is piece-wise linear. smoothness_order_Y0W = 0 is piece-wise constant.
 2. `max_degree`: Max interaction degree for HAL estimator of E[Y|A,W] (see \code{\link[hal9001]{fit_hal}})
@@ -98,13 +98,13 @@ Useful to set to a large value in high dimensions.}
 
 \item{estimand}{Estimand/parameter to estimate. Choices are:
 `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect). 
+Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect).
 Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model.
 `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated). 
+Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated).
 Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
 `TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=a,W]` for `a` in \code{levels_A}.
-Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean). 
+Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean).
 Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
 `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} using the parametric model \code{formula}.
 Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
@@ -116,9 +116,9 @@ Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametr
 \description{
 npCOXph
 Nonparametric robust generalized linear models for causal inference and marginal structural models (for some estimands).
-Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation, 
+Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation,
 ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
-Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct. 
+Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct.
 The estimates and inference obtained by `causalRobustGLM` are robust and nonparametrically correct, which comes at a small cost in confidence interval width relative to `causalGLM`.
 Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.
 }

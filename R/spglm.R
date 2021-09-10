@@ -1,5 +1,5 @@
 
-#' causalGLMsp
+#' spglm
 #' Semiparametric generalized linear models for causal inference
 #' Supports flexible semiparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation
 #' Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.
@@ -67,7 +67,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
-causalGLMsp <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), append_interaction_matrix = TRUE, cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, wrap_in_Lrnr_glm_sp = TRUE, weights = NULL, HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"), delta_epsilon = 0.1, verbose = TRUE, ...) {
+spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), append_interaction_matrix = TRUE, cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, wrap_in_Lrnr_glm_sp = TRUE, weights = NULL, HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"), delta_epsilon = 0.1, verbose = TRUE, ...) {
   estimand <- match.arg(estimand)
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -143,8 +143,22 @@ causalGLMsp <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR")
   node_list <- list(weights = "weights", W = W, A = A, Y = Y)
   tmle3_input <- list(tmle_spec_sp = tmle_spec_sp, data = data, node_list = node_list, learner_list = learner_list)
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_sp, data, node_list, learner_list)))
+  coefs <- tmle3_fit$summary
+  coefs <- coefs[, -3]
+  if (estimand %in% c("CATE", "CATT", "TSM")) {
+    coefs <- coefs[, 1:6]
+  } else {
+    cur_names <- colnames(coefs)
+    cur_names <- gsub("transformed", "exp", cur_names)
+    colnames(coefs) <- cur_names
+  }
 
-  output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
-  class(output) <- c("causalGLMsp", "causalGLM")
+  Zscore <- abs(sqrt(n) * coefs$tmle_est / coefs$se)
+  pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
+  coefs$Z_score <- Zscore
+  coefs$p_value <- pvalue
+
+  output <- list(coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
+  class(output) <- c("spglm", "causalglm")
   return(output)
 }

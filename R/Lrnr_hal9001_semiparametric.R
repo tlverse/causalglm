@@ -66,14 +66,15 @@ Lrnr_hal9001_semiparametric <- R6Class(
       trt <- args$interaction_variable
       A <- task$data[[trt]]
       W <- as.matrix(task$X)
-      W <- W[, setdiff(task$nodes$covariates, trt)]
+      W <- W[, setdiff(task$nodes$covariates, trt), drop = F]
+       
       V <- model.matrix(formula_sp, as.data.frame(W))
-
+       
       outcome_type <- self$get_outcome_type(task)
-      args$X <- W
+      args$X <- as.matrix(W)
       args$X_unpenalized <- as.matrix(A * V)
-      args$Y <- outcome_type$format(task$Y)
-
+      args$Y <- as.numeric(as.character(outcome_type$format(task$Y)))
+      
       if (is.null(args$family)) {
         args$family <- outcome_type$glm_family()
       }

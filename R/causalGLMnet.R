@@ -1,9 +1,9 @@
 
-#' causalGLMnet
+#' causalglmnet
 #' High dimensional semiparametric generalized linear models for causal inference using the LASSO.
 #' Supports flexible semiparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation
 #' \code{\link[glmnet]{cv.glmnet}} is used to fit all nuisance parameters. The parametric component of the semiparametric model is not penalized.
-#' This function is almost just a wrapper for \code{causalGLM}.
+#' This function is almost just a wrapper for \code{causalglm}.
 #'
 #' @param formula A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).
 #' @param data A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
@@ -24,7 +24,7 @@
 #' @param parallel See \code{\link[glmnet]{cv.glmnet}}
 #' @param ... Other arguments to pass to \code{\link[glmnet]{cv.glmnet}}
 #' @export
-causalGLMnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), cross_fit = TRUE, constant_variance_CATE = FALSE, weights = NULL, parallel = TRUE, verbose = TRUE, ...) {
+causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), max_degree = 1, cross_fit = TRUE, constant_variance_CATE = FALSE, weights = NULL, parallel = TRUE, verbose = TRUE, ...) {
   append_interaction_matrix <- TRUE
   estimand <- match.arg(estimand)
 
@@ -44,10 +44,10 @@ causalGLMnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"
     sl3_Learner_var_Y <- Lrnr_glmnet$new(formula = formula(paste0("~ . + .*", A)), family = "poisson")
   }
   sl3_Learner_Y <- Lrnr_hal9001_semiparametric$new(
-    formula = formula, family = family_list[[estimand]],
+    formula_sp = formula, family = family_list[[estimand]],
     interaction_variable = A,
     smoothness_orders = 1,
-    max_degree = 1,
+    max_degree = max_degree,
     num_knots = 1, fit_control = HAL_fit_control
   )
 
@@ -66,6 +66,6 @@ causalGLMnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"
   tmle3_fit <- ((tmle3(tmle_spec_sp, data, node_list, learner_list)))
 
   output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
-  class(output) <- c("causalGLMnet", "causalGLM")
+  class(output) <- c("causalglmnet", "causalglm")
   return(output)
 }

@@ -1,12 +1,12 @@
 
 
 
-#' causalGLMnp
+#' npglm
 #' Nonparametric robust generalized linear models for causal inference and marginal structural models (for some estimands).
 #' Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation,
 #' ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
 #' Specifically, a causal projection of the true estimand onto the working-model is estimated; the parametric model is not assumed correct.
-#' The estimates and inference obtained by `causalGLMnp` are robust and nonparametrically correct, which comes at a small cost in confidence interval width relative to `causalGLM`.
+#' The estimates and inference obtained by `npglm` are robust and nonparametrically correct, which comes at a small cost in confidence interval width relative to `spglm`.
 #' Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.
 #' @param formula A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).
 #' @param data A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
@@ -26,18 +26,18 @@
 #' Note speed can vary significantly depending on learner choice!
 #' @param estimand Estimand/parameter to estimate. Choices are:
 #' `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-#' Note: if \code{formula} = `~1` then \code{causalGLMnp} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect).
+#' Note: if \code{formula} = `~1` then \code{npglm} returns a nonparametric and efficient estimator for the ATE (Marginal average treatment effect).
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model.
 #' `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-#' Note: if \code{formula} = `~1` then \code{causalGLMnp} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated).
+#' Note: if \code{formula} = `~1` then \code{npglm} returns a nonparametric and efficient estimator for the ATT (Marginal average treatment effect among the treated).
 #' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
 #' `TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=a,W]` for `a` in \code{levels_A}.
-#' Note: if \code{formula} = `~1` then \code{causalGLMnp} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean).
+#' Note: if \code{formula} = `~1` then \code{npglm} returns a nonparametric and efficient estimator for the TSM (Marginal treatment-specific mean).
 #' Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
 #' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} using the parametric model \code{formula}.
 #' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
 #' `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
-#' Note: if \code{formula} = `~1` then \code{causalGLMnp} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``).
+#' Note: if \code{formula} = `~1` then \code{npglm} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``).
 #' @param levels_A Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
@@ -72,7 +72,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
-causalGLMnp <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, weights = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, weights = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   estimand <- match.arg(estimand)
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -146,6 +146,6 @@ causalGLMnp <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TS
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
 
   output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
-  class(output) <- c("causalGLMnp", "causalGLM")
+  class(output) <- c("npglm", "causalglm")
   return(output)
 }

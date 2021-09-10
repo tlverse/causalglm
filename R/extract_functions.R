@@ -1,18 +1,18 @@
 #' @export
-summary.causalGLM <- function(object) {
+summary.causalglm <- function(object) {
   print(object$coefs)
   return(invisible(object$coefs))
 }
 
 #' @export
-coef.causalGLM <- function(object) {
+coef.causalglm <- function(object) {
   out <- (object$coefs)
   out
 }
 
 
 #' @export
-predict.causalGLM <- function(object, Wnew) {
+predict.causalglm <- function(object, Wnew) {
   n <- object$n
   Wnew <- as.matrix(Wnew)
   formula <- object$formula

@@ -1,4 +1,4 @@
-Package: causalGLM
+Package: causalglm
 Type: Package
 Title: Semiparametric and nonparametric generalized linear models for causal inference using targeted machine-learning in high and low dimensions
 Version: 0.1.0
