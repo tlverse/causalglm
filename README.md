@@ -5,7 +5,7 @@ Basic simulations have been run to test the 95% CI coverage of the methods. Simu
 The plan is to have this package ready for use within the next two weeks or so.  
 
 
-## Key Words: conditional treatment effects, interpretable nonparametric inference with parametric working models, marginal structural models, targeted-learning 
+#### Key Words: conditional treatment effects, interpretable nonparametric inference with parametric working models, marginal structural models, targeted-learning 
 
 ## Semiparametric and nonparametric generalized linear models for causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
