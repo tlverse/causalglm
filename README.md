@@ -1,4 +1,4 @@
-# causalGLM with the tlverse/tmle3 generalized targeted-learning framework (Actively being developed.)
+# causalGLM with the tlverse generalized targeted-learning framework (Actively being developed.)
 
 Basic simulations have been run to test the 95% CI coverage of the methods. Simulations suggest that most of the methods work (except coxph). However, more extensive testing is needed to ensure there are no bugs. 
 
