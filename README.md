@@ -19,7 +19,7 @@ This package supports (semiparametric and nonparametric versions of) the followi
 2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression)
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with causalGLMnp)
-5. Conditional average treatment effect among the treated (Only supported nonparametrically with causalGLMnp)
+5. Conditional average treatment effect among the treated (CATT) (Only supported nonparametrically with causalGLMnp)
 6. Using causalGLMnp with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT, TSM and RR.
 
 This package also supports the following survival estimands:
