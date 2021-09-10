@@ -236,23 +236,25 @@ Any confusion? Questions? Don't know which method to use? None of the methods ha
 
 If any of the above features is urgently needed (or just needed), let me know.
 
-## References:
-To be completed. 
-
-
+## References (To be completed):
 These semiparametric models have a rich history and their theory goes back a long time. These references are very incomplete and and further references will be added in the future.
+ 
+The semiparametric methods (CATE, OR, RR in `causalGLMsp`) were implemented based on theory and pseudo-code provided in the working paper van der Laan (2009), some of which is also published in journals: https://core.ac.uk/download/pdf/61320177.pdf (Page 600, 621, ish).
+Specifically, the relative risk method implemented in `causalGLMsp` is treated in Targeted Maximum Likelihood Estimation of Conditional Relative Risk in a Semi-parametric Regression Model, Tuglus et al. (2011): https://biostats.bepress.com/ucbbiostat/paper283/.
 
-Most methods are based on theory and pseudo-code provided in the working paper van der Laan (2009), some of which is also published in journals: https://core.ac.uk/download/pdf/61320177.pdf (Page 600, 621, ish)
+The CATT method implemented in `causalGLMnp` is due to Chambaz et al. (2012), "Estimation of a non-parametric variable importance measure of a continuous exposure"
+which can be found here:  https://projecteuclid.org/journals/electronic-journal-Nonparametricof-statistics/volume-6/issue-none/Estimation-of-a-non-parametric-variable-importance-measure-of-a/10.1214/12-EJS703.full
+and an independent implementation is given in the package "tmle.npvi": https://cran.case.edu/web/packages/tmle.npvi/tmle.npvi.pdf, https://github.com/cran/tmle.npvi.
+The TSM and CATE methods implemented in `causalGLMnp` follow from minor modifications of the CATT method and arised in discussions with Prof. Mark van der Laan. 
 
-
-The relative risk method is treated in Targeted Maximum Likelihood Estimation of Conditional Relative Risk in a Semi-parametric Regression Model, Tuglus et al. (2011): https://biostats.bepress.com/ucbbiostat/paper283/.
-The CATE method is treated in Statistical Inference for Variable Importance, van der Laan (2006): https://biostats.bepress.com/ucbbiostat/paper188/
-  For machine-learnng, the package tlverse/hal9001 and tlverse/sl3 are used: https://github.com/tlverse/hal9001
+The fully nonparametric conditional relative risk estimand and estimator implemented in `causalGLMnp` is novel as far as I am aware but is closely related to the semiparametric version treated in  Tuglus et al. (2011).
+The fully nonparametric conditional hazard ratio estimand and estimator implemented in `npCOXph` is novel as far as I am aware.
+ 
+For machine-learning, the package tlverse/hal9001 and tlverse/sl3 are used: https://github.com/tlverse/hal9001 and https://github.com/tlverse/sl3
+For the implementation of the TMLEs, tlverse/tmle3 is used: https://github.com/tlverse/tmle3
 
 See also:
-  
-  Estimation of a non-parametric variable importance measure of a continuous exposure, Chambaz et al. (2012): https://projecteuclid.org/journals/electronic-journal-Nonparametricof-statistics/volume-6/issue-none/Estimation-of-a-non-parametric-variable-importance-measure-of-a/10.1214/12-EJS703.full
-
+ 
 Causal effects based on marginal structural models, Neugebauer, van der Laan (2007): 
   https://www.researchgate.net/publication/222318646_Nonparametric_causal_effects_based_on_marginal_structural_models  
 
