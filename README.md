@@ -23,8 +23,8 @@ This package supports (semiparametric and nonparametric versions of) the followi
 6. Using npglm with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT, TSM and RR.
 
 This package also supports the following survival estimands:
-1. Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npCOXph`.
-2. The estimands supported by `npCOXph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
+1. Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npcoxph`.
+2. The estimands supported by `npcoxph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
 
 The semiparametric methods are run using the function `spglm` and the nonparametric methods are run using the function `npglm`. 
 A semiparametric high dimensional LASSO version of `spglm` is implemented in `causalglmnet`.
@@ -195,9 +195,9 @@ Notably, if formula = ~1 is passed to `npglm` then the coefficient is an efficie
 More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model `log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z)` where `Z` is a subset of `W` and `V` is obtained from a formula that only depends on `Z`, then the coefficients can be learned by applying `npglm` with the formula that gave `V(Z)`. This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
-## Interpretable nonparametric inference for the conditional hazard ratio for censored time-to-event data (assumption-lean COXph) with npCOXph
+## Interpretable nonparametric inference for the conditional hazard ratio for censored time-to-event data (assumption-lean COXph) with npcoxph
 
-The function `npCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
+The function `npcoxph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
 `log[P(T=t| T \geq t, A=1, W)/P(T=t| T \geq t, A=0, W)] = beta^T f(W,t)`
 
@@ -248,7 +248,7 @@ and an independent implementation is given in the package "tmle.npvi": https://c
 The TSM and CATE methods implemented in `npglm` follow from minor modifications of the CATT method and arised in discussions with Prof. Mark van der Laan. 
 
 The fully nonparametric conditional relative risk estimand and estimator implemented in `npglm` is novel as far as I am aware but is closely related to the semiparametric version treated in  Tuglus et al. (2011).
-The fully nonparametric conditional hazard ratio estimand and estimator implemented in `npCOXph` is novel as far as I am aware.
+The fully nonparametric conditional hazard ratio estimand and estimator implemented in `npcoxph` is novel as far as I am aware.
  
 For machine-learning, the package tlverse/hal9001 and tlverse/sl3 are used: https://github.com/tlverse/hal9001 and https://github.com/tlverse/sl3
 For the implementation of the TMLEs, tlverse/tmle3 is used: https://github.com/tlverse/tmle3

@@ -1,7 +1,7 @@
 
 
 
-#' npCOXph
+#' npcoxph
 #' Nonparametric robust generalized linear models for causal inference and marginal structural models (for some estimands).
 #' Supports flexible nonparametric conditional average treatment effect (CATE), conditional odds ratio (OR), and conditional relative risk (RR) estimation,
 #' ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
@@ -71,7 +71,7 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
-npCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20, learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_T = NULL, sl3_Learner_C = NULL, formula_T = as.formula(paste0("~ . + . *", A)), formula_HAL_T = paste0("~ . + h(.,", A, ") + h(.,t)"), HAL_args_T = list(smoothness_orders = 1, max_degree = 2, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+npcoxph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20, learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_T = NULL, sl3_Learner_C = NULL, formula_T = as.formula(paste0("~ . + . *", A)), formula_HAL_T = paste0("~ . + h(.,", A, ") + h(.,t)"), HAL_args_T = list(smoothness_orders = 1, max_degree = 2, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   stop("This function is not yet available. ")
   learning_method <- match.arg(learning_method)
   data <- as.data.table(data)
@@ -148,6 +148,6 @@ npCOXph <- function(formula, data, W, A, Ttilde, Delta, num_bins_t = 20, learnin
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
 
   output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
-  class(output) <- c("npCOXph", "causalGLM")
+  class(output) <- c("npcoxph", "causalGLM")
   return(output)
 }
