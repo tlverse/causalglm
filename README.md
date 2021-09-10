@@ -223,7 +223,7 @@ For high dimensional W, you can use the wrapper function `causalGLMnet` which ru
 
 Any confusion? Questions? Don't know which method to use? None of the methods handle your problem? Need a custom/specialized method?
   
-  Just send me a message. I would enjoy connecting with you and be happy to develop and implement a new method to add to this package.
+  Just send me a message. I would enjoy connecting with you and be happy to develop and implement a new method to add to this package. Please contact me at vanderlaanlars@yahoo.com.
 
 ## Future features to add
 
@@ -271,7 +271,5 @@ For fully nonparametric ATE-type methods, see the tmle package: https://cran.r-p
 Or tlverse/tmle3: https://tlverse.org
 
 
-
-## Author of Package: Lars van der Laan (vanderlaanlars@yahoo.com)
-
+ 
 
