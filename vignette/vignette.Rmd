@@ -36,7 +36,7 @@ formula_CATE <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "HAL", verbose = FALSE)
+causal_fit <- causalGLMsp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "HAL", verbose = FALSE)
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -47,18 +47,18 @@ summary(causal_fit)
 
 ```{r}
 # We can also use generalized additive models.
-causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "gam", estimand = "CATE")
+causal_fit <- causalGLMsp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "gam", estimand = "CATE")
 summary(causal_fit)
 
 # We can also use lasso (glmnet). This is useful for very high dimensional models. (By default, it is cross-fitted to reduce bias).
 # It is amazing that we can get valid inference using the LASSO.
-causal_fit <-causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "glmnet", estimand = "CATE")
+causal_fit <-causalGLMsp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  learning_method = "glmnet", estimand = "CATE")
 summary(causal_fit)
 
 
 # We can also use cross-fitted and CV-tuned xgboost. (glmnet is included in the cross-validation selection library/ensemble as well.)
 # Xgboost is black-box. But, we can still get inference!
-causal_fit <- causalGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y, learning_method = "xgboost", estimand = "CATE")
+causal_fit <- causalGLMsp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y, learning_method = "xgboost", estimand = "CATE")
 summary(causal_fit)
 
 ```
@@ -87,7 +87,7 @@ formula_logOR <- ~ 1
 
 # Let use MARS (multivariate adaptive regression splines) using the "earth" package.
 # It is amazing that we can get valid inference using the greedy selection algorithms like MARS!
-causal_fit <- causalGLM(formula = formula_logOR, data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "mars")
+causal_fit <- causalGLMsp(formula = formula_logOR, data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "mars")
 # We got pretty close!
 
 
@@ -121,7 +121,7 @@ print(data_list$logRR)
 formula_logRR <- ~ 1 + W1 + W2 
 
 # This will take a few seconds. 
-causal_fit <- causalGLM(formula = formula_logRR, data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "xgboost"  )
+causal_fit <- causalGLMsp(formula = formula_logRR, data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "xgboost"  )
 # We got pretty close!
  
  summary(causal_fit) 
@@ -130,7 +130,7 @@ causal_fit <- causalGLM(formula = formula_logRR, data, W  = W, A = A, Y = Y,  es
  
 
 
-# causalRobustGLM user-guide
+# causalGLMnp user-guide
  
 ## Robust CATE estimation
 ```{r}
@@ -158,7 +158,7 @@ formula_CATE <- ~ 1
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
 data
-causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "glmnet")
+causal_fit <- causalGLMnp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATE", learning_method = "glmnet")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -191,7 +191,7 @@ formula_TSM <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_TSM, data = data, W  = W, A = A, Y = Y,  estimand = "TSM", learning_method = "HAL")
+causal_fit <- causalGLMnp(formula = formula_TSM, data = data, W  = W, A = A, Y = Y,  estimand = "TSM", learning_method = "HAL")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -223,7 +223,7 @@ formula_CATE <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATT", learning_method = "HAL")
+causal_fit <- causalGLMnp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "CATT", learning_method = "HAL")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -256,7 +256,7 @@ formula_CATE <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "glmnet")
+causal_fit <- causalGLMnp(formula = formula_CATE, data = data, W  = W, A = A, Y = Y,  estimand = "OR", learning_method = "glmnet")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -291,7 +291,7 @@ formula_RR <- ~ 1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 
-causal_fit <- causalRobustGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm" )
+causal_fit <- causalGLMnp(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm" )
 # We got pretty close!
 coefs <- causal_fit$coefs
 
@@ -299,7 +299,7 @@ coefs <- causal_fit$coefs
 summary(causal_fit)
 
 
-causal_fit <- causalGLM(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm")
+causal_fit <- causalGLMsp(formula = formula_RR, data = data, W  = W, A = A, Y = Y,  estimand = "RR", learning_method = "glm")
 # We got pretty close!
 coefs <- causal_fit$coefs
 
