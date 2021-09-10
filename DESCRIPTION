@@ -1,11 +1,11 @@
 Package: causalGLM
 Type: Package
-Title: Semiparametric generalized linear models for causal inference using targeted machine-learning in high and low dimensions
+Title: Semiparametric and nonparametric generalized linear models for causal inference using targeted machine-learning in high and low dimensions
 Version: 0.1.0
 Author: Lars van der Laan
 Maintainer: Lars van der Laan <vanderlaanlars@yahoo.com>
 Description: Utilizing the framework of Targeted Maximum-Likelihood estimation (TMLE) and machine-learning,
-  robust and efficient estimates and inference can be obtained for user-specified semiparametric generalized linear models including:
+  robust and efficient estimates and inference can be obtained for user-specified semiparametric and nonparametric generalized linear models including:
   Conditional odds ratios between a binary outcome and binary treatment variables (causal semiparametric logisic regression)
   Conditional additive treatment effects for a continuous outcome (causal semiparametric linear regression with general link functions)
   Conditional relative risk/treatment-effects for a nonnegative outcome (e.g. binary or count) (causal semiparametric relative risk regression with general link functions)
