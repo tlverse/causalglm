@@ -272,3 +272,6 @@ Or tlverse/tmle3: https://tlverse.org
 
 
 
+## Author of Package: Lars van der Laan (vanderlaanlars@yahoo.com)
+
+
