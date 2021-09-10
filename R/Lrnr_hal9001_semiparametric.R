@@ -60,54 +60,54 @@ Lrnr_hal9001_semiparametric <- R6Class(
     .properties = c("continuous", "binomial", "weights", "ids"),
     .train = function(task) {
       args <- self$params
-      
-     
+
+
       formula_sp <- args$formula_sp
       trt <- args$interaction_variable
       A <- task$data[[trt]]
       W <- as.matrix(task$X)
       W <- W[, setdiff(task$nodes$covariates, trt)]
       V <- model.matrix(formula_sp, as.data.frame(W))
-      
+
       outcome_type <- self$get_outcome_type(task)
       args$X <- W
-      args$X_unpenalized <- as.matrix(A*V)
+      args$X_unpenalized <- as.matrix(A * V)
       args$Y <- outcome_type$format(task$Y)
-      
+
       if (is.null(args$family)) {
         args$family <- outcome_type$glm_family()
       }
-      
+
       if (!any(grepl("fit_control", names(args)))) {
         args$fit_control <- list()
       }
       args$fit_control$foldid <- origami::folds2foldvec(task$folds)
-      
+
       if (task$has_node("id")) {
         args$id <- task$id
       }
-      
+
       if (task$has_node("weights")) {
         args$fit_control$weights <- task$weights
       }
-      
+
       if (task$has_node("offset")) {
         args$offset <- task$offset
       }
-      
+
       # fit HAL, allowing glmnet-fitting arguments
       other_valid <- c(
         names(formals(glmnet::cv.glmnet)), names(formals(glmnet::glmnet))
       )
-      
+
       fit_object <- sl3:::call_with_args(
         hal9001::fit_hal, args,
         other_valid = other_valid
       )
-      
+
       return(fit_object)
     },
-    
+
     .predict = function(task = NULL) {
       args <- self$params
       formula_sp <- args$formula_sp
@@ -116,7 +116,7 @@ Lrnr_hal9001_semiparametric <- R6Class(
       W <- as.matrix(task$X)
       W <- W[, setdiff(task$nodes$covariates, trt)]
       V <- model.matrix(formula_sp, as.data.frame(W))
-      X_unpenalized <- as.matrix(A*V)
+      X_unpenalized <- as.matrix(A * V)
       predictions <- stats::predict(
         self$fit_object,
         new_data = as.matrix(W),
@@ -128,7 +128,7 @@ Lrnr_hal9001_semiparametric <- R6Class(
       }
       return(predictions)
     },
-    
+
     .required_packages = c("hal9001", "glmnet")
   )
 )
@@ -189,7 +189,7 @@ Lrnr_hal9001 <- R6Class(
   classname = "Lrnr_hal9001",
   inherit = Lrnr_base, portable = TRUE, class = TRUE,
   public = list(
-    initialize = function(formula_hal= NULL, ...) {
+    initialize = function(formula_hal = NULL, ...) {
       params <- sl3:::args_to_list()
       super$initialize(params = params, ...)
     }
@@ -200,44 +200,44 @@ Lrnr_hal9001 <- R6Class(
       args <- self$params
       args$formula <- args$formula_hal
       args$X <- as.matrix(task$X)
-      
+
       outcome_type <- self$get_outcome_type(task)
       args$Y <- outcome_type$format(task$Y)
-      
+
       if (is.null(args$family)) {
         args$family <- outcome_type$glm_family()
       }
-      
+
       if (!any(grepl("fit_control", names(args)))) {
         args$fit_control <- list()
       }
       args$fit_control$foldid <- origami::folds2foldvec(task$folds)
-      
+
       if (task$has_node("id")) {
         args$id <- task$id
       }
-      
+
       if (task$has_node("weights")) {
         args$fit_control$weights <- task$weights
       }
-      
+
       if (task$has_node("offset")) {
         args$offset <- task$offset
       }
-      
+
       # fit HAL, allowing glmnet-fitting arguments
       other_valid <- c(
         names(formals(glmnet::cv.glmnet)), names(formals(glmnet::glmnet))
       )
-      
+
       fit_object <- sl3:::call_with_args(
         hal9001::fit_hal, args,
         other_valid = other_valid
       )
-      
+
       return(fit_object)
     },
-    
+
     .predict = function(task = NULL) {
       predictions <- stats::predict(
         self$fit_object,
@@ -249,8 +249,7 @@ Lrnr_hal9001 <- R6Class(
       }
       return(predictions)
     },
-    
+
     .required_packages = c("hal9001", "glmnet")
   )
 )
-
