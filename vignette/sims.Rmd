@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
  
-n <- 5000
-nsims <- 200
+n <- 800
+nsims <- 100
 ```
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric CATE and CATT
@@ -32,14 +32,14 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_CATE
   doMC::registerDoMC(10)
-  out <- causalGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "CATE", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(out$coefs)
-  out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
+  out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATE", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
     passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
 
     print(out$coefs)
-   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATT", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
+   out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATT", learning_method = "glmnet", verbose = T, HAL_fit_control = list(parallel = TRUE))
     print(out$coefs)
   passes2 <- cbind(passes2, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
@@ -73,12 +73,12 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logOR
   
-  out <- causalGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
  
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))
   
-    out <- causalRobustGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
+    out <- causalGLMnp(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
  
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes1))
@@ -101,11 +101,11 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logRR
   
-  out <- causalGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
+  out <- causalGLMsp(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
   
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
-   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
+   out <- causalGLMnp(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
   
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))
@@ -163,7 +163,7 @@ data$Ttilde <- data_surv$Ttilde
 print(table(data$Delta))
 
   doMC::registerDoMC(10)
-  out <- causalRobustCOXph(~1, data, learning_method = "HAL", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ ., formula_HAL_T = NULL, HAL_args_T = list(max_degree = 2, smoothness_orders  =1, num_knots = c(10,5)), HAL_fit_control = list(parallel = TRUE) )
+  out <- npCOXph(~1, data, learning_method = "HAL", W = c("W1", "W2"), "A" = "A", Ttilde = "Ttilde", Delta = "Delta", formula_N = ~ ., formula_HAL_T = NULL, HAL_args_T = list(max_degree = 2, smoothness_orders  =1, num_knots = c(10,5)), HAL_fit_control = list(parallel = TRUE) )
   print(out$coefs)
   passes <- c(passes, out$coefs$lower <= 0.5  & out$coefs$upper >= 0.5 )
   print(mean(passes))
