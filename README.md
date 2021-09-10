@@ -1,8 +1,8 @@
 # causalGLM (Actively being developed.)
 
-Basic simulations have been run to test the 95% CI coverage of the methods. Simulations suggest that the most of the methods work (except coxph). However, more extensive testing is needed to ensure there are no bugs. 
+Basic simulations have been run to test the 95% CI coverage of the methods. Simulations suggest that most of the methods work (except coxph). However, more extensive testing is needed to ensure there are no bugs. 
 
-Use with caution.
+The plan is to have this package ready for use within the next two weeks or so.  
 
 ## Semiparametric and nonparametric generalized linear models for causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
