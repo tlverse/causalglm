@@ -42,10 +42,10 @@ Noticable features supported:
 
 ### User-friendly interface
 The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `causalGLM/causalGLMnp/causalGLMnet` functions. Check out the vignette to see how to use it! The necessary arguments are: 
-1. A formula object for the `CATE`, `OR`, or `RR` (or `TSM`, `CATT` for `causalGLMnp`)
+1. A formula object for the `CATE`, `OR`, or `RR` (also `TSM`, `CATT` for `causalGLMnp`)
 2. A data.frame containing the data
 3. Variable names: `W`, `A`, `Y` are character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
-4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (or `"TSM"`, `"CATT"` for `causalGLMnp`)
+4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (also `"TSM"`, `"CATT"` for `causalGLMnp`)
 
 That's it! Feel free to customize the machine-learning routines available using the "learning_method" argument. Built in options are: SuperLearner, HAL, glm, glmnet, gam, earth (MARS), CV-autotuned-xgboost. Cross-fitting is performed automatically. If you want to make your own learner, use the sl3_Learner argument and the tlverse/sl3 package.
 
