@@ -4,6 +4,9 @@ Basic simulations have been run to test the 95% CI coverage of the methods. Simu
 
 The plan is to have this package ready for use within the next two weeks or so.  
 
+
+## Key Words: conditional treatment effects, interpretable nonparametric inference with parametric working models, marginal structural models, targeted-learning 
+
 ## Semiparametric and nonparametric generalized linear models for causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
@@ -17,10 +20,11 @@ This package supports (semiparametric and nonparametric versions of) the followi
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with causalGLMnp)
 5. Conditional average treatment effect among the treated (Only supported nonparametrically with causalGLMnp)
-6. Using causalGLMnp with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT and RR.
+6. Using causalGLMnp with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT, TSM and RR.
 
 This package also supports the following survival estimands:
-1. Conditional hazard ratio between two treatments with `npCOXph`.
+1. Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npCOXph`.
+2. The estimands supported by `npCOXph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
 
 The semiparametric methods are run using the function `causalGLMsp` and the nonparametric methods are run using the function `causalGLMnp`. 
 A semiparametric high dimensional LASSO version of `causalGLMsp` is implemented in `causalGLMnet`.
@@ -29,11 +33,12 @@ A semiparametric high dimensional LASSO version of `causalGLMsp` is implemented 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`causalGLMsp` and `causalGLMnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`causalGLMnp`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
 Noticable features supported:
-1. All methods utilize the powerful tlverse/tmle3 generalized targeted learning framework.
-2. Interpretable semiparametric estimates and efficient inference even with adaptive estimation and variable selection.
-3. High dimensional covariates and variable selection for confounders (with the wrapper function `causalGLMnet`).
-4. General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem.
-5. Built-in machine-learning routines for diverse settings and immediate use.
+1. Efficent semiparametric and nonparametric inference for user-specified parametric working-models of conditional treatment-effect functions with `causalGLMsp` and `causalGLMnp`.
+2. Efficient nonparametric inference for marginal structural models for the CATE, CATT, TSM and RR with `causalGLMnp`.
+3. General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem.
+4. High dimensional covariates and variable selection for confounders with the wrapper function `causalGLMnet`.
+5. Interpretable semiparametric and nonparametric estimates and efficient inference even with adaptive estimation and variable selection.
+6. Designed-easy-to-use interface and built-in machine-learning routines for diverse settings and immediate use.
 
 ### User-friendly interface
 The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `causalGLM/causalGLMnp/causalGLMnet` functions. Check out the vignette to see how to use it! The necessary arguments are: 
@@ -45,11 +50,11 @@ The functions are designed to be easy to use (any feedback will be greatly appre
 That's it! Feel free to customize the machine-learning routines available using the "learning_method" argument. Built in options are: SuperLearner, HAL, glm, glmnet, gam, earth (MARS), CV-autotuned-xgboost. Cross-fitting is performed automatically. If you want to make your own learner, use the sl3_Learner argument and the tlverse/sl3 package.
 
 Outputs include:
-  1. Coefficient estimates (using the S3 summary function)
+1. Coefficient estimates (using the S3 summary function)
 2. Z-scores and p-values for coefficients (Still to come)
 3. 95% confidence intervals for coefficients
 
-## Semiparametric inference for generalized linear models with causalGLM: CATE, OR, and RR (with causalGLMsp)
+## Semiparametric inference for generalized linear models with causalGLMsp: CATE, OR, and RR  
 
 The main function `causalGLM` implements semiparametric estimators for the CATE, OR and RR, which are each identified by some partially-linear generalized-linear model. We will utilize the statistical data-structure `O=(W,A,Y)` where `W` represents a vector of baseline variables, `A` is a binary treatment variable, and `Y` is some outcome.
 
@@ -190,7 +195,7 @@ Notably, if formula = ~1 is passed to `causalGLMnp` then the coefficient is an e
 More generally, this method can be used to learn marginal structural model parameters. Specifically, if one assumes the marginal structural model `log(E[E[Y|A=1,W]|Z]/E[E[Y|A=1,W]|Z]) = beta^T V(Z)` where `Z` is a subset of `W` and `V` is obtained from a formula that only depends on `Z`, then the coefficients can be learned by applying `causalGLMnp` with the formula that gave `V(Z)`. This is true because, by conditioning, the risk function can be rewritten as
 `R(beta)  = E{E[E[Y|A=0,W]|Z] exp(beta^T V(Z)) - E[E[Y|A=1,W]|Z] beta^T V(Z)}`.
 
-## Interpretable nonparametric inference for the conditional hazard ratio between two treatments for censored time-to-event data (assumption-lean COXph)
+## Interpretable nonparametric inference for the conditional hazard ratio for censored time-to-event data (assumption-lean COXph) with npCOXph
 
 The function `npCOXph` allows you to estimate the parameters of a user-specified (time-dependent) parametric working-model for the conditional hazard ratio between two treatments. Specifically, this estimator is totally nonparametric and utilizes the approximate working model:
 
