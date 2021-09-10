@@ -111,8 +111,6 @@ Specifically, this estimand is the log-likelihood projection of the true conditi
 `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
 Note: if \code{formula} = `~1` then \code{causalRobustGLM} returns a nonparametric and efficient estimator for the marginal relative risk (`E_W[E[Y|A=1,W]]/E_W[E[Y|A=0,W]]``).}
 
-\item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}
-
 \item{weights}{An optional vector of weights to use in procedure.}
 }
 \description{

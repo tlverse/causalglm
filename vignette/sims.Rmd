@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
  
-n <- 750
+n <- 5000
 nsims <- 200
 ```
 
@@ -31,15 +31,15 @@ for(i in 1:nsims){
   A <- data_list$A
   Y <- data_list$Y
   beta0 <- data_list$beta_CATE
-  
-  out <- causalGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "mars", verbose = F)
+  doMC::registerDoMC(10)
+  out <- causalGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(out$coefs)
-  out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "mars", verbose = F)
+  out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATE", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
     passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
 
     print(out$coefs)
-   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATT", learning_method = "mars", verbose = F)
+   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "CATT", learning_method = "HAL", verbose = T, HAL_fit_control = list(parallel = TRUE))
     print(out$coefs)
   passes2 <- cbind(passes2, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
@@ -50,7 +50,11 @@ for(i in 1:nsims){
 
 ```
 
- 
+```{r}
+bins <-  quantile(ceiling(T), seq(0,1, length = 20))
+as.vector(bins[findInterval(T, bins, all.inside = TRUE)])
+
+```
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric OR
 ```{r}
@@ -69,12 +73,12 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logOR
   
-  out <- causalGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glmnet", verbose = FALSE, delta_epsilon = 0.05)
+  out <- causalGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
  
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))
   
-    out <- causalRobustGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glmnet", verbose = FALSE, delta_epsilon = 0.05)
+    out <- causalRobustGLM(formula, data, W, A, Y, estimand = "OR", learning_method = "glm", verbose = FALSE, delta_epsilon = 0.05)
  
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes1))
@@ -97,11 +101,11 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logRR
   
-  out <- causalGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glmnet", verbose = FALSE)
+  out <- causalGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
   
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
-   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glmnet", verbose = FALSE)
+   out <- causalRobustGLM(formula, data, W, A, Y, estimand = "RR", learning_method = "glm", verbose = FALSE)
   
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))
@@ -114,7 +118,8 @@ for(i in 1:nsims){
 # Simulations 95% CI coverage RobustCOXph
 
 
-```{r}
+```{r, include  = F, eval = F}
+stop("no")
 passes<-c()
 require(simcausal)
 for(i in 1:200){
