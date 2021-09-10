@@ -172,8 +172,8 @@ a coefficient estimate for the intercept, lower and upper confidence intervals, 
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se    lower     upper  Z_score p_value
-1: CATE (Intercept) 0.8974528 0.03857099 0.821855 0.9730505 367.8924       0
+   type       param tmle_est         se     lower upper  Z_score p_value
+1: CATE (Intercept) 1.026223 0.03866241 0.9504457 1.102 419.6843       0
 \end{Soutput}
 \end{Schunk}
 We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
@@ -197,8 +197,8 @@ We can also do a much more complex model with higher dimensional treatment effec
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9982058 0.05126623 0.8977258 1.098686 307.8639       0
-2: CATE           W 0.9323954 0.08306047 0.7695998 1.095191 177.4908       0
+1: CATE (Intercept) 0.9787273 0.04950999 0.8816895 1.075765 312.5640       0
+2: CATE           W 1.1755497 0.08980445 0.9995362 1.351563 206.9727       0
 \end{Soutput}
 \end{Schunk}
 
@@ -225,8 +225,8 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9889806 0.04921739 0.8925163 1.085445 317.7161       0
-2: CATE           W 1.1238567 0.08624532 0.9548190 1.292894 206.0371       0
+1: CATE (Intercept) 1.0249074 0.05269567 0.9216258 1.128189 307.5245       0
+2: CATE           W 0.8597583 0.08892706 0.6854645 1.034052 152.8665       0
 \end{Soutput}
 \begin{Sinput}
 > # multivariate adaptive regression splines:
@@ -243,8 +243,8 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9903361 0.05237121 0.8876904 1.092982 298.9923       0
-2: CATE           W 1.1120918 0.08808528 0.9394478 1.284736 199.6215       0
+1: CATE (Intercept) 1.0233198 0.05273542 0.9199603 1.126679 306.8167       0
+2: CATE           W 0.8635521 0.09071917 0.6857458 1.041358 150.5080       0
 \end{Soutput}
 \begin{Sinput}
 > # gradient-boosting with xgboost: :
@@ -260,9 +260,9 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.032140 0.05167771 0.9308538 1.133427 315.7952       0
-2: CATE           W 1.054663 0.08677083 0.8845957 1.224731 192.1808       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.0129419 0.05977955 0.8957762 1.130108 267.9180       0
+2: CATE           W 0.8656902 0.10194256 0.6658864 1.065494 134.2694       0
 \end{Soutput}
 \end{Schunk}
 
@@ -291,8 +291,8 @@ The default learning algorithm "HAL" can be customized with the HAL\_args\_Y0W a
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9894792 0.04931406 0.8928254 1.086133 317.2531       0
-2: CATE           W 1.1226105 0.08572600 0.9545906 1.290630 207.0554       0
+1: CATE (Intercept) 1.0251586 0.05256995 0.9221234 1.128194 308.3355       0
+2: CATE           W 0.8608271 0.08936778 0.6856695 1.035985 152.3018       0
 \end{Soutput}
 \end{Schunk}
 
@@ -324,8 +324,8 @@ Take a look at the argument append\_interaction\_matrix to understand the design
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9925936 0.05048638 0.8936421 1.091545 310.8617       0
-2: CATE           W 1.1063712 0.08933799 0.9312719 1.281470 195.8099       0
+1: CATE (Intercept) 1.0221893 0.05375550 0.9168304 1.127548 300.6619       0
+2: CATE           W 0.8679767 0.09374433 0.6842412 1.051712 146.3973       0
 \end{Soutput}
 \end{Schunk}
  
@@ -358,12 +358,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param tmle_est        se     lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 1.083701 0.2985842 0.4984869 1.668916 2.955599  1.646228
-2:   OR           W 1.631791 0.5524025 0.5491019 2.714480 5.113023  1.731697
-   upper_exp  Z_score p_value
-1:   5.30641 57.38689       0
-2:  15.09675 46.70667       0
+   type       param  tmle_est        se      lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 0.7666271 0.2999089  0.1788165 1.354438 2.152494 1.1958012
+2:   OR           W 0.3402048 0.5412221 -0.7205710 1.400981 1.405235 0.4864744
+   upper_exp   Z_score p_value
+1:  3.874582 40.417070       0
+2:  4.059179  9.938822       0
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -387,11 +387,11 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  psi_exp lower_exp
-1:   RR (Intercept) 0.9248356 0.09372716 0.7411338 1.108538 2.521454  2.098313
-2:   RR           W 1.0333629 0.18296551 0.6747571 1.391969 2.810501  1.963556
-   upper_exp   Z_score p_value
-1:  3.029924 156.01598       0
-2:  4.022762  89.30045       0
+1:   RR (Intercept) 0.9668071 0.09697739 0.7767349 1.156879 2.629535  2.174361
+2:   RR           W 0.9484044 0.16000809 0.6347943 1.262015 2.581587  1.886634
+   upper_exp  Z_score p_value
+1:  3.179994 157.6302       0
+2:  3.532531  93.7177       0
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -530,12 +530,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est tmle_est        se     lower    upper
-1: CATE (Intercept) 1.131416 1.130387 0.1141667 0.9066247 1.354150
-2: CATE           W 1.112400 1.112148 0.2034269 0.7134383 1.510857
+   type       param  init_est  tmle_est        se     lower    upper
+1: CATE (Intercept) 1.2112549 1.2134225 0.1051584 1.0073158 1.419529
+2: CATE           W 0.8654967 0.8468275 0.1645314 0.5243519 1.169303
    psi_transformed lower_transformed upper_transformed
-1:        1.130387         0.9066247          1.354150
-2:        1.112148         0.7134383          1.510857
+1:       1.2134225         1.0073158          1.419529
+2:       0.8468275         0.5243519          1.169303
 \end{Soutput}
 \begin{Sinput}
 > # CATT
@@ -558,12 +558,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est tmle_est         se     lower    upper
-1: CATT (Intercept) 1.119560 1.115756 0.06777038 0.9829287 1.248584
-2: CATT           W 1.173507 1.190409 0.11457006 0.9658558 1.414962
+   type       param  init_est  tmle_est         se     lower    upper
+1: CATT (Intercept) 0.9959520 0.9941363 0.06560489 0.8655531 1.122719
+2: CATT           W 0.9686176 0.9686705 0.11544915 0.7423943 1.194947
    psi_transformed lower_transformed upper_transformed
-1:        1.115756         0.9829287          1.248584
-2:        1.190409         0.9658558          1.414962
+1:       0.9941363         0.8655531          1.122719
+2:       0.9686705         0.7423943          1.194947
 \end{Soutput}
 \begin{Sinput}
 > # TSM
@@ -588,12 +588,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est  tmle_est        se     lower    upper
-1: CATT (Intercept) 0.998573 0.9987455 0.0649746 0.8713976 1.126093
-2: CATT           W 1.076206 1.0789194 0.1342602 0.8157742 1.342065
+   type       param  init_est  tmle_est         se     lower    upper
+1: CATT (Intercept) 0.9685815 0.9466608 0.06577929 0.8177357 1.075586
+2: CATT           W 1.0182326 1.0740731 0.11731441 0.8441411 1.304005
    psi_transformed lower_transformed upper_transformed
-1:       0.9987455         0.8713976          1.126093
-2:       1.0789194         0.8157742          1.342065
+1:       0.9466608         0.8177357          1.075586
+2:       1.0740731         0.8441411          1.304005
 \end{Soutput}
 \begin{Sinput}
 > # OR
@@ -616,12 +616,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est        se      lower    upper
-1:   OR (Intercept) 1.1674668 1.2313596 0.3058172  0.6319689 1.830750
-2:   OR           W 0.7520165 0.7111272 0.5762328 -0.4182683 1.840523
+   type       param      init_est   tmle_est        se      lower    upper
+1:   OR (Intercept)  1.097543e+00 1.12837019 0.2985599  0.5432035 1.713537
+2:   OR           W -2.436271e-16 0.09491525 0.5204351 -0.9251187 1.114949
    psi_transformed lower_transformed upper_transformed
-1:        3.425884         1.8813110          6.238567
-2:        2.036285         0.6581856          6.299831
+1:        3.090615         1.7215129          5.548551
+2:        1.099566         0.3964843          3.049413
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -644,12 +644,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est         se     lower    upper
-1:   RR (Intercept) 0.9624342 0.9590256 0.09890568 0.7651740 1.152877
-2:   RR           W 1.0084495 1.0064625 0.20518884 0.6042998 1.408625
+   type       param init_est tmle_est         se     lower    upper
+1:   RR (Intercept) 1.151173 1.155827 0.09708966 0.9655348 1.346119
+2:   RR           W 1.180005 1.108697 0.22827653 0.6612834 1.556111
    psi_transformed lower_transformed upper_transformed
-1:        2.609153          2.149368          3.167293
-2:        2.735906          1.829970          4.090328
+1:        3.176649          2.626192          3.842485
+2:        3.030408          1.937277          4.740350
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -658,27 +658,35 @@ formula ~ 1 + W
 
 
 \section{High dimensional semiparametric generalized linear models for treatment effect estimation using the LASSO with causalGLMnet}
-In high dimensional settings (e.g. dim(W) >= 50-200), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalGLMnet is a specialized wrapper for causalGLMsp that uses the lasso implementation provided by the state-of-the-art R package glmnet (CITE) for estimation of all nuisance parameters. It's use it exactly the same as causalGLMsp except learners no longer need to be specified.
+In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalGLMnet is a specialized wrapper for causalGLMsp that uses the lasso implementation provided by the state-of-the-art R package glmnet (CITE) for estimation of all nuisance parameters. It's use it exactly the same as causalGLMsp except learners no longer need to be specified.
 
 \begin{Schunk}
 \begin{Sinput}
 > n <- 250
-> W <- runif(n, min = -1,  max = 1)
-> A <- rbinom(n, size = 1, prob = plogis(W))
+> W <- replicate(100,runif(n, min = -1,  max = 1))
+> colnames(W) <- paste0("W", 1:100)
+> beta <- runif(10, -1, 1)/20
+> A <- rbinom(n, size = 1, prob = plogis(W[,10*(1:10)] %*% beta))
 > # CATE
-> Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
+> Y <- rnorm(n, mean = A + W[,10*(1:10)] %*% beta, sd = 0.5)
 > data <- data.frame(W, A, Y)
-> formula ~ 1 + W
-\end{Sinput}
-\begin{Soutput}
-formula ~ 1 + W
-\end{Soutput}
-\begin{Sinput}
+> formula = ~ 1  
 > output <-
 +   causalGLMnet(
 +     formula,
 +     data,
-+     W = "W", A = "A", Y = "Y",
++     W = colnames(W), A = "A", Y = "Y",
 +     estimand = "CATE" ,
 +     verbose = FALSE
 +   )
+> summary(output)
+\end{Sinput}
+\begin{Soutput}
+   type       param  init_est  tmle_est         se     lower    upper
+1: CATE (Intercept) 0.9776083 0.9719364 0.06447831 0.8455612 1.098312
+   psi_transformed lower_transformed upper_transformed
+1:       0.9719364         0.8455612          1.098312
+\end{Soutput}
+\begin{Sinput}
+> # OR
+> Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %&% beta))

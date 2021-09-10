@@ -28,7 +28,7 @@
 
 
 
-\title{causalGLM}
+\title{causalglm}
 \author{vanderlaanlars }
 \date{September 2021}
 
@@ -98,7 +98,7 @@ Under the parametric assumptions, standard generalize linear model software can 
 
 
 
-\section{Semiparametric generalized linear models for treatment effect estimation  with causalGLMsp}
+\section{Semiparametric generalized linear models for treatment effect estimation  with spglm}
 
 In this section, we give an overview of semiparametric treatment-effect estimation in partially-linear generalized linear models which allows for adaptive estimation of nuisance parameters of the data-generating distribution that are not directly relevant for the problem at end. Semiparametric models are statistical models in which one component of the data-generating distribution is parametric and the remaining components are nonparametric. 
 
@@ -117,7 +117,7 @@ where $ h_0(W) := E[Y|A=0,W]$ is an unspecified nuisance function that is to be 
 $$CATE(w) = \beta_0 + \beta_1^T w.$$
 Thus, this semiparametric model only makes assumptions that directly relate the estimand of interest!
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{causalGLMsp} with the option `estimand = "CATE"`. We employ machine-learning for initial estimation of the relevant components of the data-generating distribution and then use targeted maximum likelihood estimation for bias-correction, thereby allowing for valid efficient inference.
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "CATE"`. We employ machine-learning for initial estimation of the relevant components of the data-generating distribution and then use targeted maximum likelihood estimation for bias-correction, thereby allowing for valid efficient inference.
  
  
 \subsection{Conditional odds ratio (OR) and partially-linear logistic regression}
@@ -126,7 +126,7 @@ $$\logit\left\{E[Y|A,W]\right\} = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
 where $ h_0(W) := \logit\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
 $$\log OR(w) = \beta_0 + \beta_1^T w.$$
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{causalGLMsp} with the option `estimand = "OR"`. 
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "OR"`. 
  
  
 
@@ -138,14 +138,14 @@ where $ h_0(W) := \log\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance func
 $$\log RR(w) = \beta_0 + \beta_1^T w.$$
 
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{causalGLMsp} with the option `estimand = "RR"`.  
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "RR"`.  
 
 
-\subsection{causalGLMsp in practice}
+\subsection{spglm in practice}
 
 Let us generate a mock dataset that has a constant CATE of value 1.
 <<a>>=
-library(causalGLM)
+library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
@@ -158,7 +158,7 @@ a coefficient estimate for the intercept, lower and upper confidence intervals, 
 <<b>>=
 formula <- ~ 1
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -176,7 +176,7 @@ Y <-
 data <- data.frame(W, A, Y)
 formula <- ~ 1 + W
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -196,7 +196,7 @@ Y <- rnorm(n, mean = A * W + A + W, sd = 0.4)
 data <- data.frame(W, A, Y)
 # generalized additive models:
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -207,7 +207,7 @@ output <-
 summary(output)
 # multivariate adaptive regression splines:
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -218,7 +218,7 @@ output <-
 summary(output)
 # gradient-boosting with xgboost: :
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -240,7 +240,7 @@ HAL_args_Y0W <-
     num_knots = c(10, 5, 1)
   )
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -266,7 +266,7 @@ lrnr_cv <- Lrnr_cv$new(lrnr_stack, full_fit = TRUE)
 # A custom superlearner
 lrnr_sl <- make_learner(Pipeline, lrnr_cv, Lrnr_cv_selector$new())
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -280,7 +280,7 @@ summary(output)
  
  
  
-That's all there is to it! causalGLMsp also supports the RR and OR estimands which are run in a completely analagous way. Use the option `estimand = "OR"` to estimate the conditional odds ratio, and use the option `estimand = "rR"` to estimate the conditional relative risk. Note that the parametric model specified by formula is actually for the log odds ratio and log relative risk (i.e. at the log scale). Thus, the coefficients returned are for the log-transformed OR and RR. We also provide the exponential-transformed coefficients and confidence intervals, which may be more interpretable as measures of the OR and RR.
+That's all there is to it! spglm also supports the RR and OR estimands which are run in a completely analagous way. Use the option `estimand = "OR"` to estimate the conditional odds ratio, and use the option `estimand = "rR"` to estimate the conditional relative risk. Note that the parametric model specified by formula is actually for the log odds ratio and log relative risk (i.e. at the log scale). Thus, the coefficients returned are for the log-transformed OR and RR. We also provide the exponential-transformed coefficients and confidence intervals, which may be more interpretable as measures of the OR and RR.
 
 <<>>=
 n <- 250
@@ -291,7 +291,7 @@ Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -305,7 +305,7 @@ Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMsp(
+  spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -316,12 +316,12 @@ summary(output)
 
 @
 
-\section{Robust nonparametric generalized linear models for treatment effect estimation  with causalGLMnp}
+\section{Robust nonparametric generalized linear models for treatment effect estimation  with npglm}
 In the previous section, we considered semiparametric generalized linear models where the data distribution component of interest (the estimand) is modeled parametrically and nuisance components are modeled nonparametrically. While this is much more robust than typical parametric methods, the parametric assumption on the estimand of interest can still be quite strong. It is therefore of interest to develop fully nonparametric methods that provide correct and interpretable estimates and inference under no parametric assumptions. To do so, we will still utilize user-specified parametric models for the estimand of interest, however, we will not assume that these parametric models are correct. We will treat these parametric models as interpretable approximations of the true nonparametric estimand. That is, we utilize the parametric model as a "working-model" that is only used to derive an interesting nonparametric estimand.
 
 It turns out that many of these working models have desirable properties. In particular, by specifying parametric models/formulas that depend on $V \subset W$ where $V$ is a subvector of baseline covariates, we can actually learn marginal structural models. Notably, the intercept working model that approximates the true estimand by a constant often corresponds with a marginal causal estimand like the average treatment effect (ATE or ATT), the marginal treatment-specific mean, or the marginal relative risk. For these reasons, these nonparametrics method allow for the estimation of an even more rich class of parameters than the analagous semiparametric methods.
 
-Nonparametric working-model based estimators for the estimands are implemented in the function `causalGLMnp`. These methods have:
+Nonparametric working-model based estimators for the estimands are implemented in the function `npglm`. These methods have:
 
 \begin{itemize}
 \item Interpretable coefficient-based estimates and inference
@@ -417,8 +417,8 @@ $$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]] \exp\left\{ \beta \right\}  -  E[E[Y|A=
 and the risk minimizer is exactly given by the nonparametric marginal relative risk $\frac{E[E[Y|A=1,W]]}{E[E[Y|A=0,W]]}$! Thus, the intercept model can be used for marginal RR estimation.
 
 
-\subsection{causalGLMnp in action}
-causalGLMnp operates in almost exactly the same way as causalGLMsp (with a few less optional arguments). The main difference is that it supports new estimands like the CATT and TSM. All previous discussion on learner customization operates in the exact same way but it should be noted that nuisance functions are now estimated nonparametrically (and no longer semiparametrically) so it is important to use learners that include interactions. The following block of the code runs causalGLMnp for each supported estimand.
+\subsection{npglm in action}
+npglm operates in almost exactly the same way as spglm (with a few less optional arguments). The main difference is that it supports new estimands like the CATT and TSM. All previous discussion on learner customization operates in the exact same way but it should be noted that nuisance functions are now estimated nonparametrically (and no longer semiparametrically) so it is important to use learners that include interactions. The following block of the code runs npglm for each supported estimand.
 
 <<>>=
 n <- 250
@@ -431,7 +431,7 @@ data <- data.frame(W, A, Y)
 formula ~ 1 + W
 # Use the formula_Y argument to specify the design matrix for glm, glmnet or mars (not supported for other learners). It is important to include treatment interactions (default).
 output <-
-  causalGLMnp(
+  npglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -446,7 +446,7 @@ Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMnp(
+  npglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -460,7 +460,7 @@ Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMnp(
+  npglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -476,7 +476,7 @@ Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMnp(
+  npglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -490,7 +490,7 @@ Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
-  causalGLMnp(
+  npglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
@@ -502,8 +502,8 @@ summary(output)
 @
 
 
-\section{High dimensional semiparametric generalized linear models for treatment effect estimation using the LASSO with causalGLMnet}
-In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalGLMnet is a specialized wrapper for causalGLMsp that uses the lasso implementation provided by the state-of-the-art R package glmnet (CITE) for estimation of all nuisance parameters. It's use it exactly the same as causalGLMsp except learners no longer need to be specified.
+\section{High dimensional semiparametric generalized linear models for treatment effect estimation using the LASSO with causalglmnet}
+In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalglmnet is a specialized wrapper for spglm that uses the lasso implementation provided by the state-of-the-art R package glmnet (CITE) for estimation of all nuisance parameters. It's use it exactly the same as spglm except learners no longer need to be specified.
 
 <<>>=
 n <- 250
@@ -517,7 +517,7 @@ Y <- rnorm(n, mean = A + W[,10*(1:10)] %*% beta, sd = 0.5)
 data <- data.frame(W, A, Y)
 formula = ~ 1  
 output <-
-  causalGLMnet(
+  causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
@@ -532,7 +532,7 @@ Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %&% beta))
 data <- data.frame(W, A, Y)
 formula  = ~ 1  
 output <-
-  causalGLMnet(
+  causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
@@ -546,7 +546,7 @@ Y <- rpois(n, lambda = exp( A + W[,10*(1:10)] %*% beta))
 data <- data.frame(W, A, Y)
 formula  = ~ 1  
 output <-
-  causalGLMnet(
+  causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
@@ -559,7 +559,7 @@ summary(output)
 
 
 
-\section{Robust nonparametric inference for the hazard ratio with npCOXph}
+\section{Robust nonparametric inference for the hazard ratio with npcoxph}
 This is in development.
 
 \end{document}

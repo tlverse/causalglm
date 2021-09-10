@@ -34,14 +34,14 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_CATE
   
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
+  out <- spglm(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
    
-  out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
+  out <- npglm(formula, data, W, A, Y, estimand = "CATE", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
     passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
 
  
-   out <- causalGLMnp(formula, data, W, A, Y, estimand = "CATT", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
+   out <- npglm(formula, data, W, A, Y, estimand = "CATT", learning_method = learning_method, verbose = T, HAL_fit_control = list(parallel = TRUE))
  
   passes2 <- cbind(passes2, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
@@ -71,12 +71,12 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logOR
   
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
+  out <- spglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes), HAL_fit_control = list(parallel = TRUE))
   
-    out <- causalGLMnp(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
+    out <- npglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes1))
@@ -99,11 +99,11 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logRR
   
-  out <- causalGLMsp(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
+  out <- spglm(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
   
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   
-   out <- causalGLMnp(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
+   out <- npglm(formula, data, W, A, Y, estimand = "RR", learning_method = learning_method, verbose = FALSE, HAL_fit_control = list(parallel = TRUE))
   
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes))

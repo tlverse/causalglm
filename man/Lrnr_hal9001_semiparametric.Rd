@@ -47,7 +47,6 @@ hal_preds <- hal_fit$predict()
 }
 \seealso{
 Other Learners: 
-\code{\link{Lrnr_glm_semiparametric}},
 \code{\link{Lrnr_hal9001}}
 }
 \concept{Learners}
