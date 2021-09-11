@@ -5,6 +5,7 @@ To install this package, install the devtools CRAN package and run:
 ``` r
 devtools::install_github("tlverse/causalglm")
 ```
+Note a bug was fixed on Sept. 11 that now allows this package to be installed without error.
 
 For a in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
 
