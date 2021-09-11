@@ -5,6 +5,14 @@ To install this package, install the devtools CRAN package and run:
 ``` r
 devtools::install_github("tlverse/causalglm")
 ```
+
+This package also requires the following github packages which may or may not be installed automatically
+``` r
+devtools::install_github("tlverse/hal9001@devel")
+devtools::install_github("tlverse/tmle3@general_submodels_devel")
+devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
+```
+
 Note a documentation bug was fixed on Sept. 11 that now allows this package to be installed without error.
 
 For a in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
