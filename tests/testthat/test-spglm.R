@@ -1,4 +1,5 @@
-context("Testing spglm")
+ 
+test_that("Testing spglm", {
 set.seed(1500)
 data_list <- sim.CATE(n=150, p=2)
 # Confounders
@@ -103,6 +104,8 @@ causal_fit <- spglm(formula = formula_logRR, data, W  = W, A = A, Y = Y,  estima
 # We got pretty close!
 
 summary(causal_fit) 
+expect_equal(T,T)
+})
 
 
 

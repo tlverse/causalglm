@@ -1,5 +1,5 @@
 
-context("Testing causalglmnet")
+test_that("Testing causalglmnet", {
 
 set.seed(1500)
 data_list <- sim.CATE(n=100, p=50)
@@ -82,3 +82,5 @@ causal_fit <- causalglmnet(formula = formula_logRR, data, W  = W, A = A, Y = Y, 
 # We got pretty close!
 
 summary(causal_fit) 
+expect_equal(T,T)
+})

@@ -1,4 +1,4 @@
-context("Testing npglm")
+test_that("Testing npglm", {
 
 
 #set.seed(1500)
@@ -156,4 +156,5 @@ coefs <- causal_fit$coefs
 
 # The intercept model can be interpreted as a population-average of the conditional odds ratio.
 summary(causal_fit)
-
+expect_equal(T,T)
+})
