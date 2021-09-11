@@ -33,12 +33,10 @@
 
 \usepackage{natbib}
  
-
-
 \title{%
-  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the \pkg{tlverse} ecosystem
+  \pkg{causalglm}: A \pkg{tlverse} \proglang{R} package for robust generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning
   }
-\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
+\Plaintitle{causalglm: robust generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
 \author{Lars van der Laan }
 \date{September 2021}
 
@@ -50,7 +48,7 @@
 %% - \Plaintitle{} without LaTeX markup (if any)
 %% - \Shorttitle{} with LaTeX markup (if any), used as running title
  
-\Shorttitle{\pkg{causalglm}: Robust adaptive generalized linear models and interpretable causal inference for treatment effects}
+\Shorttitle{\pkg{causalglm}: interpretable causal inference for heterogeneous treatment effects}
 
 %% - \Abstract{} almost as usual
 \Abstract{
@@ -75,7 +73,7 @@ Generalized linear models are well-established and interpretable methods for lea
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
-% \SweaveOpts{concordance=TRUE}
+ 
 
 \maketitle
 
