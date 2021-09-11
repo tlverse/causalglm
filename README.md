@@ -292,6 +292,7 @@ W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+
 formula ~ 1 + W
 output <-
   npglm(
