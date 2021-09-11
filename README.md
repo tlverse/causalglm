@@ -51,7 +51,7 @@ Outputs include:
 
 Some comments/warnings:
 1. The formula argument should only specify a parametric model for the estimand of interest (e.g. the CATE, OR or RR), and not the full conditional mean/outcome model. This is in contrast to standard `glm` implementations that require specifying the entire model with the formula argument. Not needing to specify parts of the model that are not of interest is one of the powerful features of this package. Thus, the formula should only depend on `W` and it should never depend on `A`.
- 
+2. For the estimands OR and RR, the parametric model is specified for the log transform of these estimands (i.e. a log-linear parametric model). Also for these estimands, in the `coefs` output, the first coefficient estimates given in the data.frame are the coefficients in the user-specified parametric model and the second coefficient estimates given in the data.frame are the exponential transforms of the first.
 
 
 ## Semiparametric inference for generalized linear models with spglm: CATE, OR, and RR  
