@@ -61,7 +61,7 @@ Outputs include:
 1. Coefficient estimates (using the S3 summary function)
 2. Z-scores and p-values for coefficients 
 3. 95% confidence intervals for coefficients
-4. Individual-level predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
+4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 
 
 Some comments/warnings:
