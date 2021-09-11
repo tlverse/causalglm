@@ -40,7 +40,7 @@ The functions are designed to be easy to use (any feedback will be greatly appre
 3. Variable names: `W`, `A`, `Y` are character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
 4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (also `"TSM"`, `"CATT"` for `npglm`)
 
-That's it! Feel free to customize the machine-learning routines available using the "learning_method" argument. Built in options are: SuperLearner, HAL, glm, glmnet, gam, earth (MARS), CV-autotuned-xgboost. Cross-fitting is performed automatically. If you want to make your own learner, use the sl3_Learner argument and the tlverse/sl3 package.
+That's it! Feel free to customize the machine-learning routines available using the "learning_method" argument. Built in options are: SuperLearner, HAL, glm, glmnet, gam, earth (MARS), CV-autotuned-xgboost. Cross-fitting is performed automatically. If you want to make your own learner, use the sl3_Learner argument and the tlverse/sl3 package. The argument "estimand" plays an analagous role as the "family" argument in the standard `glm` implementation. Loosely speaking, `estimand = CATE` corresponds with `family = gaussian()`, `estimand = OR` corresponds with `family = binomial()`, and `estimand = RR` corresponds with `family = poisson()`.  However, we note that the methods implemented here and the inference provided do not assume anything about the error distribution of the outcome variable.
 
 Outputs include:
 1. Coefficient estimates (using the S3 summary function)
@@ -54,7 +54,7 @@ The function `spglm` implements semiparametric estimators for the CATE, OR and R
 
 ### Conditional average treatment effect and partially-linear least-squares regression (spglm)
 `spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
-`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is a nuisance function that is learned nonparametrically using machine-learning. Here is some different ways you can model the CATE:
+`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is a nuisance function that is learned nonparametrically using machine-learning. In other words, only the treatment interaction terms in the linear model for `E[Y|A,W]` are modeled parametrically.  Here is some different ways you can model the CATE:
 
 ``` r
 library(causalglm)
@@ -102,7 +102,7 @@ This is equivalent to assuming the logistic regression model
 
 `P(Y=1|A,W) = expit{A*logOR(W) + logit(P(Y=1|A=0,W))}`
 
-where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning.
+where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the logisic regression model for `P(Y=1|A,W)` are modeled parametrically.
 
 ``` r
 library(causalglm)
@@ -140,7 +140,7 @@ That is, we only assume the user specified parametric model (at the log scale) f
 
 This is equivalent to assuming the log-linear regression model
 `E[Y|A,W] = E[Y|A=0,W] exp(log RR(W)) = E[Y|A=0,W] RR(W)`,
-where `log RR(W)` is parametric and `E[Y|A=0,W]` is the background/placebo outcome model which is unspecified and learned using machine-learning.
+where `log RR(W)` is parametric and `E[Y|A=0,W]` is the background/placebo outcome model which is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the log-linear regression model for `E[Y|A,W]` are modeled parametrically.
 
 
 ``` r
