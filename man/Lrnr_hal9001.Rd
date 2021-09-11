@@ -45,10 +45,6 @@ hal_lrnr <- Lrnr_hal9001$new(
 hal_fit <- hal_lrnr$train(task)
 hal_preds <- hal_fit$predict()
 }
-\seealso{
-Other Learners: 
-\code{\link{Lrnr_hal9001_semiparametric}}
-}
 \concept{Learners}
 \keyword{data}
 \section{Super class}{

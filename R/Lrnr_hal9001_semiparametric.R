@@ -1,52 +1,9 @@
 #' Scalable Highly Adaptive Lasso (HAL) semiparametric
-#'
-#' The Highly Adaptive Lasso (HAL) is a nonparametric regression function that
-#' has been demonstrated to optimally estimate functions with bounded (finite)
-#' variation norm. The algorithm proceeds by first building an adaptive basis
-#' (i.e., the HAL basis) based on indicator basis functions (or higher-order
-#' spline basis functions) representing covariates and interactions of the
-#' covariates up to a pre-specified degree. The fitting procedures included in
-#' this learner use \code{\link[hal9001]{fit_hal}} from the \pkg{hal9001}
-#' package. For details on HAL regression, consider consulting the following
-#' \insertCite{benkeser2016hal;textual}{sl3}),
-#' \insertCite{coyle2020hal9001-rpkg;textual}{sl3}),
-#' \insertCite{hejazi2020hal9001-joss;textual}{sl3}).
-#'
-#' @docType class
-#'
 #' @importFrom R6 R6Class
 #' @importFrom origami folds2foldvec
 #' @importFrom stats predict quasibinomial
 #'
 #' @export
-#'
-#' @keywords data
-#'
-#' @return A learner object inheriting from \code{\link{Lrnr_base}} with
-#'  methods for training and prediction. For a full list of learner
-#'  functionality, see the complete documentation of \code{\link{Lrnr_base}}.
-#'
-#' @format An \code{\link[R6]{R6Class}} object inheriting from
-#'  \code{\link{Lrnr_base}}.
-#'
-#' @family Learners
-#'
-#' @section Parameters:
-#'   - \code{...}: Arguments passed to \code{\link[hal9001]{fit_hal}}. See
-#'    it's documentation for details.
-#'
-#' @examples
-#' data(cpp_imputed)
-#' covs <- c("apgar1", "apgar5", "parity", "gagebrth", "mage", "meducyrs")
-#' task <- sl3_Task$new(cpp_imputed, covariates = covs, outcome = "haz")
-#'
-#' # instantiate with max 2-way interactions, 0-order splines, and binning
-#' # (i.e., num_knots) that decreases with increasing interaction degree
-#' hal_lrnr <- Lrnr_hal9001$new(
-#'   max_degree = 2, num_knots = c(20, 10), smoothness_orders = 0
-#' )
-#' hal_fit <- hal_lrnr$train(task)
-#' hal_preds <- hal_fit$predict()
 Lrnr_hal9001_semiparametric <- R6Class(
   classname = "Lrnr_hal9001_semiparametric",
   inherit = Lrnr_base, portable = TRUE, class = TRUE,
