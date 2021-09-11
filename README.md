@@ -90,7 +90,7 @@ This is equivalent to assuming the logistic regression model
 
 where P(Y=1|A=0,W) is unspecified and learned using machine-learning.
 
-`
+``` r
 library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
@@ -108,7 +108,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
-`
+```
 
  
 
@@ -128,7 +128,7 @@ This is equivalent to assuming the log-linear regression model
 where log RR(W) is parametric and E[Y|A=0,W] is the background/placebo outcome model which is unspecified and learned using machine-learning.
 
 
- `
+``` r
 library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
@@ -146,7 +146,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
-`
+```
 
 
 ## Robust nonparametric inference for generalized linear models with npglm: CATE, CATT, TSM, RR, and OR
@@ -162,7 +162,8 @@ We refer to the writeup "causalglm_writeup.pdf", which can be found in the folde
 
 ### Robust nonparametric inference for the CATE, CATT, and TSM (conditional treatment effects with npglm)
 
-`library(causalglm)
+``` r
+library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
@@ -223,11 +224,11 @@ output <-
     verbose = FALSE
   )
 summary(output)
-`
+```
 
 
 ### Robust nonparametric inference for the RR (conditional relative-risk with npglm)
- `
+``` r
 library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
@@ -245,13 +246,13 @@ output <-
     verbose = FALSE
   )
 summary(output)
-`
+```
  
 
 ## Semiparametric inference for high dimensional generalized linear models with causalglmnet (the LASSO): CATE, OR, and RR
 For high dimensional W, you can use the wrapper function `causalglmnet` which runs `spglm` using a custom glmnet-LASSO learner for estimation. This allows for robust and fast estimation in high dimensional settings where conventional machine-learning algorithms may struggle. Cross-fitting can be performed to reduce bias. This method can be viewed as an adaptive version of "glm" in that confounders/variables to adjust for are adaptively selected using the LASSO, while still allowing for asymptotically correct post-selection inference. 
 
-`
+``` r
 n <- 200
 W <- replicate(100,runif(n, min = -1,  max = 1))
 colnames(W) <- paste0("W", 1:100)
@@ -301,7 +302,7 @@ output <-
   )
 summary(output)
 
-`
+```
 
 ## Need a new or specialized method? Questions? Suggestions?
 
