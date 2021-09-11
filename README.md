@@ -28,7 +28,7 @@ This package supports semiparametric and nonparametric estimation for user-speci
 
  
 The semiparametric methods are run using the function `spglm` and the nonparametric methods are run using the function `npglm`. 
-A semiparametric high dimensional LASSO version of `spglm` is implemented in `causalglmnet`. 
+A semiparametric high dimensional LASSO version of `spglm` is implemented in `causalglmnet` which allows for inference when with adaptive selection and adjustment of possible confounders. 
 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
@@ -179,7 +179,7 @@ head(predict(output, data = data))
 
 
 ## Robust nonparametric inference for generalized linear models with npglm: CATE, CATT, TSM, RR, and OR
-Rather than assuming a semiparametric model, we can instead make no assumptions (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
+Rather than assuming a semiparametric model, we can instead make no assumptions on any functional forms (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
 
 This nonparametric view is implemented in the function `npglm`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimands are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. 
 
