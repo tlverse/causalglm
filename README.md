@@ -48,6 +48,12 @@ Outputs include:
 3. 95% confidence intervals for coefficients
 4. Individual-level predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 
+
+Some comments/warnings:
+1. The formula argument should only specify a parametric model for the estimand of interest (e.g. the CATE, OR or RR), and not the full conditional mean/outcome model. This is in contrast to standard `glm` implementations that require specifying the entire model with the formula argument. Not needing to specify parts of the model that are not of interest is one of the powerful features of this package. Thus, the formula should only depend on `W` and it should never depend on `A`.
+ 
+
+
 ## Semiparametric inference for generalized linear models with spglm: CATE, OR, and RR  
 
 The function `spglm` implements semiparametric estimators for the CATE, OR and RR, which are each identified by some partially-linear generalized-linear model. We will utilize the statistical data-structure `O=(W,A,Y)` where `W` represents a vector of baseline variables, `A` is a binary treatment variable, and `Y` is some outcome.
