@@ -4,7 +4,7 @@ To install this package, install the devtools CRAN package and run:
 
 ``` r
 if(!require(devtools)) {
-  packages.install("devtools")
+  install.packages(devtools)
 }
 devtools::install_github("tlverse/causalglm")
 ```
