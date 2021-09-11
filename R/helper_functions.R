@@ -1,3 +1,33 @@
+#' Plotting of univariate marginal structural models
+#' @param object A `msmglm` object
+#' @param data The data containing `V` for plotting
+#' @import ggplot2
+#' @export
+plot_msm <- function(object, data = object$args$data) {
+  require(ggplot2)
+  if (!inherits(object, "msmglm")) {
+    stop("object must be a msmglm object.")
+  }
+  if (length(object$args$V) > 1) {
+    stop("MSM plotting is only supported for one-dimensional `V`.")
+  }
+  preds_full <- predict(object, data = data)
+  index <- which(colnames(preds_full) == "se") - 1
+  x <- data[[object$args$V]]
+  y <- preds_full[[index]]
+  data <- data.frame(x = x, y = y, upper = preds_full$CI_right, lower = preds_full$CI_left)
+
+  plot <- ggplot(data, aes(x = x, y = y)) +
+    geom_smooth(se = F) +
+    geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
+    xlab(paste0("V = ", object$args$V)) +
+    ylab("MSM(V)") +
+    ggtitle(object$formula_fit)
+  return(plot)
+}
+
+
+
 #' @export
 summary.causalglm <- function(object) {
   print(object)
@@ -10,7 +40,7 @@ summary.causalglm <- function(object) {
 
 #' @export
 coef.causalglm <- function(object) {
-  out <- (object$coefs)
+  out <- object$coefs
   out
 }
 
@@ -59,6 +89,7 @@ predict.causalglm <- function(object, data = object$args$data, transformed = TRU
     name <- paste0("log ", name)
   }
   colnames(preds_new) <- c(colnames(V), name, "se", "CI_left", "CI_right", "Z-score", "p-value")
+  preds_new <- as.data.frame(preds_new)
   return(preds_new)
 }
 

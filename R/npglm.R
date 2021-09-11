@@ -188,6 +188,29 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
 
+  if (estimand == "TSM") {
+    anum <- length(levels_A)
+
+    numform <- nrow(coefs) / anum
+
+    coefs_list <- split(coefs, rep(1:anum, each = numform))
+
+    output_list <- list()
+    for (i in 1:anum) {
+      coefs <- coefs_list[[i]]
+
+      tmp <- coefs$param
+      formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+
+      output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
+      class(output) <- c("npglm", "causalglm")
+      output_list[[gsub(":.*", "", tmp[1])]] <- output
+    }
+    output_list$estimand <- "TSM"
+    output_list$levels_A <- levels_A
+    return(output_list)
+  }
+
   tmp <- coefs$param
   if (estimand %in% c("OR", "RR")) {
     formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))

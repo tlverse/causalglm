@@ -52,7 +52,7 @@
 
 %% - \Abstract{} almost as usual
 \Abstract{
-Generalized linear models are well-established and interpretable methods for learning heterogeneous treatment effects. However, conventional parametric generalized linear models make strong parametric assumptions on components of the data-generating distribution that are not directly of interest for the causal question at hand. Notably, in real-world settings, the relation between confounders and the outcome is almost always unknown and may be quite complex. As a result, causal inference based on parametric generalized linear models can be very biased and even misleading. Moreover, in high dimensional settings, generalized linear models and their inference breaks down and alternative methods like lasso and elastic-net regression do not easily provide inference. In this article, we present the \proglang{R} package \pkg{causalglm} that implements robust semiparametric (\textit{spglm}) and nonparametric (\textit{npglm}) generalized linear models and causal inference for heterogeneous treatment effects in both low and high dimensions. These methods utilize targeted maximum likelihood estimation and therefore can leverage adaptive machine-learning algorithms for estimation and variable selection of nonparametric nuisance components of the data-distribution. The methods allow for the interpretable and familiar coefficient-based inference while significantly relaxing the assumptions needed for correct inference through the use of machine-learning. This package supports semiparametric and nonparametric estimation and inference for user-specified parametric models of the estimands: the conditional average treatment effect, the conditional relative risk, the conditional odds ratio, and much more. The nonparametric methods view the user-specified parametric model as a causal approximation (i.e. working-model) and provide interpretable and correct causal inference even when the parametric model is incorrect (i.e. misspecified). The nonparametric methods can also be used without change to learn marginal structural models for heterogeneous treatment effect parameters. A custom lasso-based version of these methods are implemented in the function \textit{causalglmnet}, allowing for robust post-confounder-selection causal inference in high dimensions. These methods are implemented using the powerful \pkg{tlverse} machine-learning (\pkg{sl3}) and generalized targeted learning (\pkg{tmle3}) ecosystem.}
+Generalized linear models are well-established and interpretable methods for learning heterogeneous treatment effects. However, conventional parametric generalized linear models make strong parametric assumptions on components of the data-generating distribution that are not directly of interest for the causal question at hand. Notably, in real-world settings, the relation between confounders and the outcome is almost always unknown and may be quite complex. As a result, causal inference based on parametric generalized linear models can be very biased and even misleading. Moreover, in high dimensional settings, generalized linear models and their inference breaks down and alternative methods like lasso and elastic-net regression do not easily provide inference. In this article, we present the \proglang{R} package \pkg{causalglm} that implements robust semiparametric (\textit{spglm}) and nonparametric (\textit{npglm}) generalized linear models and causal inference for heterogeneous treatment effects in both low and high dimensions. These methods utilize targeted maximum likelihood estimation and therefore can leverage adaptive machine-learning algorithms for estimation and variable selection of nonparametric nuisance components of the data-distribution. The methods allow for the interpretable and familiar coefficient-based inference while significantly relaxing the assumptions needed for correct inference through the use of machine-learning. This package supports semiparametric and nonparametric estimation and inference for user-specified parametric models of the estimands: the conditional average treatment effect, the conditional relative risk, the conditional odds ratio, and much more. The nonparametric methods view the user-specified parametric model as a causal approximation (i.e. working-model) and provide interpretable and correct causal inference even when the parametric model is incorrect (i.e. misspecified). Robust causal inference for marginal structural models based on nonparametric projections onto working models are implemented in the function \textit{msmglm}. A custom lasso-based version of these methods are implemented in the function \textit{causalglmnet}, allowing for robust post-confounder-selection causal inference in high dimensions. These methods are implemented using the powerful \pkg{tlverse} machine-learning (\pkg{sl3}) and generalized targeted learning (\pkg{tmle3}) ecosystem.}
 
 %% - \Keywords{} with LaTeX markup, at least one required
 %% - \Plainkeywords{} without LaTeX markup (if necessary)
@@ -134,7 +134,10 @@ The function npglm supports nonparametric efficient working-model-based estimati
 \item Conditional relative risk (RR) for nonnegative outcomes and a binary treatment.  
 \end{itemize}
 
-This function also automatically supports marginal structural models by specifying lower dimensional formulas/working-models for the following estimands
+This function also automatically supports marginal structural models by specifying lower dimensional formulas/working-models for the estimands: CATE, CATT, TSM and RR. For ease-of-use, we provide a separate function called "msmglm" for marginal structural model estimation.
+
+\subsection{msmglm: nonparametric causal-inference for marginal structural models}
+This function follows user-specified marginal structural models (based on nonparametric projections onto working models) for the following estimands:
 \begin{itemize}
 \item Marginal structural models for the conditional average treatment effect (CATE).
 \item Marginal structural models for the conditional average treatment effect among the treated (CATT).
@@ -142,6 +145,7 @@ This function also automatically supports marginal structural models by specifyi
 \item Marginal structural models for the conditional relative risk (RR). 
 \end{itemize}
 
+ 
 
 \subsection{causalglmnet: high dimensional causal inference for generalized linear models}
 The function causalglmnet supports causal inference with high dimensional confounders for the following estimands:
@@ -477,17 +481,17 @@ This approach has a number of desirable properties. Firstly, additive regression
 
 
 
-\section{Robust nonparametric glms for treatment effect estimation  with npglm}
+\section{Robust nonparametric glms for conditional and marginal structural treatment effects with npglm and msmglm}
 In the previous section, we considered semiparametric generalized linear models where the data distribution component of interest (the estimand) is modeled parametrically and nuisance components are modeled nonparametrically. While this is much more robust than typical parametric methods, the parametric assumption on the estimand of interest can still be quite strong. It is therefore of interest to develop fully nonparametric methods that provide correct and interpretable estimates and inference under no parametric assumptions. To do so, we will still utilize user-specified parametric models for the estimand of interest, however, we will not assume that these parametric models are correct. We will treat these parametric models as interpretable approximations of the true nonparametric estimand. That is, we utilize the parametric model as a "working-model" that is only used to derive an interesting nonparametric estimand.
 
 It turns out that many of these working models have desirable properties. In particular, by specifying parametric models/formulas that depend on $V \subset W$ where $V$ is a subvector of baseline covariates, we can actually learn marginal structural models. Notably, the intercept working model that approximates the true estimand by a constant often corresponds with a marginal causal estimand like the average treatment effect (ATE or ATT), the marginal treatment-specific mean, or the marginal relative risk. For these reasons, these nonparametrics method allow for the estimation of an even more rich class of parameters than the analagous semiparametric methods.
 
-Nonparametric working-model based estimators for the estimands are implemented in the function `npglm`. These methods have:
+Nonparametric working-model based estimators for the estimands are implemented in the function `npglm` and `msmglm` is a wrapper function that focuses on marginal structural model estimation but simply calls `npglm` behind the scenes. These methods have:
 
 \begin{itemize}
 \item Interpretable coefficient-based estimates and inference
 \item Nonparametric and causal estimates and inference even when the parametric model is incorrect
-\item Many of the estimands correspond with marginal structural models when lower dimensional working-models are used.
+\item Many of the estimands for `npglm` correspond with marginal structural models when lower dimensional working-models are used.
 \end{itemize}
 
 We refer to van der Laan, Robins (2003), Neugebauer, van der Laan (2008), and Robins et al. (1994) for  background on marginal structural models. See also the working paper, van der Laan (2009), for more on marginal structural models in the context of TMLE.
@@ -578,7 +582,7 @@ $$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]] \exp\left\{ \beta \right\}  -  E[E[Y|A=
 and the risk minimizer is exactly given by the nonparametric marginal relative risk $\frac{E[E[Y|A=1,W]]}{E[E[Y|A=0,W]]}$! Thus, the intercept model can be used for marginal RR estimation.
 
 
-\subsection{npglm in action}
+\subsection{npglm and msmglm in action}
 npglm operates in almost exactly the same way as spglm (with a few less optional arguments). The main difference is that it supports new estimands like the CATT and TSM. All previous discussion on learner customization operates in the exact same way but it should be noted that nuisance functions are now estimated nonparametrically (and no longer semiparametrically) so it is important to use learners that include interactions. The following block of the code runs npglm for each supported estimand.
 
 <<>>=
@@ -632,9 +636,9 @@ output <-
     formula_Y = ~ . + . * A,
     verbose = FALSE
   )
-
-summary(output)
-
+# TSM returns a list of causalglm objects for each level
+summary(output[[1]])
+summary(output[[2]])
 # OR
 Y <- rbinom(n, size = 1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
@@ -666,6 +670,86 @@ output <-
 summary(output)
 
 head(predict(output, data = data))
+@
+
+
+Marginal structural models can be learned with `msmglm`. The only difference with `npglm` is that the marginal covariate of interest `V` must be provided. `V` can be a vector of covariates but plotting is only supported for univariate `V`. 
+<<>>=
+n <- 250
+V <- runif(n, min = -1, max = 1)
+W <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+
+# CATE
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
+output <-
+  msmglm(
+    formula_msm,
+    data,
+   V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "glm",
+    formula_Y = ~ . + . * A,
+    verbose = FALSE
+  )
+
+summary(output)
+plot_msm(output)
+# CATT
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "CATT",
+    verbose = FALSE
+  )
+
+summary(output)
+
+# TSM
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "TSM",
+    learning_method = "mars",
+    formula_Y = ~ . + . * A,
+    verbose = FALSE
+  )
+
+summary(output[[1]])
+summary(output[[2]])
+ plot_msm(output[[1]])
+
+# RR
+Y <- rpois(n, lambda = exp( A * (1 + V + 2*V^2)  + sin(5 * W)))
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+
+summary(output)
+plot_msm(output)
 @
 
 

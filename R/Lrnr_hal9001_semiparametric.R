@@ -3,7 +3,7 @@
 #' @importFrom origami folds2foldvec
 #' @importFrom stats predict quasibinomial
 #'
- 
+
 Lrnr_hal9001_semiparametric <- R6Class(
   classname = "Lrnr_hal9001_semiparametric",
   inherit = Lrnr_base, portable = TRUE, class = TRUE,
