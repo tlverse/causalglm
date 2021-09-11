@@ -44,7 +44,8 @@ The function `spglm` implements semiparametric estimators for the CATE, OR and R
 `spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
 `E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Here is some different ways you can model the CATE:
 
-`library(causalglm)
+``` r
+library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
@@ -74,7 +75,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
-`
+```
 
 ### Conditional odds ratio and partially-linear logistic regression (spglm)
 When Y is binary, the adjusted causal odds ratio between A and Y may be of interest. Use the function `spglm` with `estimand = "OR"`. The model used is the so-called "partially-linear logistic regression model" which *only* assumes
