@@ -267,7 +267,9 @@ output <-
     estimand = "CATE",
     verbose = FALSE
   )
+
 summary(output)
+
 @
 We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
 <<b>>=
@@ -286,6 +288,7 @@ output <-
     estimand = "CATE",
     verbose = FALSE
   )
+
 summary(output)
 
 @
@@ -404,6 +407,7 @@ output <-
     estimand = "OR",
     verbose = FALSE
   )
+
 summary(output)
 
 # RR
@@ -418,6 +422,7 @@ output <-
     estimand = "RR",
     verbose = FALSE
   )
+
 summary(output)
 @
 
@@ -545,6 +550,7 @@ output <-
     formula_Y = ~ . + . * A,
     verbose = FALSE
   )
+
 summary(output)
 # CATT
 Y <- rnorm(n, mean = A + A * W + W + sin(5 * W), sd = 0.5)
@@ -558,6 +564,7 @@ output <-
     estimand = "CATT",
     verbose = FALSE
   )
+
 summary(output)
 
 # TSM
@@ -569,11 +576,12 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "CATT",
+    estimand = "TSM",
     learning_method = "mars",
     formula_Y = ~ . + . * A,
     verbose = FALSE
   )
+
 summary(output)
 
 # OR
@@ -588,6 +596,7 @@ output <-
     estimand = "OR",
     verbose = FALSE
   )
+
 summary(output)
 
 # RR
@@ -602,6 +611,7 @@ output <-
     estimand = "RR",
     verbose = FALSE
   )
+
 summary(output)
 
 head(predict(output, data = data))
@@ -630,6 +640,7 @@ output <-
     estimand = "CATE",
     verbose = FALSE
   )
+
 summary(output)
 
 
@@ -645,6 +656,7 @@ output <-
     estimand = "OR",
     verbose = FALSE
   )
+
 summary(output)
 
 # RR
@@ -659,6 +671,7 @@ output <-
     estimand = "RR",
     verbose = FALSE
   )
+
 summary(output)
 
 head(predict(output, data = data))

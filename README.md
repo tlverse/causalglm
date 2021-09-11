@@ -83,6 +83,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output) 
 head(predict(output, data = data))
 
@@ -96,6 +97,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output) 
 head(predict(output, data = data))
 ```
@@ -130,6 +132,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```
@@ -169,6 +172,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```
@@ -205,6 +209,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output) 
 head(predict(output, data = data))
 
@@ -217,6 +222,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output) 
 head(predict(output, data = data))
 
@@ -230,6 +236,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output) 
 head(predict(output, data = data))
 ```
@@ -256,6 +263,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```
@@ -279,6 +287,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```
@@ -302,6 +311,7 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```
@@ -329,6 +339,7 @@ output <-
     estimand = "CATE" ,
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 
@@ -344,6 +355,7 @@ output <-
     estimand = "OR" ,
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 
@@ -359,6 +371,7 @@ output <-
     estimand = "RR" ,
     verbose = FALSE
   )
+
 summary(output)
 head(predict(output, data = data))
 ```

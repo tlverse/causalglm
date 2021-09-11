@@ -1,5 +1,9 @@
 #' @export
 summary.causalglm <- function(object) {
+  print(object)
+  cat("\n\n")
+  cat("Coefficient estimates and inference:")
+  cat("\n")
   print(object$coefs)
   return(invisible(object$coefs))
 }
@@ -8,6 +12,12 @@ summary.causalglm <- function(object) {
 coef.causalglm <- function(object) {
   out <- (object$coefs)
   out
+}
+
+#' @export
+print.causalglm <- function(object) {
+  cat(paste0("A causalglm fit object obtained from ", class(object)[1], " for the estimand ", object$estimand, " with formula: \n"))
+  cat(object$formula_fit)
 }
 
 
