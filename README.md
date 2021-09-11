@@ -134,6 +134,7 @@ W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+
 formula ~ 1 + W
 output <-
   spglm(
@@ -174,6 +175,7 @@ W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+
 formula ~ 1 + W
 output <-
   spglm(
@@ -265,6 +267,7 @@ W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+
 formula ~ 1 + W
 output <-
   npglm(
@@ -313,6 +316,7 @@ W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+
 formula ~ 1 
 output <-
   npglm(
@@ -342,6 +346,7 @@ A <- rbinom(n, size = 1, prob = plogis(W[,10*(1:10)] %*% beta))
 # CATE
 Y <- rnorm(n, mean = A + W[,10*(1:10)] %*% beta, sd = 0.5)
 data <- data.frame(W, A, Y)
+
 formula = ~ 1  
 output <-
   causalglmnet(
@@ -358,6 +363,7 @@ head(predict(output, data = data))
 # OR
 Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %*% beta))
 data <- data.frame(W, A, Y)
+
 formula  = ~ 1  
 output <-
   causalglmnet(
@@ -374,6 +380,7 @@ head(predict(output, data = data))
 # RR
 Y <- rpois(n, lambda = exp( A + W[,10*(1:10)] %*% beta))
 data <- data.frame(W, A, Y)
+
 formula  = ~ 1  
 output <-
   causalglmnet(
