@@ -53,8 +53,11 @@ Outputs include:
 The function `spglm` implements semiparametric estimators for the CATE, OR and RR, which are each identified by some partially-linear generalized-linear model. We will utilize the statistical data-structure `O=(W,A,Y)` where `W` represents a vector of baseline variables, `A` is a binary treatment variable, and `Y` is some outcome.
 
 ### Conditional average treatment effect and partially-linear least-squares regression (spglm)
-`spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
-`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is a nuisance function that is learned nonparametrically using machine-learning. In other words, only the treatment interaction terms in the linear model for `E[Y|A,W]` are modeled parametrically.  Here is some different ways you can model the CATE:
+`spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" which *only* assumes
+
+`CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] ~ a user-specified parametric model.`
+
+This is equivalent to the semiparametric linear regression model `E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is an unspecified nuisance function that is learned nonparametrically using, for instance, machine-learning. In other words, only the treatment interaction terms in the linear model for `E[Y|A,W]` are modeled parametrically.  Here is some different ways you can model the CATE:
 
 ``` r
 library(causalglm)
@@ -98,11 +101,11 @@ When Y is binary, the adjusted causal odds ratio between A and Y may be of inter
 
 That is, the user specifies a parametric model for the log odds between A and Y and nothing else is assumed known. 
 
-This is equivalent to assuming the logistic regression model
+This is equivalent to assuming the semiparametric logistic regression model
 
 `P(Y=1|A,W) = expit{A*logOR(W) + logit(P(Y=1|A=0,W))}`
 
-where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the logisic regression model for `P(Y=1|A,W)` are modeled parametrically.
+where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the logistic regression model for `P(Y=1|A,W)` are modeled parametrically.
 
 ``` r
 library(causalglm)
@@ -138,7 +141,7 @@ The model used is the so-called "partially-linear log-linear/poisson regression 
 
 That is, we only assume the user specified parametric model (at the log scale) for the relative risk of Y with respect to A.
 
-This is equivalent to assuming the log-linear regression model
+This is equivalent to assuming the semiparametric log-linear regression model
 `E[Y|A,W] = E[Y|A=0,W] exp(log RR(W)) = E[Y|A=0,W] RR(W)`,
 where `log RR(W)` is parametric and `E[Y|A=0,W]` is the background/placebo outcome model which is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the log-linear regression model for `E[Y|A,W]` are modeled parametrically.
 
@@ -186,7 +189,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rnorm(n, mean = A + W, sd = 0.3)
 data <- data.frame(W,A,Y)
 
-formula <- ~ 1
+formula <- ~ 1 + W
 output <-
   npglm(
     formula,
@@ -225,6 +228,9 @@ summary(output)
 head(predict(output, data = data))
 ```
 
+To estimate with `npglm` the following marginal estimands: ATE := `E_WE[Y|A=1,W] - E_WE[Y|A=0,W]`, TSM := `E_WE[Y|A=a,W]` and ATT :=`E[E[Y|A=1,W],A=1] - E[E[Y|A=0,W]|A=1]`, you only need to input the intercept model: `formula = ~ 1`. Marginal structural models can be learned by inputting lower dimensional formulas that depend on a subset of `W`. This powerful feature is unique to `npglm` and does not hold for `spglm`.
+
+
 ### Robust nonparametric inference for the OR (conditional odds ratio with npglm)
 
 ``` r
@@ -258,6 +264,29 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR" ,
+    learning_method = "HAL",
+    verbose = FALSE
+  )
+summary(output)
+head(predict(output, data = data))
+```
+
+To estimate the marginal relative risk `E_WE[Y|A=1,W] / E_WE[Y|A=0,W]`, you only need to input intercept model. Marginal structural models for the conditional relative-risk can be learned by inputting lower dimensional formulas that depend on a subset of `W`. This powerful feature is unique to `npglm` and does not hold for `spglm`.
+
+``` r
+library(causalglm)
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula ~ 1 
 output <-
   npglm(
     formula,
