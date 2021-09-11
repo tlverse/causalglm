@@ -33,7 +33,8 @@ pdfstartview={XYZ null null 1}}
 
 \title{%
   causalglm \\
-  \large Semiparametric and nonparametric generalized linear models for conditional causal inference using targeted maximum likelihood estimation
+  \vspace{0.3cm}
+  \large Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
   }
 \author{Lars van der Laan }
 \date{September 2021}
@@ -52,12 +53,12 @@ pdfstartview={XYZ null null 1}}
 
 
 \section{Introduction to causalglm}
-\subsection{Semiparametric and nonparametric generalized linear models for conditional causal inference using targeted maximum lkelihood estimation}
+\subsection{Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation}
 
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
 
-In this package, we utilize targeted machine-learning to generalize the parametric generalized linear models commonly used for treatment effect estimation (e.g. the R package glm) to the world of semi and nonparametric models. There is little-to-no loss in precision/p-values/confidence-interval-widths with these semiparametric methods relative to parametric generalized linear models, but the bias reduction from these methods can be substantial! Simulations suggest that these methods can work well with small sample sizes. We employ ensemble machine-learning (Super-Learning) that adapts the aggressiveness of the ML algorithms with sample size, thereby allowing for robust and correct inference in a diverse range of settings. All methods utilize targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011).\nocite{vanderLaanRose2011}
+In this package, we utilize targeted machine-learning to generalize the parametric generalized linear models commonly used for heterogeneous treatment effect estimation (e.g. the R package glm) to the world of semi and nonparametric models. There is little-to-no loss in precision/p-values/confidence-interval-widths with these semiparametric methods relative to parametric generalized linear models, but the bias reduction from these methods can be substantial! Simulations suggest that these methods can work well with small sample sizes. We employ ensemble machine-learning (Super-Learning) that adapts the aggressiveness of the ML algorithms with sample size, thereby allowing for robust and correct inference in a diverse range of settings. All methods utilize targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011).\nocite{vanderLaanRose2011}
 
 Each estimand considered in this package can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
@@ -66,7 +67,7 @@ By default, the Highly Adaptive Lasso (HAL) and its semiparametric variants are 
 
 Noticable features supported:
 \begin{itemize}
-\item Efficent semiparametric and nonparametric Interpretable inference for user-specified parametric working-models of conditional treatment-effect functions with `spglm` and `npglm`.
+\item Efficent semiparametric and nonparametric interpretable inference for user-specified parametric working-models of conditional treatment-effect functions with `spglm` and `npglm`.
 \item  Efficient nonparametric inference for marginal structural models for a number of conditional treatment-effect estimands with `npglm`.
 \item Designed-easy-to-use interface and built-in machine-learning routines for diverse settings and immediate use.
 \item  General machine-learning tools with the tlverse/sl3 generalized machine-learning ecosystem (Coyle et al., 2021).\nocite{coyle2021sl3}

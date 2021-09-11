@@ -1,6 +1,6 @@
 Package: causalglm
 Type: Package
-Title: Semiparametric and nonparametric generalized linear models for conditional causal inference using targeted maximum likelihood estimation
+Title: Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
 Version: 0.1.0
 Author: Lars van der Laan
 Maintainer: Lars van der Laan <vanderlaanlars@yahoo.com>
