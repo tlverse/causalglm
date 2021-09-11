@@ -51,7 +51,7 @@ The function `spglm` implements semiparametric estimators for the CATE, OR and R
 
 ### Conditional average treatment effect and partially-linear least-squares regression (spglm)
 `spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" defined as
-`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and E[Y|A=0,W] is a nuisance function that is learned nonparametrically using machine-learning. Here is some different ways you can model the CATE:
+`E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is a nuisance function that is learned nonparametrically using machine-learning. Here is some different ways you can model the CATE:
 
 ``` r
 library(causalglm)
@@ -97,7 +97,7 @@ This is equivalent to assuming the logistic regression model
 
 `P(Y=1|A,W) = expit{A*logOR(W) + logit(P(Y=1|A=0,W))}`
 
-where P(Y=1|A=0,W) is unspecified and learned using machine-learning.
+where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning.
 
 ``` r
 library(causalglm)
@@ -134,7 +134,7 @@ That is, we only assume the user specified parametric model (at the log scale) f
 
 This is equivalent to assuming the log-linear regression model
 `E[Y|A,W] = E[Y|A=0,W] exp(log RR(W)) = E[Y|A=0,W] RR(W)`,
-where log RR(W) is parametric and E[Y|A=0,W] is the background/placebo outcome model which is unspecified and learned using machine-learning.
+where `log RR(W)` is parametric and `E[Y|A=0,W]` is the background/placebo outcome model which is unspecified and learned using machine-learning.
 
 
 ``` r
@@ -213,9 +213,11 @@ output <-
     verbose = FALSE
   )
 summary(output) 
- 
+```
+
 ### Robust nonparametric inference for the OR (conditional odds ratio with npglm)
-`
+
+``` r
 library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
