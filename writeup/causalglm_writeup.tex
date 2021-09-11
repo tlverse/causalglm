@@ -24,6 +24,8 @@ pdfstartview={XYZ null null 1}}
 
 
 
+
+
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\expit}{expit}
 
@@ -31,9 +33,17 @@ pdfstartview={XYZ null null 1}}
 \bibliographystyle{apalike}
 
 
-\title{causalglm}
-\author{vanderlaanlars }
+\title{%
+  causalglm \\
+  \large Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation
+  }
+\author{Lars van der Laan }
 \date{September 2021}
+
+ 
+\usepackage{fancyhdr}          % this and next line are for fancy headers/footers
+\pagestyle{fancy}
+
 
 
 \usepackage{Sweave}
@@ -45,7 +55,7 @@ pdfstartview={XYZ null null 1}}
 
 
 \section{Introduction to causalglm}
-\subsection{Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions}
+\subsection{Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation}
 
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
@@ -255,7 +265,7 @@ a coefficient estimate for the intercept, lower and upper confidence intervals, 
 \end{Sinput}
 \begin{Soutput}
    type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.974924 0.03756467 0.9012986 1.048549 410.3563       0
+1: CATE (Intercept) 1.004872 0.04151975 0.9234949 1.086249 382.6714       0
 \end{Soutput}
 \end{Schunk}
 We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
@@ -279,8 +289,8 @@ We can also do a much more complex model with higher dimensional treatment effec
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9254711 0.05101393 0.8254856 1.025457 286.8429       0
-2: CATE           W 1.1226342 0.09122935 0.9438279 1.301440 194.5690       0
+1: CATE (Intercept) 1.0277026 0.04909300 0.9314821 1.123923 330.9923       0
+2: CATE           W 0.9871299 0.08397783 0.8225364 1.151723 185.8573       0
 \end{Soutput}
 \end{Schunk}
 
@@ -307,8 +317,8 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9665992 0.05387751 0.8610012 1.072197 283.6671       0
-2: CATE           W 1.0879020 0.09544206 0.9008390 1.274965 180.2271       0
+1: CATE (Intercept) 1.0012411 0.05350114 0.8963808 1.106101 295.9005       0
+2: CATE           W 0.8401017 0.09212771 0.6595347 1.020669 144.1822       0
 \end{Soutput}
 \begin{Sinput}
 > # multivariate adaptive regression splines:
@@ -325,8 +335,8 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9612229 0.05424115 0.8549122 1.067534 280.1981       0
-2: CATE           W 1.0819919 0.09593940 0.8939541 1.270030 178.3187       0
+1: CATE (Intercept) 1.0029456 0.05372013 0.8976560 1.108235 295.1959       0
+2: CATE           W 0.8424231 0.08904975 0.6678888 1.016957 149.5779       0
 \end{Soutput}
 \begin{Sinput}
 > # gradient-boosting with xgboost: :
@@ -343,8 +353,8 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9619887 0.05857263 0.8471885 1.076789 259.6840       0
-2: CATE           W 1.0837580 0.09638020 0.8948562 1.272660 177.7929       0
+1: CATE (Intercept) 0.9914452 0.05788597 0.8779907 1.104900 270.8104       0
+2: CATE           W 0.8041160 0.10782745 0.5927781 1.015454 117.9124       0
 \end{Soutput}
 \end{Schunk}
 
@@ -373,8 +383,8 @@ The default learning algorithm "HAL" can be customized with the HAL\_args\_Y0W a
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9733916 0.05385283 0.8678420 1.078941 285.7913       0
-2: CATE           W 1.0598753 0.08929428 0.8848617 1.234889 187.6727       0
+1: CATE (Intercept) 0.9987979 0.05349649 0.8939467 1.103649 295.2040       0
+2: CATE           W 0.8275429 0.09751685 0.6364134 1.018672 134.1779       0
 \end{Soutput}
 \end{Schunk}
 
@@ -406,8 +416,8 @@ Take a look at the argument append\_interaction\_matrix to understand the design
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9673789 0.05382626 0.8618814 1.072876 284.1662       0
-2: CATE           W 1.0903127 0.09248130 0.9090527 1.271573 186.4091       0
+1: CATE (Intercept) 1.0030332 0.05421587 0.8967720 1.109294 292.5222       0
+2: CATE           W 0.8375932 0.09881702 0.6439154 1.031271 134.0205       0
 \end{Soutput}
 \end{Schunk}
 
@@ -440,12 +450,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est        se       lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 1.2918581 0.3154199  0.67364651 1.910070 3.639543 1.9613765
-2:   OR           W 0.9794396 0.5350977 -0.06933258 2.028212 2.662963 0.9330163
-   upper_exp  Z_score p_value
-1:  6.753560 64.75835       0
-2:  7.600483 28.94107       0
+   type       param  tmle_est        se      lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 1.4443123 0.3018202  0.8527557 2.035869 4.238936 2.3461030
+2:   OR           W 0.1211853 0.4931871 -0.8454436 1.087814 1.128834 0.4293669
+   upper_exp   Z_score    p_value
+1:  7.658905 75.662877 0.00000000
+2:  2.967780  3.885155 0.00010226
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -469,11 +479,11 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est        se     lower    upper  psi_exp lower_exp
-1:   RR (Intercept) 0.7984247 0.1152801 0.5724798 1.024370 2.222038  1.772657
-2:   RR           W 1.1595596 0.2135176 0.7410728 1.578046 3.188529  2.098185
+1:   RR (Intercept) 0.8733092 0.0978053 0.6816143 1.065004 2.394823  1.977067
+2:   RR           W 1.1532052 0.1835341 0.7934850 1.512925 3.168332  2.211089
    upper_exp   Z_score p_value
-1:  2.785339 109.50892       0
-2:  4.845481  85.86761       0
+1:  2.900851 141.18080       0
+2:  4.539993  99.34815       0
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -626,12 +636,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est tmle_est        se     lower    upper
-1: CATE (Intercept) 1.052173 1.024999 0.1091037 0.8111598 1.238838
-2: CATE           W 1.030469 1.035008 0.1735572 0.6948425 1.375174
+   type       param  init_est  tmle_est        se     lower    upper
+1: CATE (Intercept) 0.8577035 0.8511518 0.1181344 0.6196126 1.082691
+2: CATE           W 0.9041695 0.9781763 0.2423005 0.5032759 1.453077
    psi_transformed lower_transformed upper_transformed
-1:        1.024999         0.8111598          1.238838
-2:        1.035008         0.6948425          1.375174
+1:       0.8511518         0.6196126          1.082691
+2:       0.9781763         0.5032759          1.453077
 \end{Soutput}
 \begin{Sinput}
 > # CATT
@@ -654,12 +664,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est        se     lower    upper
-1: CATT (Intercept) 0.9262390 0.9258107 0.0640027 0.8003677 1.051254
-2: CATT           W 0.9267867 0.9430870 0.1254964 0.6971186 1.189055
+   type       param  init_est  tmle_est         se     lower    upper
+1: CATT (Intercept) 1.0829632 1.0842410 0.06645006 0.9540013 1.214481
+2: CATT           W 0.9066356 0.9044631 0.12490959 0.6596448 1.149281
    psi_transformed lower_transformed upper_transformed
-1:       0.9258107         0.8003677          1.051254
-2:       0.9430870         0.6971186          1.189055
+1:       1.0842410         0.9540013          1.214481
+2:       0.9044631         0.6596448          1.149281
 \end{Soutput}
 \begin{Sinput}
 > # TSM
@@ -685,11 +695,11 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
    type       param  init_est tmle_est         se     lower    upper
-1: CATT (Intercept) 0.9912969 0.995758 0.07147714 0.8556654 1.135851
-2: CATT           W 1.1082472 1.099562 0.11695959 0.8703253 1.328798
+1: CATT (Intercept) 0.9297729 0.927676 0.06166459 0.8068156 1.048536
+2: CATT           W 1.2176464 1.209762 0.13238313 0.9502956 1.469228
    psi_transformed lower_transformed upper_transformed
-1:        0.995758         0.8556654          1.135851
-2:        1.099562         0.8703253          1.328798
+1:        0.927676         0.8068156          1.048536
+2:        1.209762         0.9502956          1.469228
 \end{Soutput}
 \begin{Sinput}
 > # OR
@@ -712,12 +722,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est  tmle_est        se      lower    upper
-1:   OR (Intercept) 0.991811 0.9831661 0.3414462  0.3139438 1.652388
-2:   OR           W 1.422093 1.2662779 0.7176239 -0.1402391 2.672795
+   type       param init_est tmle_est        se       lower    upper
+1:   OR (Intercept) 1.074840 1.121198 0.3165971  0.50067901 1.741717
+2:   OR           W 1.216106 1.176498 0.6299912 -0.05826187 2.411258
    psi_transformed lower_transformed upper_transformed
-1:        2.672906         1.3688129          5.219431
-2:        3.547623         0.8691504         14.480385
+1:        3.068528         1.6498412          5.707134
+2:        3.242998         0.9434029         11.147981
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -740,12 +750,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est tmle_est        se     lower    upper
-1:   RR (Intercept) 1.228618 1.239101 0.1095864 1.0243160 1.453887
-2:   RR           W 1.027852 1.027396 0.2054616 0.6246982 1.430093
+   type       param  init_est  tmle_est        se     lower    upper
+1:   RR (Intercept) 1.1001582 1.1014440 0.0885031 0.9279811 1.274907
+2:   RR           W 0.7841284 0.7946179 0.2020066 0.3986923 1.190543
    psi_transformed lower_transformed upper_transformed
-1:         3.45251          2.785190          4.279717
-2:         2.79378          1.867682          4.179088
+1:        3.008507          2.529397          3.578368
+2:        2.213595          1.489875          3.288868
 \end{Soutput}
 \begin{Sinput}
 > 

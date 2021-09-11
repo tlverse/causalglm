@@ -24,6 +24,8 @@ pdfstartview={XYZ null null 1}}
 
 
 
+
+
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\expit}{expit}
 
@@ -37,6 +39,11 @@ pdfstartview={XYZ null null 1}}
   }
 \author{Lars van der Laan }
 \date{September 2021}
+
+ 
+\usepackage{fancyhdr}          % this and next line are for fancy headers/footers
+\pagestyle{fancy}
+
 
 
 \begin{document}
