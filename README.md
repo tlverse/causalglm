@@ -17,7 +17,7 @@ It is possible to get robust and efficient inference for causal quantities using
 
 In this package, we utilize targeted machine-learning to generalize the parametric generalized linear models commonly used for treatment effect estimation (e.g. the R package glm) to the world of semi and nonparametric models. There is little-to-no loss in precision/p-values/confidence-interval-widths with these semiparametric methods relative to parametric generalized linear models, but the bias reduction from these methods can be substantial! Simulations suggest that these methods can work well with small sample sizes. We employ ensemble machine-learning (Super-Learning) that adapts the aggressiveness of the ML algorithms with sample size, thereby allowing for robust and correct inference in a diverse range of settings. All methods utilize targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2012).
 
-This package supports (semiparametric and nonparametric versions of) the following point-treatment estimands:
+This package supports semiparametric and nonparametric estimation for user-specified models of the following point-treatment estimands:
 
 1. Conditional average treatment effect (CATE). (Causal semiparametric linear regression)
 2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression)
