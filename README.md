@@ -1,4 +1,5 @@
-# causalglm with the tmle3 framework  
+# causalglm 
+## with the the powerful tmle3 framework  
 
 To install this package, install the devtools CRAN package and run:
 
