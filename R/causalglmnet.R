@@ -26,6 +26,7 @@
 #' @export
 causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), max_degree = 1, cross_fit = TRUE, constant_variance_CATE = FALSE, weights = NULL, parallel = TRUE, verbose = TRUE, ...) {
   check_arguments(formula, data, W, A, Y)
+  args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
 
   append_interaction_matrix <- TRUE
   estimand <- match.arg(estimand)
@@ -67,7 +68,29 @@ causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"
   tmle3_input <- list(tmle_spec_sp = tmle_spec_sp, data = data, node_list = node_list, learner_list = learner_list)
   tmle3_fit <- ((tmle3(tmle_spec_sp, data, node_list, learner_list)))
 
-  output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
+  coefs <- tmle3_fit$summary
+  coefs <- coefs[, -3]
+  if (estimand %in% c("CATE", "CATT", "TSM")) {
+    coefs <- coefs[, 1:6]
+  } else {
+    cur_names <- colnames(coefs)
+    cur_names <- gsub("transformed", "exp", cur_names)
+    colnames(coefs) <- cur_names
+  }
+  n <- nrow(data)
+  Zscore <- abs(sqrt(n) * coefs$tmle_est / coefs$se)
+  pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
+  coefs$Z_score <- Zscore
+  coefs$p_value <- pvalue
+
+  tmp <- coefs$param
+  if (estimand %in% c("OR", "RR")) {
+    formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+  } else {
+    formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+  }
+
+  output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
   class(output) <- c("causalglmnet", "causalglm")
   return(output)
 }

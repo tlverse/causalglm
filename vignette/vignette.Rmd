@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-library(causalglmnet)
+library(causalglm)
 
 ```
 
@@ -32,7 +32,7 @@ print(trueCATE)
 
 # Let's learn it using semiparametric methods.
 # Lets specify a constant model for the CATE
-formula_CATE <- ~ 1
+formula_CATE <- ~ 1 + W1
 
 # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
 # 

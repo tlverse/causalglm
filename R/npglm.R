@@ -74,6 +74,8 @@
 #' @export
 npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   check_arguments(formula, data, W, A, Y)
+  args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
+
   tryCatch(
     {
       data <- as.data.table(data)
@@ -171,7 +173,29 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
   tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list)
   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
 
-  output <- list(coefs = tmle3_fit$summary, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input)
+  coefs <- tmle3_fit$summary
+  coefs <- coefs[, -3]
+  if (estimand %in% c("CATE", "CATT", "TSM")) {
+    coefs <- coefs[, 1:6]
+  } else {
+    cur_names <- colnames(coefs)
+    cur_names <- gsub("transformed", "exp", cur_names)
+    colnames(coefs) <- cur_names
+  }
+  n <- nrow(data)
+  Zscore <- abs(sqrt(n) * coefs$tmle_est / coefs$se)
+  pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
+  coefs$Z_score <- Zscore
+  coefs$p_value <- pvalue
+
+  tmp <- coefs$param
+  if (estimand %in% c("OR", "RR")) {
+    formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+  } else {
+    formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+  }
+
+  output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
   class(output) <- c("npglm", "causalglm")
   return(output)
 }
