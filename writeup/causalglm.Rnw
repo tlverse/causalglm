@@ -36,9 +36,9 @@
 
 
 \title{%
-  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning with the \pkg{tlverse} ecosystem
+  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the \pkg{tlverse} ecosystem
   }
-\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
+\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
 \author{Lars van der Laan }
 \date{September 2021}
 
@@ -50,7 +50,7 @@
 %% - \Plaintitle{} without LaTeX markup (if any)
 %% - \Shorttitle{} with LaTeX markup (if any), used as running title
  
-\Shorttitle{\pkg{causalglm}: Robust adaptive generalized linear models and causal inference for treatment effects}
+\Shorttitle{\pkg{causalglm}: Robust adaptive generalized linear models and interpretable causal inference for treatment effects}
 
 %% - \Abstract{} almost as usual
 \Abstract{
@@ -82,7 +82,7 @@ Generalized linear models are well-established and interpretable methods for lea
 
 
 \section{Introduction to causalglm}
-\subsection{Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation}
+\subsection{Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation}
 
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
