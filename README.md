@@ -39,7 +39,7 @@ This package supports semiparametric and nonparametric estimation for user-speci
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with npglm)
 5. Conditional average treatment effect among the treated (CATT) (Only supported nonparametrically with npglm)
-6. Using npglm with lower dimensional formula arguments, you can also learn marginal structural models for the CATE, CATT, TSM and RR.
+6. Using `msmglm`, you can also learn marginal structural models for the CATE, CATT, TSM and RR with nonparametric robustness.
 
  
 The semiparametric methods are run using the function `spglm` and the nonparametric methods are run using the function `npglm`. 
@@ -49,7 +49,7 @@ Each estimand can be modeled with a user-specified parametric model that is eith
 
  
 ### User-friendly interface
-The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `spglm/npglm/causalglmnet` functions. Check out the vignette to see how to use it! The necessary arguments are: 
+The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `spglm/npglm/causalglmnet/msmglm` functions. Check out the vignette to see how to use it! The necessary arguments are: 
 1. A formula object for the `CATE`, `OR`, or `RR` (also `TSM`, `CATT` for `npglm`)
 2. A data.frame containing the data
 3. Variable names: `W`, `A`, `Y` are character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
@@ -61,7 +61,12 @@ Outputs include:
 1. Coefficient estimates (using the S3 summary function)
 2. Z-scores and p-values for coefficients 
 3. 95% confidence intervals for coefficients
+<<<<<<< HEAD
+4. Individual-level predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
+5. Plotting with `plot_msm` for objects returned by `msmglm`.
+=======
 4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
+>>>>>>> 156ead56e4589a9702399b2ffaf05cd31ae7f564
 
 
 Some comments/warnings:
@@ -200,7 +205,7 @@ Rather than assuming a semiparametric model, we can instead make no assumptions 
 
 This nonparametric view is implemented in the function `npglm`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimands are the coefficients of the projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. 
 
-We critically note that the semiparametric estimates given by `spglm` are (usually) not asymptotically equivalent to those given by`npglm` when the parametric model is incorrect. The latter method can truly be viewed as an estimator for the best causal approximation, while the former is not necessarily so. Therefore, `npglm` does not only give nonparametrically correct inference but also provides estimates for a nonparametric estimand that is more interpretable than the coefficients of the misspecified semiparametric model given by `spglm`. Notably, the intercept model for npglm often corresponds with estimation of a nonparametric marginal causal parameter (like the ATE, ATT, marginal TSM, or marginal relative risk). This feature generalizes to marginal structural models for a number of the estimands. This is not true for the semiparametric methods implemented in `spglm`. There is a usually slight increase in confidence interval width for the nonparametric methods relative to the semiparametric methods.
+We critically note that the semiparametric estimates given by `spglm` are (usually) not asymptotically equivalent to those given by`npglm` when the parametric model is incorrect. The latter method can truly be viewed as an estimator for the best causal approximation, while the former is not necessarily so. Therefore, `npglm` does not only give nonparametrically correct inference but also provides estimates for a nonparametric estimand that is more interpretable than the coefficients of the misspecified semiparametric model given by `spglm`. Notably, the intercept model for npglm often corresponds with estimation of a nonparametric marginal causal parameter (like the ATE, ATT, marginal TSM, or marginal relative risk). This feature generalizes to marginal structural models for a number of the estimands. This is not true for the semiparametric methods implemented in `spglm`. There is a usually slight increase in confidence interval width for the nonparametric methods relative to the semiparametric methods. The wrapper function `msmglm` focuses purely on marginal structural model estimation.
 
 We refer to the writeup "causalglm_writeup.pdf", which can be found in the folder "writeup" for the description of the following working-model based methods.
 
@@ -257,9 +262,7 @@ output <-
 summary(output) 
 head(predict(output, data = data))
 ```
-
-To estimate with `npglm` the following marginal estimands: ATE := `E_WE[Y|A=1,W] - E_WE[Y|A=0,W]`, TSM := `E_WE[Y|A=a,W]` and ATT :=`E[E[Y|A=1,W],A=1] - E[E[Y|A=0,W]|A=1]`, you only need to input the intercept model: `formula = ~ 1`. Marginal structural models can be learned by inputting lower dimensional formulas that depend on a subset of `W`. This powerful feature is unique to `npglm` and does not hold for `spglm`.
-
+ 
 
 ### Robust nonparametric inference for the OR (conditional odds ratio with npglm)
 
@@ -311,30 +314,85 @@ summary(output)
 head(predict(output, data = data))
 ```
 
-To estimate the marginal relative risk `E_WE[Y|A=1,W] / E_WE[Y|A=0,W]`, you only need to input intercept model. Marginal structural models for the conditional relative-risk can be learned by inputting lower dimensional formulas that depend on a subset of `W`. This powerful feature is unique to `npglm` and does not hold for `spglm`.
+## Learn marginal structural models for conditional treatment effects with `msmglm`
 
+The `msmglm` function is a wrapper for `npglm` that focuses purely on marginal structural model estimation and it has some convenient plotting features. `V` can be multivariate but plotting is only supports for the univariate case. The intercept model reduces to nonparametric efficient estimators for the ATE, ATT, TSM and RR respectivelly.
 ``` r
-library(causalglm)
 n <- 250
-W <- runif(n, min = -1,  max = 1)
+V <- runif(n, min = -1, max = 1)
+W <- runif(n, min = -1, max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
-data <- data.frame(W, A, Y)
 
-formula ~ 1 
+# CATE
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
 output <-
-  npglm(
-    formula,
+  msmglm(
+    formula_msm,
     data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "RR" ,
-    learning_method = "HAL",
+   V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "glm",
+    formula_Y = ~ . + . * A,
     verbose = FALSE
   )
 
 summary(output)
-head(predict(output, data = data))
-```
+plot_msm(output)
+# CATT
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "CATT",
+    verbose = FALSE
+  )
+
+summary(output)
+
+# TSM
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "TSM",
+    learning_method = "mars",
+    formula_Y = ~ . + . * A,
+    verbose = FALSE
+  )
+
+summary(output[[1]])
+summary(output[[2]])
+ plot_msm(output[[1]])
+
+# RR
+Y <- rpois(n, lambda = exp( A * (1 + V + 2*V^2)  + sin(5 * W)))
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    data,
+    V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+
+summary(output)
+plot_msm(output)
  
 
 ## Semiparametric inference for high dimensional generalized linear models with causalglmnet (the LASSO): CATE, OR, and RR
