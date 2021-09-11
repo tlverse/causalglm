@@ -6,7 +6,7 @@ To install this package, install the devtools CRAN package and run:
 devtools::install_github("tlverse/causalglm")
 ```
 
-For a in-depth description of these methods and example code, see the document "causalglm_writeup.pdf" in the "writeup" folder. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder. 
+For a in-depth description of these methods and example code, see the document "causalglm_writeup.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
 
 ## Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation in low and high dimensions
 
