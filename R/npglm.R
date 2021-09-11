@@ -72,33 +72,36 @@
 #' Useful to set to a large value in high dimensions.
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
-npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL , formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   check_arguments(formula, data, W, A, Y)
-  tryCatch({
-  data <- as.data.table(data)
-  }, error = function(...){
-    stop("Unable to cast `data` into data.table. Make sure this is a matrix or data.frame.")
-  })
-  if(!is.character(W)) {
+  tryCatch(
+    {
+      data <- as.data.table(data)
+    },
+    error = function(...) {
+      stop("Unable to cast `data` into data.table. Make sure this is a matrix or data.frame.")
+    }
+  )
+  if (!is.character(W)) {
     stop("`W` should be a character vector of baseline covariates.")
   } else if (!(all(W %in% colnames(data)))) {
     stop("Not all variables in `W` were found in `data`.")
   }
-  if(length(A)!=1){
+  if (length(A) != 1) {
     stop("`A` should be a single character specifying the treatment variable name in `data`.")
   } else if (!(A %in% colnames(data))) {
     stop("Variable `A` was not found in `data`.")
   }
-  if(length(Y)!=1){
+  if (length(Y) != 1) {
     stop("`Y` should be a single character specifying the treatment variable name in `data`.")
   } else if (!(Y %in% colnames(data))) {
     stop("Variable `Y` was not found in `data`.")
   }
-  weights = NULL
-  
+  weights <- NULL
+
   estimand <- match.arg(estimand)
   learning_method <- match.arg(learning_method)
-  
+
   if (!is.null(weights)) {
     data$weights <- weights
   } else {

@@ -242,16 +242,16 @@ Let us generate a mock dataset that has a constant CATE of value 1.
 <<a>>=
 library(causalglm)
 n <- 250
-W <- runif(n, min = -1,  max = 1)
+W <- runif(n, min = -1, max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rnorm(n, mean = A + W, sd = 0.3)
-data <- data.frame(W,A,Y)
+data <- data.frame(W, A, Y)
 @
 
 We specify the parametric form of the CATE through the formula argument. In this case, we will use the intercept-only formula which is equivalent to assuming the CATE is constant.  The output consists of:
 a coefficient estimate for the intercept, lower and upper confidence intervals, an asymptotic standard error estimate for the estimator, a Z-score and p-value. The argument `W` should be a character vector of variable names in data for which to adjust, `A` should be the name of a treatment variable, and `Y` should be the name of an outcome variable. We set the argument `estimand = "CATE"` to estimate the conditional average treatment effect.
 <<b>>=
-formula <- ~ 1
+formula <- ~1
 output <-
   spglm(
     formula,
@@ -260,14 +260,15 @@ output <-
     estimand = "CATE",
     verbose = FALSE
   )
-summary(output) 
+summary(output)
 @
 We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
 <<b>>=
 Y <-
   rnorm(n,
-        mean = A * W + A + poly(W, degree = 3) + sin(4 * W),
-        sd = 0.4)
+    mean = A * W + A + poly(W, degree = 3) + sin(4 * W),
+    sd = 0.4
+  )
 data <- data.frame(W, A, Y)
 formula <- ~ 1 + W
 output <-
@@ -278,7 +279,7 @@ output <-
     estimand = "CATE",
     verbose = FALSE
   )
-summary(output) 
+summary(output)
 @
 
 
@@ -319,7 +320,7 @@ output <-
     learning_method = "xgboost",
     verbose = FALSE
   )
-summary(output) 
+summary(output)
 @
 
 
@@ -342,7 +343,7 @@ output <-
     HAL_args_Y0W = HAL_args_Y0W,
     verbose = FALSE
   )
-summary(output) 
+summary(output)
 @
 
 It is also possible to employ custom learners using the tlverse/sl3 framework and the sl3\_Learner\_Y (to estimate $E[Y|A=1,W]$ and $E[Y|A=0,W]$) and sl3\_Learner\_A (to estimate $P(A=1|W)$) argument.
@@ -364,11 +365,11 @@ output <-
     data,
     W = "W", A = "A", Y = "Y",
     estimand = "CATE",
-    sl3_Learner_A = lrnr_sl  ,
-    sl3_Learner_Y = lrnr_sl ,
+    sl3_Learner_A = lrnr_sl,
+    sl3_Learner_Y = lrnr_sl,
     verbose = FALSE
   )
-summary(output) 
+summary(output)
 @
 
 
@@ -377,10 +378,10 @@ That's all there is to it! spglm also supports the RR and OR estimands which are
 
 <<>>=
 n <- 250
-W <- runif(n, min = -1,  max = 1)
+W <- runif(n, min = -1, max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 # OR
-Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+Y <- rbinom(n, size = 1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
@@ -388,7 +389,7 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "OR" ,
+    estimand = "OR",
     verbose = FALSE
   )
 summary(output)
@@ -402,11 +403,10 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "RR" ,
+    estimand = "RR",
     verbose = FALSE
   )
 summary(output)
-
 @
 
 \section{Robust nonparametric generalized linear models for treatment effect estimation  with npglm}
@@ -515,7 +515,7 @@ npglm operates in almost exactly the same way as spglm (with a few less optional
 
 <<>>=
 n <- 250
-W <- runif(n, min = -1,  max = 1)
+W <- runif(n, min = -1, max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 
 # CATE
@@ -528,9 +528,9 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "CATE" ,
+    estimand = "CATE",
     learning_method = "glm",
-    formula_Y = ~ . + .*A,
+    formula_Y = ~ . + . * A,
     verbose = FALSE
   )
 summary(output)
@@ -543,7 +543,7 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "CATT" ,
+    estimand = "CATT",
     verbose = FALSE
   )
 summary(output)
@@ -557,15 +557,15 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "CATT" ,
+    estimand = "CATT",
     learning_method = "mars",
-    formula_Y = ~ . + .*A,
+    formula_Y = ~ . + . * A,
     verbose = FALSE
   )
 summary(output)
 
 # OR
-Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+Y <- rbinom(n, size = 1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula ~ 1 + W
 output <-
@@ -573,7 +573,7 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "OR" ,
+    estimand = "OR",
     verbose = FALSE
   )
 summary(output)
@@ -587,11 +587,10 @@ output <-
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "RR" ,
+    estimand = "RR",
     verbose = FALSE
   )
 summary(output)
-
 @
 
 
@@ -600,54 +599,53 @@ In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-lear
 
 <<eval=FALSE>>=
 n <- 200
-W <- replicate(100,runif(n, min = -1,  max = 1))
+W <- replicate(100, runif(n, min = -1, max = 1))
 colnames(W) <- paste0("W", 1:100)
-beta <- runif(10, -1, 1)/20
-A <- rbinom(n, size = 1, prob = plogis(W[,10*(1:10)] %*% beta))
+beta <- runif(10, -1, 1) / 20
+A <- rbinom(n, size = 1, prob = plogis(W[, 10 * (1:10)] %*% beta))
 
 # CATE
-Y <- rnorm(n, mean = A + W[,10*(1:10)] %*% beta, sd = 0.5)
+Y <- rnorm(n, mean = A + W[, 10 * (1:10)] %*% beta, sd = 0.5)
 data <- data.frame(W, A, Y)
-formula = ~ 1  
+formula <- ~1
 output <-
   causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
-    estimand = "CATE" ,
+    estimand = "CATE",
     verbose = FALSE
   )
 summary(output)
 
 
 # OR
-Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %*% beta))
+Y <- rbinom(n, size = 1, prob = plogis(A + W[, 10 * (1:10)] %*% beta))
 data <- data.frame(W, A, Y)
-formula  = ~ 1  
+formula <- ~1
 output <-
   causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
-    estimand = "OR" ,
+    estimand = "OR",
     verbose = FALSE
   )
 summary(output)
 
 # RR
-Y <- rpois(n, lambda = exp( A + W[,10*(1:10)] %*% beta))
+Y <- rpois(n, lambda = exp(A + W[, 10 * (1:10)] %*% beta))
 data <- data.frame(W, A, Y)
-formula  = ~ 1  
+formula <- ~1
 output <-
   causalglmnet(
     formula,
     data,
     W = colnames(W), A = "A", Y = "Y",
-    estimand = "RR" ,
+    estimand = "RR",
     verbose = FALSE
   )
 summary(output)
-
 @
 
 
