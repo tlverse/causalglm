@@ -1,0 +1,74 @@
+
+\def \thecommandindex{%
+    \@restonecoltrue
+    \if@twocolumn \@restonecolfalse \fi
+    \columnseprule = \z@
+    \columnsep = 35pt
+    \twocolumn[\@makeschapterhead{Command Index}]%
+    \@mkboth{Command Index}{Command Index}%
+    \addcontentsline{toc}{chapter}{\bfseries{Command Index}}
+    \thispagestyle{plain}%
+    \parindent = \z@
+    \parskip = \z@ plus .3pt\relax
+    \let \item = \@idxitem
+}%
+\def \thedatasetindex{%
+    \@restonecoltrue
+    \if@twocolumn \@restonecolfalse \fi
+    \columnseprule = \z@
+    \columnsep = 35pt
+    \twocolumn[\@makeschapterhead{Dataset Index}]%
+    \@mkboth{Dataset Index}{Dataset Index}%
+    \addcontentsline{toc}{chapter}{\bfseries{Dataset Index}}
+    \thispagestyle{plain}%
+    \parindent = \z@
+    \parskip = \z@ plus .3pt\relax
+    \let \item = \@idxitem
+}%
+
+\def \thepackageindex{%
+    \@restonecoltrue
+    \if@twocolumn \@restonecolfalse \fi
+    \columnseprule = \z@
+    \columnsep = 35pt
+    \twocolumn[\@makeschapterhead{Package Index}]%
+    \@mkboth{Package Index}{Package Index}%
+    \addcontentsline{toc}{chapter}{\bfseries{Package Index}}
+    \thispagestyle{plain}%
+    \parindent = \z@
+    \parskip = \z@ plus .3pt\relax
+    \let \item = \@idxitem
+}%
+
+\let \endthepackageindex = \endtheindex
+\let \endthecommandindex = \endtheindex
+\let \endthedatasetindex = \endtheindex
+
+
+
+
+
+\def \printcommandindex{%
+  \bgroup \renewenvironment{theindex}%
+  {\begin{thecommandindex}Only first or main appearance is listed.\\[3mm]}{\end{thecommandindex}}%
+  \@input {command.ind}%
+  \egroup }%
+\def \printdatasetindex{%
+  \bgroup \renewenvironment{theindex}%
+  {\begin{thedatasetindex}Page numbers in upright, slanted and italics refer to main explanation in text, use in \R~chuncks and in figures, respectively.\\[2mm]}{\end{thedatasetindex}}%
+  \@input {dataset.ind}%
+  \egroup }%
+\def \printpackageindex{%
+  \bgroup \renewenvironment{theindex}%
+  {\begin{thepackageindex}Only first appearance in each chapter is listed.\\[3mm]}{\end{thepackageindex}}%
+  \@input {package.ind}%
+  \egroup }%
+
+\def \see #1#2{{\em see\/} #1}%
+
+\def \AEnamefontfirst #1{{\rm #1}}%
+\def \AEnamefontrest  #1{{\rm #1}}%
+\def \AEpagefontfirst #1{{\rm #1}}%
+\def \AEpagefontrest  #1{{\rm #1}}%
+
+%================================The End================================

@@ -1,0 +1,415 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% now math stuff and other details...
+\usepackage{amsmath,amsthm,amssymb}
+
+%\newtheorem{pro}{Property}[chapter]
+%\newtheorem{lem}{Lemma}[chapter]
+%\theoremstyle{definition}
+%\newtheorem{des}{Definition}[chapter]
+%\newtheorem{bsp}{Example}[chapter]
+%\newtheorem{remark}{Remark}[chapter]
+
+%\newcommand{\widebar}[1]{\overline{#1}}
+\newcommand*\widebar[1]{%
+  \vbox{%
+    \hrule height 0.5pt%     % Line above with certain width
+    \kern0.5ex%             % Distance between line and content
+    \hbox{%
+      \kern-0.1em%           % Distance between content and left side of box, negative values for lines shorter than content
+      \ifmmode#1\else\ensuremath{#1}\fi%  % The content, typeset in dependence of mode
+      \kern-0.1em%      % Distance between content and left side of box, negative values for lines shorter than content
+    }% end of hbox
+  }% end of vbox
+}
+\def\ds{\displaystyle}
+\newcommand{\bed}{\hfill\ensuremath\clubsuit}    % example
+\newcommand{\ded}{\hfill\ensuremath\diamondsuit} % definition
+\newcommand{\red}{\hfill\ensuremath\heartsuit}   % remark
+\newcommand{\rr}[1]{{\ttfamily\slshape\color{DarkGreen} #1}}
+
+\def\baustelle{\includegraphics[height=13.2mm,width=15.6mm]{baustelle.png} }
+\def\kleinebaustelle{\includegraphics[height=6.6mm,width=7.8mm]{baustelle.png} }
+
+
+\newcommand{\fcaption}[2]{\caption{#2 (See \R-Code~{\ref{r#1}}.)}\label{f#1}}
+\newcommand{\rcaption}[2]{\caption{#2 (See Figure~{\ref{f#1}}.)}\label{r#1}}
+\newcommand{\idea}[1]{\noindent%
+\fcolorbox{black}{LightYellow}{\hspace*{1cm}%
+\begin{minipage}{\textwidth-2cm-8pt}%{\bf Idea:}\raisebox{1cm}{\,}\vskip5pt\hrule
+\vskip15pt#1\raisebox{-4mm}{\,}\end{minipage}%
+\hspace*{1cm}}\vskip8mm%
+}
+
+\newcommand{\addrscript}[1]{\vspace*{3mm}\R-Code for this chapter: \href{http://www.math.uzh.ch/furrer/download/sta330/chapter#1.R}{www.math.uzh.ch/furrer/download/sta330/chapter#1.R}.}
+
+\makeatletter
+%http://tex.stackexchange.com/questions/100139/prevent-equation-labeling-to-change-sizes
+  \def\my@tag@font{\small}%normalsize}
+  \def\maketag@@@#1{\hbox{\m@th\normalfont\my@tag@font#1}}
+  \let\amsmath@eqref\eqref
+  \renewcommand\eqref[1]{{\let\my@tag@font\relax\amsmath@eqref{#1}}}
+\makeatother
+
+
+% clever trick to circumvent potential redefines after loading packages:
+% \providecommand{\something}{}  % if it does not exist, it creates it.
+%      has same syntax as \newcommand
+% \renewcommand{\something}{....}
+% TUGboat 29(2)
+
+
+\makeatletter
+%umdefinierung exisitierender befehle
+\let\oldH\H
+\let\oldL\L
+\let\oldO\H
+\let\oldS\S
+\let\olda\a
+\let\oldb\b
+\let\oldc\c
+\let\oldd\d
+\let\oldk\k
+\let\oldv\v
+\let\oldl\l
+\let\oldt\t
+\let\oldu\u
+\let\oldIJ\IJ
+\let\oldP\P
+\let\P\relax
+\let\oldnorm\|
+
+%\DefineVerbatimEnvironment{CodeInput}{Verbatim}{fontshape=sl}
+%\DefineVerbatimEnvironment{CodeOutput}{Verbatim}{}
+
+\def\endrem{\hfill$\clubsuit$\\}
+\def\endbibrem{\hfill$\spadesuit$\\}
+
+
+\renewcommand{\|}{|\!|}         % closer norm
+\newcommand{\T}{{}^{\top}}%\newcommand{\T}{{}^{\mathsf{T}}}
+ 
+\DeclareMathOperator{\tol}{T}                       % Tolerance reagion
+\def\lzwei{\ensuremath{\mathsf{L}_2}} 
+\newcommand{\co}{c^{\circ}}
+\def\four{^\cF} 
+\def\spam{\code{spam}}
+\def\R{{\sf R}}
+\def\fields{\code{fields}}
+
+
+%\newtheorem{pro}{Proposition}[chapter]
+%\theoremstyle{definition}
+%\newtheorem{des}{Definition}[chapter]
+%\newtheorem{remark}{Remark}[chapter]
+%\newtheorem{bibremark}{Bibliographic Remark}[chapter]
+\newcounter{algo}
+\newenvironment{algorithm}{%
+  \begin{list}{
+      (\arabic{algo})
+    }{
+      \usecounter{algo}
+    }%
+}{
+  \end{list}
+}
+
+% some text abbreviation
+\newcommand{\GLS}{\text{GLS}}
+\newcommand{\GLSE}{\text{GLSE}}
+\newcommand{\RR}{\text{RR}}
+\newcommand{\OR}{\text{OR}}
+\newcommand{\WLS}{\text{WLS}}
+\newcommand{\MLE}{\text{MLE}}
+\newcommand{\OLS}{\text{OLS}}
+\newcommand{\MAE}{\text{MAE}}
+\newcommand{\MAD}{\text{MAD}}
+\newcommand{\RMSE}{\text{RMSE}}
+
+\newcommand{\ii}{\text{\i}}
+\newcommand{\obs}{\text{obs}}
+
+\newcommand{\Bin}{\cB\mathit{\!i\!n}}
+\newcommand{\Beta}{\cB\mathit{\!e\!t\!a}}
+\newcommand{\Pois}{\cP\mathit{\!o\!i\!s\!s\!o\!n}}
+\newcommand{\Exp}{\cE\mathit{\!x\!p}}
+
+
+%\newcommand\prog[1]{\texttt{#1}}
+%\newcommand{\co}{c^{\circ}}
+%%%%%%%%%%%%%%%%%% end: maybe to be eliminated
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\card}{card}
+\DeclareMathOperator{\cov}{Cov}                   
+\DeclareMathOperator{\corr}{Corr}                 
+\DeclareMathOperator{\var}{Var}                   
+\DeclareMathOperator{\trace}{tr}                  
+%\DeclareMathOperator{\E}{E}                       
+\DeclareMathOperator{\P}{P}                       
+\DeclareMathOperator{\pred}{p}
+\DeclareMathOperator{\vect}{vec}                  
+\DeclareMathOperator{\vech}{vech}                 
+\DeclareMathOperator{\rank}{rank}                 
+\DeclareMathOperator{\e}{e}                       
+\DeclareMathOperator{\GCV}{GCV}                     
+\DeclareMathOperator{\CV}{CV}                     
+\DeclareMathOperator{\BLUP}{BLUP}                 
+\DeclareMathOperator{\MSE}{MSE}                   
+\DeclareMathOperator{\MS}{MS}                   
+\DeclareMathOperator{\df}{df}                   
+\DeclareMathOperator{\bias}{bias}                   
+\DeclareMathOperator{\eig}{eig}                   
+\DeclareMathOperator{\Prec}{Prec}
+\DeclareMathOperator{\mode}{mode}
+\renewcommand{\SS}{\text{SS}}
+\renewcommand{\d}{\mathsf{\,d}}
+
+\def\arctanh{\qopname\relax o{arctanh}}  % as in amsopn
+\def\atan{\qopname\relax o{atan}}  % as in amsopn
+\newcommand{\bigo}{\cO}
+\newcommand{\lito}{\text{\scriptsize{$\cO$}}}
+\newcommand{\cdfPhi}{\itPhi}
+\newcommand{\simiid}{\stackrel[]{\text{iid}}{\sim}}
+\newcommand{\ml}{_\text{ML}}
+
+\newcommand*{\stack@relbin}[3][]{%
+  \mathop{#3}\limits
+  \toks@{#1}%
+  \edef\reserved@a{\the\toks@}%
+  \ifx\reserved@a\@empty\else_{#1}\fi
+  \toks@{#2}%
+  \edef\reserved@a{\the\toks@}%
+  \ifx\reserved@a\@empty\else^{#2}\fi
+  \egroup
+}%
+\renewcommand*{\stackrel}{\mathrel\bgroup\stack@relbin}
+\newcommand*{\stackbin}{\mathbin\bgroup\stack@relbin}
+
+
+% Kalligraphischer Schriftsatz
+\newcommand{\cA}{{\cal{A}}}
+\newcommand{\cB}{{\cal{B}}} 
+\newcommand{\cC}{{\cal{C}}}
+\newcommand{\cD}{{\cal{D}}} 
+\newcommand{\cE}{{\cal{E}}}
+\newcommand{\cF}{{\cal{F}}}
+\newcommand{\cG}{{\cal{G}}}
+\newcommand{\cH}{{\cal{H}}}
+\newcommand{\cI}{{\cal{I}}}
+\newcommand{\cJ}{{\cal{J}}}
+\newcommand{\cK}{{\cal{K}}}
+\newcommand{\cL}{{\cal{L}}}
+\newcommand{\cM}{{\cal{M}}} 
+\newcommand{\cN}{{\cal{N}}}
+\newcommand{\cO}{{\cal{O}}} 
+\newcommand{\cP}{{\cal{P}}}
+\newcommand{\cQ}{{\cal{Q}}} 
+\newcommand{\cR}{{\cal{R}}} 
+\newcommand{\cS}{{\cal{S}}} 
+\newcommand{\cT}{{\cal{T}}}
+\newcommand{\cU}{{\cal{U}}}
+\newcommand{\cV}{{\cal{V}}}
+\newcommand{\cW}{{\cal{W}}}
+\newcommand{\cX}{{\cal{X}}} 
+\newcommand{\cY}{{\cal{Y}}}
+\newcommand{\cZ}{{\cal{Z}}} 
+
+
+\newcommand{\IA}{{\mathbb{A}}}
+\newcommand{\IB}{{\mathbb{B}}}
+\newcommand{\IC}{{\mathbb{C}}}
+\newcommand{\ID}{{\mathbb{D}}}
+\newcommand{\IE}{{\mathbb{E}}}
+\newcommand{\IF}{{\mathbb{F}}}
+\newcommand{\IG}{{\mathbb{G}}}
+\newcommand{\IH}{{\mathbb{H}}}
+\newcommand{\II}{{\mathbb{I}}}
+%\newcommand{\IJ}{{\mathbb{J}}}
+\newcommand{\IK}{{\mathbb{K}}}
+\newcommand{\IL}{{\mathbb{L}}}
+\newcommand{\IM}{{\mathbb{M}}}
+\newcommand{\IN}{{\mathbb{N}}}
+\newcommand{\IO}{{\mathbb{O}}}
+\newcommand{\IP}{{\mathbb{P}}}
+\newcommand{\IQ}{{\mathbb{Q}}}
+\newcommand{\IR}{{\mathbb{R}}}
+\newcommand{\IS}{{\mathbb{S}}}
+\newcommand{\IT}{{\mathbb{T}}}
+\newcommand{\IU}{{\mathbb{U}}}
+\newcommand{\IV}{{\mathbb{V}}}
+\newcommand{\IW}{{\mathbb{W}}}
+\newcommand{\IX}{{\mathbb{X}}}
+\newcommand{\IY}{{\mathbb{Y}}}
+\newcommand{\IZ}{{\mathbb{Z}}}
+
+
+% fette griechische kleinbuchstaben
+\newcommand{\balpha}{{\boldsymbol{\alpha}}}
+\newcommand{\bbeta}{{\boldsymbol{\beta}}}
+\newcommand{\bgamma}{{\boldsymbol{\gamma}}}
+\newcommand{\bdelta}{{\boldsymbol{\delta}}}
+\newcommand{\blambda}{{\boldsymbol{\lambda}}}
+\newcommand{\bepsilon}{{\boldsymbol{\epsilon}}}
+\newcommand{\bvarepsilon}{{\boldsymbol{\varepsilon}}}
+\newcommand{\bzeta}{{\boldsymbol{\zeta}}}
+\newcommand{\bfeta}{{\boldsymbol{\eta}}}  %  <----- exception !
+\newcommand{\btheta}{{\boldsymbol{\theta}}{}}
+\newcommand{\bvartheta}{{\boldsymbol{\vartheta}}}
+\newcommand{\biota}{{\boldsymbol{\iota}}}
+\newcommand{\bkappa}{{\boldsymbol{\kappa}}}
+\newcommand{\bmu}{{\boldsymbol{\mu}}}
+\newcommand{\bnu}{{\boldsymbol{\nu}}}
+\newcommand{\bxi}{{\boldsymbol{\xi}}}
+\newcommand{\bpi}{{\boldsymbol{\pi}}}
+\newcommand{\bvarpi}{{\boldsymbol{\varpi}}}
+\newcommand{\brho}{{\boldsymbol{\rho}}}
+\newcommand{\bvarrhoi}{{\boldsymbol{\varrho}}}
+\newcommand{\bsigma}{{\boldsymbol{\sigma}}}
+\newcommand{\bvarsigma}{{\boldsymbol{\varsigma}}}
+\newcommand{\btau}{{\boldsymbol{\tau}}}
+\newcommand{\bvartau}{{\boldsymbol{\vartau}}}
+\newcommand{\bupsilon}{{\boldsymbol{\upsilon}}}
+\newcommand{\bphi}{{\boldsymbol{\phi}}}
+\newcommand{\bvarphi}{{\boldsymbol{\varphi}}}
+\newcommand{\bchi}{{\boldsymbol{\chi}}}
+\newcommand{\bpsi}{{\boldsymbol{\psi}}}
+\newcommand{\bomega}{{\boldsymbol{\omega}}}
+
+
+% fette griechische grossbuchstaben
+\newcommand{\bGamma}{{\boldsymbol{\Gamma}}}
+\newcommand{\bDelta}{{\boldsymbol{\Delta}}}
+\newcommand{\bTheta}{{\boldsymbol{\Theta}}}
+\newcommand{\bLambda}{{\boldsymbol{\Lambda}}{}}
+\newcommand{\bXi}{{\boldsymbol{\Xi}}}
+\newcommand{\bPi}{{\boldsymbol{\Pi}}}
+\newcommand{\bSigma}{{\boldsymbol{\Sigma}}{}}
+\newcommand{\bUpsilon}{{\boldsymbol{\Upsilon}}{}}
+\newcommand{\bPhi}{{\boldsymbol{\Phi}}}
+\newcommand{\bPsi}{{\boldsymbol{\Psi}}}
+\newcommand{\bOmega}{{\boldsymbol{\Omega}}}
+
+% italics griechische grossbuchstaben
+\newcommand{\itGamma}{{\mathit{\Gamma}}}
+\newcommand{\itDelta}{{\mathit{\Delta}}}
+\newcommand{\itTheta}{{\mathit{\Theta}}}
+\newcommand{\itLambda}{{\mathit{\Lambda}}}
+\newcommand{\itXi}{{\mathit{\Xi}}}
+\newcommand{\itPi}{{\mathit{\Pi}}}
+\newcommand{\itSigma}{{\mathit{\Sigma}}}
+\newcommand{\itUpsilon}{{\mathit{\Upsilon}}}
+\newcommand{\itPhi}{{\mathit{\Phi}}}
+\newcommand{\itPsi}{{\mathit{\Psi}}}
+\newcommand{\itOmega}{{\mathit{\Omega}}}
+
+
+
+\newcommand{\A}{{\mathbf{A}}}
+\newcommand{\B}{{\mathbf{B}}}
+\newcommand{\C}{{\mathbf{C}}}
+\newcommand{\D}{{\mathbf{D}}}
+\newcommand{\bfE}{{\mathbf{E}}}    % \E: expectation
+\newcommand{\F}{{\mathbf{F}}}
+\newcommand{\G}{{\mathbf{G}}}
+\renewcommand{\H}{{\mathbf{H}}}
+\newcommand{\I}{{\mathbf{I}}}
+\newcommand{\J}{{\mathbf{J}}}
+\newcommand{\K}{{\mathbf{K}}}
+\renewcommand{\L}{{\mathbf{L}}}
+\newcommand{\bfM}{{\mathbf{M}}}
+\newcommand{\N}{{\mathbf{N}}}
+\renewcommand{\O}{{\mathbf{O}}}
+\newcommand{\bfP}{{\mathbf{P}}}  % \P : probability
+\newcommand{\Q}{{\mathbf{Q}}}
+\newcommand{\bfR}{{\mathbf{R}}}
+\renewcommand{\S}{{\mathbf{S}}}
+\newcommand{\bfT}{{\mathbf{T}}} % \T transpose
+\newcommand{\U}{{\mathbf{U}}}
+\newcommand{\V}{{\mathbf{V}}}
+\newcommand{\W}{{\mathbf{W}}}
+\newcommand{\X}{{\mathbf{X}}}
+\newcommand{\Y}{{\mathbf{Y}}}
+\newcommand{\Z}{{\mathbf{Z}}}
+
+
+\newcommand{\0}{{\mathbf{0}}}
+\newcommand{\1}{{\mathbf{1}}}
+\newcommand{\2}{{\mathbf{2}}}
+\newcommand{\3}{{\mathbf{3}}}
+\newcommand{\4}{{\mathbf{4}}}
+\newcommand{\5}{{\mathbf{5}}}
+\newcommand{\6}{{\mathbf{6}}}
+\newcommand{\7}{{\mathbf{7}}}
+\newcommand{\8}{{\mathbf{8}}}
+\newcommand{\9}{{\mathbf{9}}}
+
+\renewcommand{\a}{{\textbf{\textit{a}}}}
+\renewcommand{\b}{{\textbf{\textit{b}}}}
+\renewcommand{\c}{{\textbf{\textit{c}}}}
+\newcommand{\bfd}{{\textbf{\textit{d}}}}  % \d  'dx'
+\newcommand{\bfe}{{\textbf{\textit{e}}}}  % \e  l'exponentiel
+\newcommand{\f}{{\textbf{\textit{f}}}}
+\newcommand{\g}{{\textbf{\textit{g}}}}
+\newcommand{\h}{{\textbf{\textit{h}}}}
+\newcommand{\bfi}{{\textbf{\textit{i}}}}%\i  complex i, sans 'dot'
+\newcommand{\bfj}{{\textbf{\textit{j}}}}
+\renewcommand{\l}{{\textbf{\textit{l}}}}
+\renewcommand{\k}{{\textbf{\textit{k}}}}
+\newcommand{\m}{{\textbf{\textit{m}}}}
+\newcommand{\bfn}{{\textbf{\textit{n}}}}
+\newcommand{\bfo}{{\textbf{\textit{o}}}}
+\newcommand{\p}{{\textbf{\textit{p}}}}
+\newcommand{\q}{{\textbf{\textit{q}}}}
+\renewcommand{\r}{{\textbf{\textit{r}}}}
+\newcommand{\s}{{\textbf{\textit{s}}}}
+\renewcommand{\t}{{\textbf{\textit{t}}}}
+\newcommand{\bfu}{{\textbf{\textit{u}}}} %\u used in references
+\renewcommand{\v}{{\textbf{\textit{v}}}}
+\newcommand{\w}{{\textbf{\textit{w}}}}
+\newcommand{\x}{{\textbf{\textit{x}}}}
+\newcommand{\y}{{\textbf{\textit{y}}}}
+\newcommand{\z}{{\textbf{\textit{z}}}}
+
+% \newcommand{\A}{{\textbf{\textit{A}}}}
+% \newcommand{\B}{{\textbf{\textit{B}}}}
+% \newcommand{\C}{{\textbf{\textit{C}}}}
+% \newcommand{\D}{{\textbf{\textit{D}}}}
+% \newcommand{\bfE}{{\textbf{\textit{E}}}}  
+% \newcommand{\F}{{\textbf{\textit{F}}}}
+% \newcommand{\G}{{\textbf{\textit{G}}}}
+% \renewcommand{\H}{{\textbf{\textit{H}}}}
+% \newcommand{\I}{{\textbf{\textit{I}}}}
+% \newcommand{\J}{{\textbf{\textit{J}}}}
+% \newcommand{\K}{{\textbf{\textit{K}}}}
+% \renewcommand{\L}{{\textbf{\textit{L}}}}
+% \newcommand{\M}{{\textbf{\textit{M}}}}
+% \newcommand{\N}{{\textbf{\textit{N}}}}
+% \renewcommand{\O}{{\textbf{\textit{O}}}}
+% \renewcommand{\P}{{\textbf{\textit{P}}}} 
+% \newcommand{\Q}{{\textbf{\textit{Q}}}}
+% \newcommand{\R}{{\textbf{\textit{R}}}}
+% \renewcommand{\S}{{\textbf{\textit{S}}}}
+% \newcommand{\bfT}{{\textbf{\textit{T}}}} % \T transpose
+% \newcommand{\U}{{\textbf{\textit{U}}}}
+% \newcommand{\V}{{\textbf{\textit{V}}}}
+% \newcommand{\W}{{\textbf{\textit{W}}}}
+% \newcommand{\X}{{\textbf{\textit{X}}}}
+% \newcommand{\Y}{{\textbf{\textit{Y}}}}
+% \newcommand{\Z}{{\textbf{\textit{Z}}}}
+
+
+% \newcommand{\0}{{\textbf{\textit{0}}}}
+% \newcommand{\1}{{\textbf{\textit{1}}}}
+% \newcommand{\2}{{\textbf{\textit{2}}}}
+% \newcommand{\3}{{\textbf{\textit{3}}}}
+% \newcommand{\4}{{\textbf{\textit{4}}}}
+% \newcommand{\5}{{\textbf{\textit{5}}}}
+% \newcommand{\6}{{\textbf{\textit{6}}}}
+% \newcommand{\7}{{\textbf{\textit{7}}}}
+% \newcommand{\8}{{\textbf{\textit{8}}}}
+% \newcommand{\9}{{\textbf{\textit{9}}}}
+

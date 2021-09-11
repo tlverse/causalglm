@@ -1,26 +1,30 @@
-\documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{listings}
-\usepackage[T1]{fontenc}
-\usepackage{cmbright}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{pxfonts}
-\usepackage[sc]{mathpazo}
-\usepackage[T1]{fontenc}
+\documentclass[article]{jss}
+\input{header.sty}
+\SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
 
-\usepackage{geometry}
-\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
-\setcounter{secnumdepth}{2}
-\setcounter{tocdepth}{2}
-\usepackage{url}
-\usepackage[unicode=true,pdfusetitle,
-bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
-breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
-{hyperref}
-\hypersetup{
-pdfstartview={XYZ null null 1}}
-\usepackage{breakurl}
+
+% \usepackage[utf8]{inputenc}
+% \usepackage{listings}
+% \usepackage[T1]{fontenc}
+% \usepackage{cmbright}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{pxfonts}
+% \usepackage[sc]{mathpazo}
+% \usepackage[T1]{fontenc}
+% \usepackage{thumbpdf,lmodern}
+% \usepackage{geometry}
+% \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+% \setcounter{secnumdepth}{2}
+% \setcounter{tocdepth}{2}
+% \usepackage{url}
+% \usepackage[unicode=true,pdfusetitle,
+% bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+% breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+% {hyperref}
+% \hypersetup{
+% pdfstartview={XYZ null null 1}}
+% \usepackage{breakurl}
 
 
 
@@ -28,25 +32,50 @@ pdfstartview={XYZ null null 1}}
 \DeclareMathOperator{\expit}{expit}
 
 \usepackage{natbib}
-\bibliographystyle{apalike}
+ 
 
 
 \title{%
-  causalglm \\
-  \vspace{0.3cm}
-  \large Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
+  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning
   }
+\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning}
 \author{Lars van der Laan }
 \date{September 2021}
 
  
-\usepackage{fancyhdr}          % this and next line are for fancy headers/footers
-\pagestyle{fancy}
+  
+\Plainauthor{Lars van der Laan }
 
+%% - \title{} in title case
+%% - \Plaintitle{} without LaTeX markup (if any)
+%% - \Shorttitle{} with LaTeX markup (if any), used as running title
+ 
+\Shorttitle{\pkg{causalglm}: Robust adaptive generalized linear models and causal inference for treatment effects}
+
+%% - \Abstract{} almost as usual
+\Abstract{
+Generalized linear models are well-established and interpretable methods for learning heterogeneous treatment effects. However, conventional parametric generalized linear models make strong parametric assumptions on components of the data-generating distribution that are not directly of interest for the causal question at hand. Notably, in real-world settings, the relation between confounders and the outcome is almost always unknown and may be quite complex. As a result, causal inference based on parametric generalized linear models can be very biased and even misleading. Moreover, in high dimensional settings, generalized linear models and their inference breaks down and alternative methods like lasso and elastic-net regression do not easily provide inference. In this article, we present the \proglang{R} package \pkg{causalglm} that implements robust semiparametric (\textit{spglm}) and nonparametric (\textit{npglm}) generalized linear models and causal inference for heterogeneous treatment effects in both low and high dimensions. These methods utilize targeted maximum likelihood estimation and therefore can leverage adaptive machine-learning algorithms for estimation and variable selection of nonparametric nuisance components of the data-distribution. The methods allow for the interpretable and familiar coefficient-based inference while significantly relaxing the assumptions needed for correct inference through the use of machine-learning. This package supports semiparametric and nonparametric estimation and inference for user-specified parametric models of the estimands: the conditional average treatment effect, the conditional relative risk, the conditional odds ratio, and much more. The nonparametric methods view the user-specified parametric model as a causal approximation (i.e. working-model) and provide interpretable and correct causal inference even when the parametric model is incorrect (i.e. misspecified). The nonparametric methods can also be used without change to learn marginal structural models for heterogeneous treatment effect parameters. A custom lasso-based version of these methods are implemented in the function \textit{causalglmnet}, allowing for robust post-confounder-selection causal inference in high dimensions. }
+
+%% - \Keywords{} with LaTeX markup, at least one required
+%% - \Plainkeywords{} without LaTeX markup (if necessary)
+%% - Should be comma-separated and in sentence case.
+\Keywords{interpretable-machine-learning, targeted-learning, generalized-linear-models, causal-inference, relative-risk-regression, heterogeneous-treatment-effects, high-dimensional-inference, robust-statistics, semiparametric, nonparametric, double-robust }
+\Plainkeywords{interpretable-machine-learning, targeted-learning, generalized-linear-models, causal-inference, relative-risk-regression, heterogeneous-treatment-effects, high-dimensional-inference, robust-statistics, semiparametric, nonparametric, double-robust }
+
+
+% \usepackage{fancyhdr}          % this and next line are for fancy headers/footers
+% \pagestyle{fancy}
+\Address{
+  Lars van der Laan\\
+  Department of Statistics\\
+  University of Washington, Seattle\\
+  E-mail: \email{vanderlaanlars@yahoo.com}\\
+}
 
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
+% \SweaveOpts{concordance=TRUE}
 
 \maketitle
 
@@ -200,7 +229,7 @@ Under the parametric assumptions, standard generalize linear model software can 
 
 
 
-\section{Semiparametric generalized linear models for treatment effect estimation  with spglm}
+\section{Semiparametric glms for treatment effect estimation  with spglm}
 
 In this section, we give an overview of semiparametric treatment-effect estimation in partially-linear generalized linear models which allows for adaptive estimation of nuisance parameters of the data-generating distribution that are not directly relevant for the problem at end. Semiparametric models are statistical models in which one component of the data-generating distribution is parametric and the remaining components are nonparametric. For background on semiparametric models and estimators in causal inference, we refer to Bickel et al. (1993) and van der Laan, Robins (2003).\nocite{vanderlaanunified}\nocite{bickel1993efficient}
 
@@ -244,7 +273,7 @@ $$\log RR(w) =\beta^T \underline{f}(w).$$
 
 Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "RR"`. The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, Tuglus et al. (2011).\nocite{TMLERR} 
 
-\subsection{spglm in practice}
+\subsection{spglm in action}
 
 Let us generate a mock dataset that has a constant CATE of value 1.
 <<a>>=
@@ -427,7 +456,30 @@ output <-
 summary(output)
 @
 
-\section{Robust nonparametric generalized linear models for treatment effect estimation  with npglm}
+\subsection{Risk minimization in semiparametric models and an optional argument }
+In this section, we consider the general partially-linear generalized linear model
+$$\theta(E[Y|A,W]) = A \cdot \beta^T \underline{f}(W) + \theta(E[Y|A=0,W]).$$
+The identity link $\theta(x) := x$ corresponds with the partially-linear least-squares regression model, $\theta(x) = \logit(x)$ the partially-linear logistic regression model, and $\theta(x) = \log(x)$ corresponds with the partially-linear log-linear regression model. A critical component of the methods implemented in spglm is the initial estimation of both $\beta$ and $E[Y|A=0,W]$ using machine-learning. The function spglm supports two different ways of performing this first initial estimation through the boolean argument `append\_interaction\_matrix`.
+
+The first approach corresponds with the option `append\_design\_matrix = FALSE` and utilizes a two-stage initial estimation approach. Specifically, we do the following:
+\begin{enumerate}
+\item Estimate $E[Y|A=0,W]$ with machine-learning separately by regressing $Y$ on $W$ using only the observations with $A=0$.
+\item Estimate $\beta$ by performing offsetted standard glm regression of $Y$ on $A \cdot \underline{f}(W)$ using as offset the initial estimator of $\theta(E[Y|A=0,W])$ from the previous step and all observations.
+\end{enumerate}
+This approach is very flexible since any machine-learning algorithm can be used to estimate $E[Y|A=0,W]$. However, one issue with this approach is that, by separating the tasks, the machine-learning is not able to pool across treatment arms and therefore does not fully utilize the simpler form of the regression function. For example, if there are far fewer observations with $A=0$ than $A=1$ then this method may perform badly. This method may also run into issues in finite samples.
+
+The second approach performs the estimation pooled across all treatment arms and corresponds with `append\_design\_matrix = TRUE` (which is the default option). We do as follows:
+\begin{enumerate}
+\item Create a design matrix obtained by appending the user-specified treatment interaction design matrix corresponding with the term $A \cdot \underline{f}(W)$ to the baseline variable design matrix for $W$.
+\item Perform the regression of $Y$ onto $(A,W)$ using this design matrix and any machine-learning algorithm. In other words, regress $Y$ on $(A \cdot \underline{f}(W), W)$. This gives an initial estimator of $E[Y|A=0,W]$ that leveraged the smoothness across the treatment arms.
+\item Project the resulting estimator of $E[Y|A=1,W]$ onto the semiparametric model by performing the parametric glm regression of the estimator of $E[Y|A=1,W]$ onto $\underline{f}(W)$ using as offset $\theta(E[Y|A=0,W])$. This pseudo-outcome regression step gives an estimate of the coefficient vector $\beta$.
+
+\end{enumerate}
+This approach has a number of desirable properties. Firstly, additive regression methods like glm, glmnet or gam can perform well since the treatment interaction terms are included in the design matrix. Also, linear estimators like glm and glmnet combined with this method will immedietly respect the semiparametric model  without the projection. The projection is needed for non-linear algorithms like gam and gradient-boosting that may not inherently respect the parametric component of the semiparametric model. Additionally using this method, we can construct custom machine-learning algorithms that generate, for instance, a rich penalized spline basis for the $W$ part of the original design matrix and leaves the treatment interaction terms untransformed and unpenalized. Such an algorithm would fully respect the constraints of the semiparametric statistical model throughout the optimization procedure. We note that the default `learning\_method = "HAL"` option for the function spglm does exactly this. A custom Highly Adaptive Lasso estimator is used that performs risk minimization fully within the semiparametric model by using a rich variation-norm-penalized spline basis for the nonparametric component and leaves the parametric component untransformed and unpenalized. This HAL estimator is implemented using the glmnet implementation of LASSO through hal9001.
+
+
+
+\section{Robust nonparametric glms for treatment effect estimation  with npglm}
 In the previous section, we considered semiparametric generalized linear models where the data distribution component of interest (the estimand) is modeled parametrically and nuisance components are modeled nonparametrically. While this is much more robust than typical parametric methods, the parametric assumption on the estimand of interest can still be quite strong. It is therefore of interest to develop fully nonparametric methods that provide correct and interpretable estimates and inference under no parametric assumptions. To do so, we will still utilize user-specified parametric models for the estimand of interest, however, we will not assume that these parametric models are correct. We will treat these parametric models as interpretable approximations of the true nonparametric estimand. That is, we utilize the parametric model as a "working-model" that is only used to derive an interesting nonparametric estimand.
 
 It turns out that many of these working models have desirable properties. In particular, by specifying parametric models/formulas that depend on $V \subset W$ where $V$ is a subvector of baseline covariates, we can actually learn marginal structural models. Notably, the intercept working model that approximates the true estimand by a constant often corresponds with a marginal causal estimand like the average treatment effect (ATE or ATT), the marginal treatment-specific mean, or the marginal relative risk. For these reasons, these nonparametrics method allow for the estimation of an even more rich class of parameters than the analagous semiparametric methods.
@@ -619,7 +671,7 @@ head(predict(output, data = data))
 @
 
 
-\section{High dimensional semiparametric generalized linear models for treatment effect estimation using the LASSO with causalglmnet}
+\section{High dimensional semiparametric glms using the LASSO with causalglmnet}
 In high dimensional settings (e.g. dim(W) >= 50-1000), conventional machine-learning algorithms may be computationally expensive or poorly behaved. In such scenarios, we can utilize lasso-penalized regression (Tibshirani, 1994) to estimate the nuisance parameters, allowing for adaptive variable selection and adjusting of confounders. The function causalglmnet is a specialized wrapper for spglm that uses the lasso implementation provided by the state-of-the-art R package glmnet (Friedman, 2010) for estimation of all nuisance parameters.\nocite{Friedman2010}\nocite{Tibshirani94regressionshrinkage} Its use is exactly the same as spglm except learners no longer need to be specified.
 
 <<eval=FALSE>>=

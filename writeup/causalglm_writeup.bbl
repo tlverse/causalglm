@@ -1,110 +1,150 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{19}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\eprint}[2][]{\url{#2}}
 
-\bibitem[Benkeser and van~der Laan, 2016]{HAL2016}
-Benkeser, D. and van~der Laan, M. (2016).
-\newblock The highly adaptive lasso estimator.
-\newblock {\em International Conference on Data Science and Advanced
-  Analytics}, pages 689--696.
+\bibitem[{Benkeser and van~der Laan(2016)}]{HAL2016}
+Benkeser D, van~der Laan M (2016).
+\newblock \enquote{The Highly Adaptive Lasso Estimator.}
+\newblock \emph{International Conference on Data Science and Advanced
+  Analytics}, pp. 689--696.
+\newblock \doi{10.1109/DSAA.2016.93}.
 
-\bibitem[Bibaut and van~der Laan, 2019]{bibaut2019fast}
-Bibaut, A.~F. and van~der Laan, M.~J. (2019).
-\newblock Fast rates for empirical risk minimization over c\`adl\`ag functions
-  with bounded sectional variation norm.
+\bibitem[{Bibaut and van~der Laan(2019)}]{bibaut2019fast}
+Bibaut AF, van~der Laan MJ (2019).
+\newblock \enquote{Fast rates for empirical risk minimization over c\`adl\`ag
+  functions with bounded sectional variation norm.}
+\newblock \eprint{1907.09244}.
 
-\bibitem[Bickel et~al., 1993]{bickel1993efficient}
-Bickel, P.~J., Klaassen, C.~A., Ritov, Y., and Wellner, J. (1993).
-\newblock {\em Efficient and adaptive estimation for semiparametric models},
+\bibitem[{Bickel \emph{et~al.}(1993)Bickel, Klaassen, Ritov, and
+  Wellner}]{bickel1993efficient}
+Bickel PJ, Klaassen CA, Ritov Y, Wellner J (1993).
+\newblock \emph{Efficient and adaptive estimation for semiparametric models},
   volume~4.
 \newblock Johns Hopkins University Press Baltimore.
 
-\bibitem[Chambaz et~al., 2012]{ChambazLaanVarimp}
-Chambaz, A., Neuvial, P., and van~der Laan, M.~J. (2012).
-\newblock {Estimation of a non-parametric variable importance measure of a
-  continuous exposure}.
-\newblock {\em Electronic Journal of Statistics}, 6(none):1059 -- 1099.
+\bibitem[{Chambaz \emph{et~al.}(2012)Chambaz, Neuvial, and van~der
+  Laan}]{ChambazLaanVarimp}
+Chambaz A, Neuvial P, van~der Laan MJ (2012).
+\newblock \enquote{{Estimation of a non-parametric variable importance measure
+  of a continuous exposure}.}
+\newblock \emph{Electronic Journal of Statistics}, \textbf{6}(none), 1059 --
+  1099.
+\newblock \doi{10.1214/12-EJS703}.
+\newblock \urlprefix\url{https://doi.org/10.1214/12-EJS703}.
 
-\bibitem[Coyle et~al., 2021a]{coyle2021sl3}
-Coyle, J.~R., Hejazi, N.~S., Malenica, I., and Sofrygin, O. (2021a).
-\newblock {\em {sl3}: Modern Pipelines for Machine Learning and {Super
+\bibitem[{Coyle \emph{et~al.}(2021{\natexlab{a}})Coyle, Hejazi, Malenica, and
+  Sofrygin}]{coyle2021sl3}
+Coyle JR, Hejazi NS, Malenica I, Sofrygin O (2021{\natexlab{a}}).
+\newblock \emph{{sl3}: Modern Pipelines for Machine Learning and {Super
   Learning}}.
-\newblock {R} package version 1.4.2.
+\newblock \doi{10.5281/zenodo.1342293}.
+\newblock {R} package version 1.4.2,
+  \urlprefix\url{https://doi.org/10.5281/zenodo.1342293}.
 
-\bibitem[Coyle et~al., 2021b]{hal1}
-Coyle, J.~R., Hejazi, N.~S., and {van der Laan}, M.~J. (2021b).
-\newblock {\em {hal9001}: The scalable highly adaptive lasso}.
-\newblock R package version 0.2.7.
+\bibitem[{Coyle \emph{et~al.}(2021{\natexlab{b}})Coyle, Hejazi, and {van der
+  Laan}}]{hal1}
+Coyle JR, Hejazi NS, {van der Laan} MJ (2021{\natexlab{b}}).
+\newblock \emph{{hal9001}: The scalable highly adaptive lasso}.
+\newblock \doi{10.5281/zenodo.3558313}.
+\newblock R package version 0.2.7,
+  \urlprefix\url{https://github.com/tlverse/hal9001}.
 
-\bibitem[Friedman et~al., 2010]{Friedman2010}
-Friedman, J., Hastie, T., and Tibshirani, R. (2010).
-\newblock Regularization paths for generalized linear models via coordinate
-  descent.
-\newblock {\em Journal of Statistical Software}, 33(1):1--22.
+\bibitem[{Friedman \emph{et~al.}(2010)Friedman, Hastie, and
+  Tibshirani}]{Friedman2010}
+Friedman J, Hastie T, Tibshirani R (2010).
+\newblock \enquote{Regularization Paths for Generalized Linear Models via
+  Coordinate Descent.}
+\newblock \emph{Journal of Statistical Software}, \textbf{33}(1), 1--22.
+\newblock \urlprefix\url{https://www.jstatsoft.org/v33/i01/}.
 
-\bibitem[Hejazi et~al., 2020]{hal2}
-Hejazi, N.~S., Coyle, J.~R., and {van der Laan}, M.~J. (2020).
-\newblock {hal9001}: Scalable highly adaptive lasso regression in {R}.
-\newblock {\em Journal of Open Source Software}.
+\bibitem[{Hejazi \emph{et~al.}(2020)Hejazi, Coyle, and {van der Laan}}]{hal2}
+Hejazi NS, Coyle JR, {van der Laan} MJ (2020).
+\newblock \enquote{{hal9001}: Scalable highly adaptive lasso regression in
+  {R}.}
+\newblock \emph{Journal of Open Source Software}.
+\newblock \doi{10.21105/joss.02526}.
+\newblock \urlprefix\url{https://doi.org/10.21105/joss.02526}.
 
-\bibitem[Laan and Rubin, 2006]{laan_rubin_2006}
-Laan, M. J. V.~D. and Rubin, D. (2006).
-\newblock Targeted maximum likelihood learning.
-\newblock {\em The International Journal of Biostatistics}, 2(1).
+\bibitem[{Laan and Rubin(2006)}]{laan_rubin_2006}
+Laan MJVD, Rubin D (2006).
+\newblock \enquote{Targeted Maximum Likelihood Learning.}
+\newblock \emph{The International Journal of Biostatistics}, \textbf{2}(1).
+\newblock \doi{10.2202/1557-4679.1043}.
 
-\bibitem[Neugebauer and {van der Laan}, 2007]{NEUGEBAUER2007419}
-Neugebauer, R. and {van der Laan}, M. (2007).
-\newblock Nonparametric causal effects based on marginal structural models.
-\newblock {\em Journal of Statistical Planning and Inference}, 137(2):419--434.
+\bibitem[{Neugebauer and {van der Laan}(2007)}]{NEUGEBAUER2007419}
+Neugebauer R, {van der Laan} M (2007).
+\newblock \enquote{Nonparametric causal effects based on marginal structural
+  models.}
+\newblock \emph{Journal of Statistical Planning and Inference},
+  \textbf{137}(2), 419--434.
+\newblock ISSN 0378-3758.
+\newblock \doi{https://doi.org/10.1016/j.jspi.2005.12.008}.
+\newblock
+  \urlprefix\url{https://www.sciencedirect.com/science/article/pii/S0378375806000334}.
 
-\bibitem[Robins et~al., 1994]{robinsCausal}
-Robins, J.~M., Rotnitzky, A., and Zhao, L.~P. (1994).
-\newblock Marginal structural models and causal inference in epidemiology.
-\newblock {\em Journal of the American statistical Association},
-  89(427):846--866.
+\bibitem[{Robins \emph{et~al.}(1994)Robins, Rotnitzky, and Zhao}]{robinsCausal}
+Robins JM, Rotnitzky A, Zhao LP (1994).
+\newblock \enquote{Marginal Structural Models and Causal Inference in
+  Epidemiology.}
+\newblock \emph{Journal of the American statistical Association},
+  \textbf{89}(427), 846--866.
 
-\bibitem[Tchetgen~Tchetgen et~al., 2010]{TchetgenOddsRatio}
-Tchetgen~Tchetgen, E., Robins, J., and Rotnitzky, A. (2010).
-\newblock On doubly robust estimation in a semiparametric odds ratio model.
-\newblock {\em Biometrika}, 97:171--180.
+\bibitem[{Tchetgen~Tchetgen \emph{et~al.}(2010)Tchetgen~Tchetgen, Robins, and
+  Rotnitzky}]{TchetgenOddsRatio}
+Tchetgen~Tchetgen E, Robins J, Rotnitzky A (2010).
+\newblock \enquote{On doubly robust estimation in a semiparametric odds ratio
+  model.}
+\newblock \emph{Biometrika}, \textbf{97}, 171--180.
 
-\bibitem[Tibshirani, 1994]{Tibshirani94regressionshrinkage}
-Tibshirani, R. (1994).
-\newblock Regression shrinkage and selection via the lasso.
-\newblock {\em Journal of the Royal Statistical Society, Series B},
-  58:267--288.
+\bibitem[{Tibshirani(1994)}]{Tibshirani94regressionshrinkage}
+Tibshirani R (1994).
+\newblock \enquote{Regression Shrinkage and Selection Via the Lasso.}
+\newblock \emph{Journal of the Royal Statistical Society, Series B},
+  \textbf{58}, 267--288.
 
-\bibitem[Tuglus et~al., 2011]{TMLERR}
-Tuglus, C., Porter, K., and van~der Laan, M. (2011).
-\newblock Targeted maximum likelihood estimation of conditional relative risk
-  in a semi-parametric regression model.
-\newblock {\em U.C. BERKELEY DIVISION OF BIOSTATISTICS WORKING PAPER SERIES},
-  Working paper 283.
+\bibitem[{Tuglus \emph{et~al.}(2011)Tuglus, Porter, and van~der Laan}]{TMLERR}
+Tuglus C, Porter K, van~der Laan M (2011).
+\newblock \enquote{Targeted Maximum Likelihood Estimation of Conditional
+  Relative Risk in a Semi-parametric Regression Model.}
+\newblock \emph{U.C. BERKELEY DIVISION OF BIOSTATISTICS WORKING PAPER SERIES},
+  \textbf{Working paper 283}.
 
-\bibitem[van~der Laan, 2009]{OddsRatioreadingsTMLE}
-van~der Laan, M. (2009).
-\newblock Readings in targeted maximum likelihood estimation.
-\newblock {\em Biostatistics Working Paper Series Working Paper 253}, pages
+\bibitem[{van~der Laan(2009)}]{OddsRatioreadingsTMLE}
+van~der Laan M (2009).
+\newblock \enquote{Readings in Targeted Maximum Likelihood Estimation.}
+\newblock \emph{Biostatistics Working Paper Series Working Paper 253}, pp.
   621--622,626--629.
 
-\bibitem[van~der Laan, 2017]{vanderlaanGenerlaTMLE}
-van~der Laan, M. (2017).
-\newblock A generally efficient targeted minimum loss based estimator based on
-  the highly adaptive lasso.
-\newblock {\em The international journal of biostatistics}, 13(2).
+\bibitem[{van~der Laan(2017)}]{vanderlaanGenerlaTMLE}
+van~der Laan M (2017).
+\newblock \enquote{A Generally Efficient Targeted Minimum Loss Based Estimator
+  based on the Highly Adaptive Lasso.}
+\newblock \emph{The international journal of biostatistics}, \textbf{13}(2).
+\newblock \doi{/10.1515/ijb-2015-0097}.
+\newblock \urlprefix\url{https://doi.org/10.1515/ijb-2015-0097}.
 
-\bibitem[van~der Laan et~al., 2007]{vanderLaanetal2007}
-van~der Laan, M.~J., Polley, E.~C., and Hubbard, A.~E. (2007).
-\newblock Super learner.
-\newblock {\em Statistical Applications in Genetics and Molecular Biology},
-  6:number 1.
+\bibitem[{van~der Laan \emph{et~al.}(2007)van~der Laan, Polley, and
+  Hubbard}]{vanderLaanetal2007}
+van~der Laan MJ, Polley EC, Hubbard AE (2007).
+\newblock \enquote{Super learner.}
+\newblock \emph{Statistical Applications in Genetics and Molecular Biology},
+  \textbf{6}, number 1.
 
-\bibitem[van~der Laan and Robins, 2003]{vanderlaanunified}
-van~der Laan, M.~J. and Robins, J.~M. (2003).
-\newblock {\em Unified Methods for Censored Longitudinal Data and Causality}.
+\bibitem[{van~der Laan and Robins(2003)}]{vanderlaanunified}
+van~der Laan MJ, Robins JM (2003).
+\newblock \emph{Unified Methods for Censored Longitudinal Data and Causality}.
 \newblock Springer.
 
-\bibitem[van~der Laan and Rose, 2011]{vanderLaanRose2011}
-van~der Laan, M.~J. and Rose, S. (2011).
-\newblock {\em Targeted Learning: Causal Inference for Observational and
+\bibitem[{van~der Laan and Rose(2011)}]{vanderLaanRose2011}
+van~der Laan MJ, Rose S (2011).
+\newblock \emph{Targeted Learning: Causal Inference for Observational and
   Experimental Data}.
 \newblock Springer, New York.
 
