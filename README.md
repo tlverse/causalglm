@@ -10,7 +10,7 @@ For a in-depth description of these methods and example code, see the document "
 
 This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
 
-## Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation
+## Semiparametric and nonparametric generalized linear models for conditional causal inference using targeted maximum likelihood estimation
 
   
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
@@ -74,6 +74,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
+head(predict(output, data = data))
 
 formula <- ~ 1 + W
 output <-
@@ -86,6 +87,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
+head(predict(output, data = data))
 ```
 
 ### Conditional odds ratio and partially-linear logistic regression (spglm)
@@ -119,6 +121,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
+head(predict(output, data = data))
 ```
 
  
@@ -157,6 +160,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
+head(predict(output, data = data))
 ```
 
 
@@ -192,6 +196,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
+head(predict(output, data = data))
 
 output <-
   npglm(
@@ -203,6 +208,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
+head(predict(output, data = data))
 
 
 output <-
@@ -215,6 +221,7 @@ output <-
     verbose = FALSE
   )
 summary(output) 
+head(predict(output, data = data))
 ```
 
 ### Robust nonparametric inference for the OR (conditional odds ratio with npglm)
@@ -237,6 +244,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
+head(predict(output, data = data))
 ```
 
 
@@ -259,6 +267,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
+head(predict(output, data = data))
 ```
  
 
@@ -285,7 +294,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
-
+head(predict(output, data = data))
 
 # OR
 Y <- rbinom(n, size =  1, prob = plogis( A + W[,10*(1:10)] %*% beta))
@@ -300,6 +309,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
+head(predict(output, data = data))
 
 # RR
 Y <- rpois(n, lambda = exp( A + W[,10*(1:10)] %*% beta))
@@ -314,7 +324,7 @@ output <-
     verbose = FALSE
   )
 summary(output)
-
+head(predict(output, data = data))
 ```
 
 ## Need a new or specialized method? Questions? Suggestions?
