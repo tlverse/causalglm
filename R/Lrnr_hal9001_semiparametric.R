@@ -90,5 +90,3 @@ Lrnr_hal9001_semiparametric <- R6Class(
     .required_packages = c("hal9001", "glmnet")
   )
 )
-
- 

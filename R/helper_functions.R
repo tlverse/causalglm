@@ -75,7 +75,7 @@ check_arguments <- function(formula, data, W, A, Y) {
       stop("Unable to cast `formula` into an R formula object. This should be a character string specifying a valid formula or a formula object.")
     }
   )
-  
+
   tryCatch(
     {
       data <- as.data.table(data)
