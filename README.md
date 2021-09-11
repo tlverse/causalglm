@@ -1,5 +1,8 @@
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
+NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
+
+
 To install this package, install the devtools CRAN package and run:
 
 ``` r
