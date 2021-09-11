@@ -183,7 +183,7 @@ Next, for the conditional odds ratio, the following logistic regression model is
 $$\logit \left\{P(Y=1|A,W=w) \right\} =  \beta_0 A +  \beta_1^T w \cdot A + \beta_2^T w.$$
 This model is equivalent to assuming both the nuisance logistic model
 $$\logit\left\{P(Y=0|A=0,W=w) \right\} =   \beta_2^T w$$
-and the target logistic model
+and the target log-linear model
 $$\log OR(w) =  \beta_0  +  \beta_1^T w. $$
 Once again, we see that the conventional logistic regression model makes strong parametric assumptions on the orthogonal nuisance parameter $P(Y=0|A=0,W=w).$ 
 
