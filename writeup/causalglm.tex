@@ -36,9 +36,9 @@
 
 
 \title{%
-  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning
+  \pkg{causalglm}: An \proglang{R} package for semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning with the \pkg{tlverse} ecosystem
   }
-\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning}
+\Plaintitle{causalglm: Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
 \author{Lars van der Laan }
 \date{September 2021}
 
@@ -54,7 +54,7 @@
 
 %% - \Abstract{} almost as usual
 \Abstract{
-Generalized linear models are well-established and interpretable methods for learning heterogeneous treatment effects. However, conventional parametric generalized linear models make strong parametric assumptions on components of the data-generating distribution that are not directly of interest for the causal question at hand. Notably, in real-world settings, the relation between confounders and the outcome is almost always unknown and may be quite complex. As a result, causal inference based on parametric generalized linear models can be very biased and even misleading. Moreover, in high dimensional settings, generalized linear models and their inference breaks down and alternative methods like lasso and elastic-net regression do not easily provide inference. In this article, we present the \proglang{R} package \pkg{causalglm} that implements robust semiparametric (\textit{spglm}) and nonparametric (\textit{npglm}) generalized linear models and causal inference for heterogeneous treatment effects in both low and high dimensions. These methods utilize targeted maximum likelihood estimation and therefore can leverage adaptive machine-learning algorithms for estimation and variable selection of nonparametric nuisance components of the data-distribution. The methods allow for the interpretable and familiar coefficient-based inference while significantly relaxing the assumptions needed for correct inference through the use of machine-learning. This package supports semiparametric and nonparametric estimation and inference for user-specified parametric models of the estimands: the conditional average treatment effect, the conditional relative risk, the conditional odds ratio, and much more. The nonparametric methods view the user-specified parametric model as a causal approximation (i.e. working-model) and provide interpretable and correct causal inference even when the parametric model is incorrect (i.e. misspecified). The nonparametric methods can also be used without change to learn marginal structural models for heterogeneous treatment effect parameters. A custom lasso-based version of these methods are implemented in the function \textit{causalglmnet}, allowing for robust post-confounder-selection causal inference in high dimensions. }
+Generalized linear models are well-established and interpretable methods for learning heterogeneous treatment effects. However, conventional parametric generalized linear models make strong parametric assumptions on components of the data-generating distribution that are not directly of interest for the causal question at hand. Notably, in real-world settings, the relation between confounders and the outcome is almost always unknown and may be quite complex. As a result, causal inference based on parametric generalized linear models can be very biased and even misleading. Moreover, in high dimensional settings, generalized linear models and their inference breaks down and alternative methods like lasso and elastic-net regression do not easily provide inference. In this article, we present the \proglang{R} package \pkg{causalglm} that implements robust semiparametric (\textit{spglm}) and nonparametric (\textit{npglm}) generalized linear models and causal inference for heterogeneous treatment effects in both low and high dimensions. These methods utilize targeted maximum likelihood estimation and therefore can leverage adaptive machine-learning algorithms for estimation and variable selection of nonparametric nuisance components of the data-distribution. The methods allow for the interpretable and familiar coefficient-based inference while significantly relaxing the assumptions needed for correct inference through the use of machine-learning. This package supports semiparametric and nonparametric estimation and inference for user-specified parametric models of the estimands: the conditional average treatment effect, the conditional relative risk, the conditional odds ratio, and much more. The nonparametric methods view the user-specified parametric model as a causal approximation (i.e. working-model) and provide interpretable and correct causal inference even when the parametric model is incorrect (i.e. misspecified). The nonparametric methods can also be used without change to learn marginal structural models for heterogeneous treatment effect parameters. A custom lasso-based version of these methods are implemented in the function \textit{causalglmnet}, allowing for robust post-confounder-selection causal inference in high dimensions. These methods are implemented using the powerful \pkg{tlverse} machine-learning (\pkg{sl3}) and generalized targeted learning (\pkg{tmle3}) ecosystem.}
 
 %% - \Keywords{} with LaTeX markup, at least one required
 %% - \Plainkeywords{} without LaTeX markup (if necessary)
@@ -75,7 +75,7 @@ Generalized linear models are well-established and interpretable methods for lea
 
 \usepackage{Sweave}
 \begin{document}
-\input{causalglm_writeup-concordance}
+\input{causalglm-concordance}
 % \SweaveOpts{concordance=TRUE}
 
 \maketitle
@@ -305,11 +305,11 @@ a coefficient estimate for the intercept, lower and upper confidence intervals, 
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1 * (Intercept)
+CATE(W) = 1.02 * (Intercept)
 [1] "Coefficient estimates and inference:"
 
    type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.002988 0.04012527 0.9243441 1.081632 395.2281       0
+1: CATE (Intercept) 1.018689 0.04250799 0.9353749 1.102003 378.9144       0
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -337,12 +337,12 @@ We can also do a much more complex model with higher dimensional treatment effec
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1.09 * (Intercept) + 1.05 * W
+CATE(W) = 1.1 * (Intercept) + 0.872 * W
 [1] "Coefficient estimates and inference:"
 
    type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.086353 0.05347580 0.9815420 1.191163 321.2059       0
-2: CATE           W 1.052821 0.09144093 0.8736001 1.232042 182.0472       0
+1: CATE (Intercept) 1.096249 0.04892268 1.0003628 1.192136 354.2984       0
+2: CATE           W 0.872198 0.08316892 0.7091899 1.035206 165.8151       0
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -355,13 +355,13 @@ We can also obtain predictions and confidence intervals thereof at observations.
 > head(predict(output, data = data))
 \end{Sinput}
 \begin{Soutput}
-  (Intercept)          W   CATE(W)        se   CI_left  CI_right  Z-score
-1           1  0.9293763 2.0648196 1.3967894 1.8916718 2.2379674 23.37336
-2           1  0.3674931 1.4732571 0.8786695 1.3643361 1.5821781 26.51081
-3           1 -0.3301924 0.7387191 1.0701067 0.6060673 0.8713709 10.91496
-4           1  0.9954337 2.1343663 1.4752399 1.9514936 2.3172389 22.87580
-5           1  0.8139898 1.9433383 1.2653926 1.7864786 2.1001980 24.28248
-6           1  0.5843620 1.7015813 1.0347436 1.5733131 1.8298494 26.00100
+  (Intercept)           W   CATE(W)        se   CI_left  CI_right  Z-score
+1           1  0.71180647 1.7170856 1.1976115 1.5686282 1.8655431 22.66971
+2           1 -0.04767226 1.0546698 0.7778064 0.9582519 1.1510877 21.43952
+3           1  0.69001831 1.6980821 1.1758776 1.5523188 1.8438453 22.83319
+4           1 -0.35471782 0.7868653 0.9143299 0.6735238 0.9002068 13.60716
+5           1  0.80589232 1.7991471 1.2945587 1.6386720 1.9596223 21.97429
+6           1 -0.01572061 1.0825380 0.7743858 0.9865441 1.1785318 22.10323
   p-value
 1       0
 2       0
@@ -392,12 +392,12 @@ Currently, the nonparametric learning is performed using the partially-linear fi
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1.02 * (Intercept) + 1.03 * W
+CATE(W) = 0.948 * (Intercept) + 1.13 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.018789 0.05095567 0.9189180 1.118661 316.1272       0
-2: CATE           W 1.034057 0.07800932 0.8811612 1.186952 209.5887       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9483531 0.05711177 0.8364161 1.060290 262.5515       0
+2: CATE           W 1.1279961 0.10944693 0.9134841 1.342508 162.9574       0
 \end{Soutput}
 \begin{Sinput}
 > # multivariate adaptive regression splines:
@@ -414,12 +414,12 @@ CATE(W) = 1.02 * (Intercept) + 1.03 * W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1 * (Intercept) + 1.03 * W
+CATE(W) = 0.946 * (Intercept) + 1.13 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.003556 0.05121096 0.9031848 1.103928 309.8482       0
-2: CATE           W 1.030164 0.08798331 0.8577202 1.202608 185.1298       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9459277 0.05741359 0.8333992 1.058456 260.5033       0
+2: CATE           W 1.1344507 0.11301083 0.9129535 1.355948 158.7214       0
 \end{Soutput}
 \begin{Sinput}
 > # gradient-boosting with xgboost: :
@@ -436,12 +436,12 @@ CATE(W) = 1 * (Intercept) + 1.03 * W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1.02 * (Intercept) + 1.04 * W
+CATE(W) = 0.989 * (Intercept) + 1.05 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est         se     lower   upper  Z_score p_value
-1: CATE (Intercept) 1.021216 0.05497772 0.9134613 1.12897 293.6978       0
-2: CATE           W 1.043797 0.08506422 0.8770740 1.21052 194.0167       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9887605 0.06435591 0.8626252 1.114896 242.9253       0
+2: CATE           W 1.0542208 0.13056260 0.7983228 1.310119 127.6682       0
 \end{Soutput}
 \end{Schunk}
 
@@ -470,12 +470,12 @@ The default learning algorithm "HAL" can be customized with the HAL\_args\_Y0W a
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1.01 * (Intercept) + 1.03 * W
+CATE(W) = 0.945 * (Intercept) + 1.15 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.014782 0.05048656 0.9158298 1.113733 317.8094       0
-2: CATE           W 1.032108 0.07867727 0.8779032 1.186312 207.4177       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9446423 0.05482762 0.8371821 1.052102 272.4194       0
+2: CATE           W 1.1485431 0.10074790 0.9510808 1.346005 180.2525       0
 \end{Soutput}
 \end{Schunk}
 
@@ -507,12 +507,12 @@ Take a look at the argument append\_interaction\_matrix to understand the design
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand CATE with formula 
-CATE(W) = 1.02 * (Intercept) + 1.03 * W
+CATE(W) = 0.947 * (Intercept) + 1.13 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.016422 0.05127196 0.9159305 1.116913 313.4469       0
-2: CATE           W 1.029178 0.08306707 0.8663696 1.191987 195.8987       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9467604 0.05832414 0.8324472 1.061074 256.6621       0
+2: CATE           W 1.1278203 0.11582388 0.9008097 1.354831 153.9614       0
 \end{Soutput}
 \end{Schunk}
 
@@ -546,15 +546,15 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand OR with formula 
-log OR(W) = 0.649 * (Intercept) + 0.408 * W
+log OR(W) = 0.626 * (Intercept) + 0.598 * W
 [1] "Coefficient estimates and inference:"
 
    type       param  tmle_est        se       lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 0.6485099 0.2924393  0.07533944 1.221680 1.912689 1.0782501
-2:   OR           W 0.4084865 0.5034409 -0.57823956 1.395213 1.504539 0.5608849
+1:   OR (Intercept) 0.6260532 0.3290273 -0.01882847 1.270935 1.870215 0.9813477
+2:   OR           W 0.5979398 0.5723116 -0.52377026 1.719650 1.818369 0.5922833
    upper_exp  Z_score p_value
-1:  3.392884 35.06315       0
-2:  4.035833 12.82919       0
+1:  3.564183 30.08495       0
+2:  5.582574 16.51943       0
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -578,15 +578,15 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from spglm for the estimand RR with formula 
-log RR(W) = 0.935 * (Intercept) + 0.887 * W
+log RR(W) = 1.11 * (Intercept) + 1.04 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param  tmle_est         se     lower    upper  psi_exp lower_exp
-1:   RR (Intercept) 0.9350559 0.09287231 0.7530295 1.117082 2.547356  2.123423
-2:   RR           W 0.8865872 0.19100238 0.5122294 1.260945 2.426833  1.669008
-   upper_exp   Z_score p_value
-1:  3.055925 159.19203       0
-2:  3.528755  73.39267       0
+   type       param tmle_est         se     lower    upper  psi_exp lower_exp
+1:   RR (Intercept) 1.111249 0.09362542 0.9277469 1.294752 3.038152  2.528805
+2:   RR           W 1.042133 0.15090287 0.7463687 1.337897 2.835258  2.109326
+   upper_exp  Z_score p_value
+1:  3.650090 187.6669       0
+2:  3.811021 109.1932       0
 \end{Soutput}
 \end{Schunk}
 
@@ -746,12 +746,12 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from npglm for the estimand CATE with formula 
-CATE(W) = 0.949 * (Intercept) + 1.12 * W
+CATE(W) = 0.982 * (Intercept) + 1.1 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param  tmle_est        se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9493787 0.1074288 0.7388220 1.159935 139.7297       0
-2: CATE           W 1.1205540 0.1635730 0.7999569 1.441151 108.3157       0
+   type       param  tmle_est        se     lower    upper   Z_score p_value
+1: CATE (Intercept) 0.9822111 0.1107525 0.7651402 1.199282 140.22364       0
+2: CATE           W 1.0951169 0.1891955 0.7243006 1.465933  91.52077       0
 \end{Soutput}
 \begin{Sinput}
 > # CATT
@@ -775,12 +775,12 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from npglm for the estimand CATT with formula 
-CATT(W) = 0.98 * (Intercept) + 0.955 * W
+CATT(W) = 1.04 * (Intercept) + 0.948 * W
 [1] "Coefficient estimates and inference:"
 
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATT (Intercept) 0.9801899 0.06386701 0.8550128 1.105367 242.6630       0
-2: CATT           W 0.9545239 0.11352895 0.7320112 1.177037 132.9383       0
+1: CATT (Intercept) 1.0378314 0.06715437 0.9062112 1.169452 244.3557       0
+2: CATT           W 0.9482873 0.14788785 0.6584324 1.238142 101.3859       0
 \end{Soutput}
 \begin{Sinput}
 > # TSM
@@ -806,19 +806,19 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from npglm for the estimand TSM with formula 
-TSM(W) = -0.00581 * E[Y_{A=0}]: (Intercept) + 0.658 * E[Y_{A=0}]: W + 1.02 * E[Y_{A=1}]: (Intercept) + 1.5 * E[Y_{A=1}]: W
+TSM(W) = 0.125 * E[Y_{A=0}]: (Intercept) + 0.908 * E[Y_{A=0}]: W + 1.04 * E[Y_{A=1}]: (Intercept) + 1.83 * E[Y_{A=1}]: W
 [1] "Coefficient estimates and inference:"
 
-   type                   param     tmle_est         se      lower     upper
-1:  TSM E[Y_{A=0}]: (Intercept) -0.005812043 0.05911024 -0.1216660 0.1100419
-2:  TSM           E[Y_{A=0}]: W  0.658255840 0.09035432  0.4811646 0.8353471
-3:  TSM E[Y_{A=1}]: (Intercept)  1.017105856 0.06299438  0.8936391 1.1405726
-4:  TSM           E[Y_{A=1}]: W  1.504012387 0.10141045  1.3052516 1.7027732
-      Z_score p_value
-1:   1.554662 0.12003
-2: 115.190267 0.00000
-3: 255.290334 0.00000
-4: 234.497773 0.00000
+   type                   param  tmle_est         se       lower     upper
+1:  TSM E[Y_{A=0}]: (Intercept) 0.1251425 0.07111677 -0.01424383 0.2645288
+2:  TSM           E[Y_{A=0}]: W 0.9075116 0.12514933  0.66222341 1.1527998
+3:  TSM E[Y_{A=1}]: (Intercept) 1.0447902 0.06369624  0.91994783 1.1696325
+4:  TSM           E[Y_{A=1}]: W 1.8278461 0.11673342  1.59905279 2.0566394
+     Z_score p_value
+1:  27.82292       0
+2: 114.65517       0
+3: 259.34941       0
+4: 247.57935       0
 \end{Soutput}
 \begin{Sinput}
 > # OR
@@ -842,15 +842,15 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from npglm for the estimand OR with formula 
-log OR(W) = 1.38 * (Intercept) + 0.979 * W
+log OR(W) = 1.21 * (Intercept) + 0.716 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param tmle_est        se      lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 1.383272 0.3227203  0.7507523 2.015793 3.987931 2.1185932
-2:   OR           W 0.979298 0.5851159 -0.1675080 2.126104 2.662587 0.8457699
+   type       param  tmle_est        se      lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 1.2148315 0.3166331  0.5942421 1.835421 3.369726 1.8116573
+2:   OR           W 0.7159379 0.6130785 -0.4856739 1.917550 2.046105 0.6152824
    upper_exp  Z_score p_value
-1:  7.506675 67.77218       0
-2:  8.382147 26.46324       0
+1:  6.267772 60.66382       0
+2:  6.804266 18.46415       0
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -874,34 +874,34 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
 A causalglm fit object obtained from npglm for the estimand RR with formula 
-log RR(W) = 0.973 * (Intercept) + 0.84 * W
+log RR(W) = 0.857 * (Intercept) + 0.823 * W
 [1] "Coefficient estimates and inference:"
 
-   type       param  tmle_est        se     lower    upper  psi_exp lower_exp
-1:   RR (Intercept) 0.9734054 0.1022388 0.7730210 1.173790 2.646943  2.166301
-2:   RR           W 0.8404128 0.1934324 0.4612923 1.219533 2.317323  1.586122
+   type       param  tmle_est         se     lower    upper  psi_exp lower_exp
+1:   RR (Intercept) 0.8574651 0.08804121 0.6849075 1.030023 2.357178  1.983588
+2:   RR           W 0.8230297 0.18203143 0.4662547 1.179805 2.277389  1.594013
    upper_exp   Z_score p_value
-1:  3.234227 150.53863       0
-2:  3.385607  68.69632       0
+1:  2.801130 153.99282       0
+2:  3.253739  71.48899       0
 \end{Soutput}
 \begin{Sinput}
 > head(predict(output, data = data))
 \end{Sinput}
 \begin{Soutput}
-  (Intercept)            W    RR(W)       se  CI_left CI_right   Z-score
-1           1  0.786821024 5.127713 3.024702 3.524413 7.460375  8.545055
-2           1 -0.493378637 1.748509 2.103146 1.347236 2.269302  4.200768
-3           1 -0.004767591 2.636359 1.615207 2.157986 3.220774  9.489519
-4           1  0.885070217 5.569079 3.283034 3.707139 8.366192  8.270332
-5           1  0.225320169 3.198773 1.816959 2.553678 4.006828 10.118538
-6           1 -0.443425674 1.823476 2.008176 1.421637 2.338900  4.729970
+  (Intercept)            W    RR(W)       se   CI_left CI_right    Z-score
+1           1 -0.005227981 2.347057 1.392044 1.9750680 2.789108  9.6905575
+2           1  0.430041973 3.358191 1.868339 2.6639254 4.233395 10.2518612
+3           1 -0.208247205 1.985899 1.512264 1.6464300 2.395360  7.1731817
+4           1 -0.984170223 1.048608 3.148598 0.7097514 1.549246  0.2383499
+5           1  0.818944315 4.625020 2.744692 3.2911764 6.499442  8.8224224
+6           1  0.528717044 3.642299 2.068619 2.8184478 4.706967  9.8800386
      p-value
 1 0.0000e+00
-2 2.6601e-05
-3 0.0000e+00
-4 2.2204e-16
+2 0.0000e+00
+3 7.3275e-13
+4 8.1161e-01
 5 0.0000e+00
-6 2.2455e-06
+6 0.0000e+00
 \end{Soutput}
 \end{Schunk}
 
