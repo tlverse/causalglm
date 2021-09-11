@@ -23,7 +23,6 @@ npglm(
   cross_fit = FALSE,
   sl3_Learner_A = NULL,
   sl3_Learner_Y = NULL,
-  weights = NULL,
   formula_Y = as.formula(paste0("~ . + . *", A)),
   formula_HAL_Y = paste0("~ . + h(.,", A, ")"),
   HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)),
@@ -89,8 +88,6 @@ Cross-fitting is recommended for all tree-based algorithms like random-forests a
 Note, \code{cross_fit} is automatically set to FALSE if this argument is provided.
 Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.}
 
-\item{weights}{An optional vector of weights to use in procedure.}
-
 \item{formula_Y}{Only used if `learning_method %in% c("glm", "earth", "gam", "glmnet")`. A R \code{formula} object that specifies the design matrix to be passed to the Learner specified by learning_method: "glm", "earth", "gam", "glmnet".
 By default, `formula_Y = . + A*.` so that additive learners still model treatment interactions.}
 
@@ -114,6 +111,8 @@ num_knots_Y0W = c(10,5,1) generates same basis functions as above and also the t
 Useful to set to a large value in high dimensions.}
 
 \item{...}{Other arguments to pass to main routine (spCATE, spOR, spRR)}
+
+\item{weights}{An optional vector of weights to use in procedure.}
 }
 \description{
 npglm

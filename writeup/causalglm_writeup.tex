@@ -24,8 +24,6 @@ pdfstartview={XYZ null null 1}}
 
 
 
-
-
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\expit}{expit}
 
@@ -122,18 +120,19 @@ Note that the function causalglmnet is a custom wrapper function around the func
 
 \subsection{npcoxph: assumption-lean inference for the conditional hazard ratio}
 The function npcoxph supports the following survival estimands:
-1. Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npcoxph`.
-2. The estimands supported by `npcoxph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
+\begin{itemize}
 
+\item Nonparametric inference for a user-specified working-model for the conditional hazard ratio between two treatments with `npcoxph`.
+\item The estimands supported by `npcoxph` based on lower dimensional formulas can immediately be interpreted as marginal structural models for the hazard ratio.
+\end{itemize}
 
 
 
 
 
 \section{Data-Structure and treatment-effect estimands}
-We will mainly consider the point-treatment data-structure $O = (W,A,Y)$ where $W$ represents a vector of baseline covariates (i.e. possible confounders), $A$ is a binary treatment assignment, and $Y$ is some outcome variable. As an example, for a given observation $O$, $W$ could be measurements: age, sex, a risk-score, location, income; $A$ could take the value $1$ if the individual receives the treatment and $0$ if they do not receive the treatment; and $Y$ is a binary or continuous variable that captures the effect of the treatment.
 
-For the goal of assessing heterogeneity of the treatment effect, there are a number of popular estimands:
+We will mainly consider the point-treatment data-structure $O = (W,A,Y)$ where $W$ represents a vector of baseline covariates (i.e. possible confounders), $A$ is a binary treatment assignment, and $Y$ is some outcome variable. As an example, for a given observation $O$, $W$ could be measurements: age, sex, a risk-score, location, income; $A$ could take the value $1$ if the individual receives the treatment and $0$ if they do not receive the treatment; and $Y$ is a binary or continuous variable that captures the effect of the treatment. For the goal of assessing heterogeneity of the treatment effect, there are a number of popular estimands:
 
 \noindent The conditional average treatment effect (CATE):
 \begin{equation}
@@ -141,10 +140,15 @@ CATE(w) := E[Y|A=1,W=w] - E[Y|A=0, W=w],
 \end{equation}
 which is an additive measure of the effect of the treatment ($A=1$) relative to no treatment $(A=0)$.
 
+\vspace{0.5cm}
+
+
 \noindent The conditional odds ratio (OR) for when $Y$ is binary:
 \begin{equation}
-OR(w) := \frac{P(Y=1|A=1,W=w)P(Y=0|A=1,W=w)}{P(Y=1|A=0,W=w)P(Y=0|A=0,W=w)}
+OR(w) := \frac{P(Y=1|A=1,W=w)/P(Y=0|A=1,W=w)}{P(Y=1|A=0,W=w)/P(Y=0|A=0,W=w)}
 \end{equation}
+
+\vspace{0.5cm}
 
 \noindent The conditional relative risk (RR) for when $Y$ is nonnegative (e.g. a binary or count variable):
 \begin{equation}
@@ -152,34 +156,36 @@ RR(w) := \frac{E[Y|A=1,W=w]}{E[Y|A=0,W=w]},
 \end{equation}
 which is a relative measure of the effect of the treatment ($A=1$) relative to no treatment $(A=0)$.
 
-In some application, non-contrast measures like the conditional treatment-specific mean (TSM) may be of interest:
+\vspace{0.5cm}
+
+\noindent In some application, non-contrast measures like the conditional treatment-specific mean (TSM) may be of interest:
 \begin{equation}
-TSM_a(w) := E[Y|A=a,W].
+TSM_a(w) := E[Y|A=a,W=w].
 \end{equation}
 
 \subsection{Conventional estimators using parametric generalized linear models}
 In order to estimate the estimands of the previous section, parametric generalized linear models are often employed (e.g. the R package \textit{glm}). For the CATE,the following linear regression model is often used:
-$$E[Y|A, W=w] = \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+$$E[Y|A, W=w] = \beta_0 A +  \beta_1^T w \cdot A + \beta_2^T w.$$
 This model is equivalent to assuming both the nuisance linear model
-$$E[Y|A=0,W=w] =  \beta_1^T W$$
+$$E[Y|A=0,W=w] =  \beta_2^T w$$
 and target linear model
-$$CATE(w) = \beta_0 + \beta_1^T W.$$
+$$CATE(w) = \beta_0 + \beta_1^T w.$$
 Thus, the coefficient in front of the treatment interactions can be directly interpreted as a measure of the conditional average treatment effect when the parametric model is correct. However, we see that very strong parametric assumptions are made on the orthogonal nuisance function $w \mapsto E[Y|A=0,W=w]$, which has little to do with the CATE.
 
 Next, for the conditional odds ratio, the following logistic regression model is often used
-$$\logit \left\{P(Y=1|A,W) \right\} =  \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+$$\logit \left\{P(Y=1|A,W=w) \right\} =  \beta_0 A +  \beta_1^T w \cdot A + \beta_2^T w.$$
 This model is equivalent to assuming both the nuisance logistic model
-$$\logit\left\{P(Y=0|A=0,W) \right\} =   \beta_2^T W$$
+$$\logit\left\{P(Y=0|A=0,W=w) \right\} =   \beta_2^T w$$
 and the target logistic model
-$$\log OR(w) =  \beta_0  +  \beta_1^T W. $$
-Once again, we see that the conventional logistic regression model makes strong parametric assumptions on the orthogonal nuisance parameter $P(Y=0|A=0,W=w).$
+$$\log OR(w) =  \beta_0  +  \beta_1^T w. $$
+Once again, we see that the conventional logistic regression model makes strong parametric assumptions on the orthogonal nuisance parameter $P(Y=0|A=0,W=w).$ 
 
 Finally, for the conditional relative-risk, the poisson or log-linear regression model is a well-known approach:
-$$\log \left\{E[Y|A,W] \right\} =  \beta_0 A +  \beta_1^T W \cdot A + \beta_2^T W.$$
+$$\log \left\{E[Y|A,W=w] \right\} =  \beta_0 A +  \beta_1^T w \cdot A + \beta_2^T w.$$
 This is equivalent to assuming the nuisance log-linear model
-$$\log \left\{E[Y|A=0,W] \right\} = \beta_2^T W$$
+$$\log \left\{E[Y|A=0,W=w] \right\} = \beta_2^T w$$
 and the target log-linear model
-$$\log \left\{RR(W) \right\} =  \beta_0  +  \beta_1^T W. $$
+$$\log \left\{RR(w) \right\} =  \beta_0  +  \beta_1^T w. $$
 Besides the strong parametric assumptions on the nuisance parameter $E[Y|A=0,W=w]$, another issue with this approach is that conventional methods only provide inference when the outcome is Poisson distributed, which is not useful if the outcome is binary. Log-link binomial generalized-linear-models are one way to overcome this limitation. 
 
 Under the parametric assumptions, standard generalize linear model software can be used to obtain estimates and inference for the coefficients in the above models for the treatment-effect estimands. However, these methods make much stronger assumptions than are needed. In particular, the parametric assumptions on $E[Y|A=0,W]$ provides little-to-no benefit in interpretability since we are interested in the coefficients for the treatment interaction terms, and it comes at a possibly substantial cost in bias due to model misspecification. Additionally, these methods do not allow for any adaptive estimation of $E[Y|A=0,W]$ (e.g. using the LASSO, variable selection, or machine-learning) and therefore do not perform well in both estimation and inference in high dimensions. In the next section, we consider a partial relaxation of the parametric models through so-called partially-linear generalized linear models.
@@ -200,39 +206,36 @@ These methods allow for:
 \end{enumerate}
 
 \subsection{Conditional average treatment effect (CATE) and partially-linear least-squares regression}
-The partially-linear least-squares model is of the form:
-$$E[Y|A,W] = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
-where $ h_0(W) := E[Y|A=0,W]$ is an unspecified nuisance function that is to be learned from the data nonparametrically. The parametric component of the model is the coefficient vector $(\beta_0, \beta_1)$. This model is equivalent to \textit{only} assuming:
+Let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric model $\beta^T \underline{f}(w)$ for $CATE(w)$. The partially-linear least-squares model is of the form:
+$$E[Y|A,W=w] = \beta^T \underline{f}(w) \cdot A + h_0(w),$$
+where $ h_0(w) := E[Y|A=0,W=w]$ is an unspecified nuisance function that is to be learned from the data nonparametrically. The parametric component of the model is the coefficient vector $\beta$. This model is equivalent to \textit{only} assuming:
+$$CATE(w) = \beta^T \underline{f}(w).$$
+Thus, this semiparametric model only makes assumptions that directly relate the estimand of interest! 
+
+\noindent A concrete model is choosing $\underline{f}(W) = (1,W)$ which gives the linear model
 $$CATE(w) = \beta_0 + \beta_1^T w.$$
-Thus, this semiparametric model only makes assumptions that directly relate the estimand of interest!
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "CATE"`. We employ machine-learning for initial estimation of the relevant components of the data-generating distribution and then use targeted maximum likelihood estimation for bias-correction, thereby allowing for valid efficient inference.
-
-The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "CATE"`. We employ machine-learning for initial estimation of the relevant components of the data-generating distribution and then use targeted maximum likelihood estimation for bias-correction, thereby allowing for valid efficient inference. The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
 
 \subsection{Conditional odds ratio (OR) and partially-linear logistic regression}
-The partially-linear logistic model is of the form:
-$$\logit\left\{E[Y|A,W]\right\} = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
-where $ h_0(W) := \logit\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
-$$\log OR(w) = \beta_0 + \beta_1^T w.$$
+Let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the parametric model $\beta^T \underline{f}(w)$ for $\log OR(w)$. The partially-linear logistic model is given by:
+$$\logit\left\{E[Y|A,W=w]\right\} = \beta^T \underline{f}(w) \cdot A + h_0(w),$$
+where $ h_0(w) := \logit\left\{E[Y|A=0,W=w]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
+$$\log OR(w) = \beta^T \underline{f}(w).$$
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "OR"`. 
-
-The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "OR"`. The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, van der Laan (2009). \nocite{OddsRatioreadingsTMLE}
 For a similar estimator based on estimating equations and additional background on the semiparametric logistic regression model, see Tchetgen Tchetgen (2010). \nocite{TchetgenOddsRatio}
 
 
 
 \subsection{Conditional relative-risk (RR) and partially-linear log-linear regression}
-The partially-linear log-linear model is of the form:
-$$\log\left\{E[Y|A,W]\right\} = \beta_0 + \beta_1^T W \cdot A + h_0(W),$$
-where $ h_0(W) := \log\left\{E[Y|A=0,W]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
-$$\log RR(w) = \beta_0 + \beta_1^T w.$$
+Let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the parametric model $\beta^T \underline{f}(w)$ for $\log RR(w)$. The partially-linear log-linear model is of the form:
+$$\log\left\{E[Y|A,W=w]\right\} = \beta^T \underline{f}(w) \cdot A + h_0(w),$$
+where $ h_0(w) := \log\left\{E[Y|A=0,W=w]\right\}$ is an unspecified nuisance function that is to be learned from the data nonparametrically. This model is equivalent to \textit{only} assuming:
+$$\log RR(w) =\beta^T \underline{f}(w).$$
 
 
-Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "RR"`.  
-
-The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, Tuglus et al. (2011).\nocite{TMLERR} 
+Estimates and inference for the coefficient vector in this semiparametric model can be obtained by applying the R function \textit{spglm} with the option `estimand = "RR"`. The estimand is estimated using targeted maximum likelihood estimation and the theory and pseudo-code for the method can be found in the working paper, Tuglus et al. (2011).\nocite{TMLERR} 
 
 \subsection{spglm in practice}
 
@@ -264,8 +267,8 @@ a coefficient estimate for the intercept, lower and upper confidence intervals, 
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.004872 0.04151975 0.9234949 1.086249 382.6714       0
+   type       param  tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 0.9726337 0.04082418 0.8926197 1.052648 376.7054       0
 \end{Soutput}
 \end{Schunk}
 We can also do a much more complex model with higher dimensional treatment effect interactions. The following data distribution has $CATE(w) = 1 + w$.  
@@ -289,15 +292,13 @@ We can also do a much more complex model with higher dimensional treatment effec
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.0277026 0.04909300 0.9314821 1.123923 330.9923       0
-2: CATE           W 0.9871299 0.08397783 0.8225364 1.151723 185.8573       0
+1: CATE (Intercept) 0.9894983 0.05007017 0.8913625 1.087634 312.4683       0
+2: CATE           W 0.9736947 0.09559303 0.7863358 1.161054 161.0522       0
 \end{Soutput}
 \end{Schunk}
 
 
-Currently, the nonparametric learning is performed using the partially-linear first-order Highly Adaptive Lasso (HAL) implemented using the R package tlverse/hal9001. HAL is an adaptive piece-wise linear regression spline estimator and the custom implementation performs the risk minimization entirely within the semiparametric model. It is implemented using LASSO regression with the parametric treatment interactions (as specified by the formula argument) unpenalized and a rich penalized spline basis for the nonparametric component of the model. This method performs risk minimization entirely within the semiparametric model.
-
-There are a number of other built-in learning options: c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost")
+Currently, the nonparametric learning is performed using the partially-linear first-order Highly Adaptive Lasso (HAL) implemented using the R package tlverse/hal9001. HAL is an adaptive piece-wise linear regression spline estimator and the custom implementation performs the risk minimization entirely within the semiparametric model. It is implemented using LASSO regression with the parametric treatment interactions (as specified by the formula argument) unpenalized and a rich penalized spline basis for the nonparametric component of the model. This method performs risk minimization entirely within the semiparametric model. There are a number of other built-in learning options: c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost")
 
 \begin{Schunk}
 \begin{Sinput}
@@ -316,9 +317,9 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.0012411 0.05350114 0.8963808 1.106101 295.9005       0
-2: CATE           W 0.8401017 0.09212771 0.6595347 1.020669 144.1822       0
+   type       param tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.064734 0.05493813 0.9570570 1.172411 306.4342       0
+2: CATE           W 1.120836 0.11262147 0.9001016 1.341570 157.3587       0
 \end{Soutput}
 \begin{Sinput}
 > # multivariate adaptive regression splines:
@@ -334,9 +335,9 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.0029456 0.05372013 0.8976560 1.108235 295.1959       0
-2: CATE           W 0.8424231 0.08904975 0.6678888 1.016957 149.5779       0
+   type       param tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.051676 0.05642054 0.9410939 1.162258 294.7235       0
+2: CATE           W 1.098311 0.10912470 0.8844307 1.312192 159.1374       0
 \end{Soutput}
 \begin{Sinput}
 > # gradient-boosting with xgboost: :
@@ -352,9 +353,9 @@ There are a number of other built-in learning options: c("HAL", "SuperLearner", 
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9914452 0.05788597 0.8779907 1.104900 270.8104       0
-2: CATE           W 0.8041160 0.10782745 0.5927781 1.015454 117.9124       0
+   type       param tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.094323 0.06419361 0.9685056 1.220140 269.5403       0
+2: CATE           W 1.193905 0.13667646 0.9260241 1.461786 138.1167       0
 \end{Soutput}
 \end{Schunk}
 
@@ -382,9 +383,9 @@ The default learning algorithm "HAL" can be customized with the HAL\_args\_Y0W a
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 0.9987979 0.05349649 0.8939467 1.103649 295.2040       0
-2: CATE           W 0.8275429 0.09751685 0.6364134 1.018672 134.1779       0
+   type       param tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.057640 0.05445743 0.9509052 1.164374 307.0794       0
+2: CATE           W 1.104797 0.11170567 0.8858578 1.323736 156.3786       0
 \end{Soutput}
 \end{Schunk}
 
@@ -415,9 +416,9 @@ Take a look at the argument append\_interaction\_matrix to understand the design
 > summary(output) 
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est         se     lower    upper  Z_score p_value
-1: CATE (Intercept) 1.0030332 0.05421587 0.8967720 1.109294 292.5222       0
-2: CATE           W 0.8375932 0.09881702 0.6439154 1.031271 134.0205       0
+   type       param tmle_est         se     lower    upper  Z_score p_value
+1: CATE (Intercept) 1.054905 0.05693366 0.9433174 1.166493 292.9641       0
+2: CATE           W 1.102858 0.10809111 0.8910031 1.314713 161.3242       0
 \end{Soutput}
 \end{Schunk}
 
@@ -450,12 +451,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  tmle_est        se      lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 1.4443123 0.3018202  0.8527557 2.035869 4.238936 2.3461030
-2:   OR           W 0.1211853 0.4931871 -0.8454436 1.087814 1.128834 0.4293669
-   upper_exp   Z_score    p_value
-1:  7.658905 75.662877 0.00000000
-2:  2.967780  3.885155 0.00010226
+   type       param tmle_est        se     lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 1.130524 0.2928748 0.5564998 1.704548 3.097279  1.744555
+2:   OR           W 1.394404 0.4856034 0.4426386 2.346169 4.032569  1.556810
+   upper_exp  Z_score p_value
+1:   5.49890 61.03342       0
+2:  10.44547 45.40219       0
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -479,11 +480,11 @@ formula ~ 1 + W
 \end{Sinput}
 \begin{Soutput}
    type       param  tmle_est        se     lower    upper  psi_exp lower_exp
-1:   RR (Intercept) 0.8733092 0.0978053 0.6816143 1.065004 2.394823  1.977067
-2:   RR           W 1.1532052 0.1835341 0.7934850 1.512925 3.168332  2.211089
-   upper_exp   Z_score p_value
-1:  2.900851 141.18080       0
-2:  4.539993  99.34815       0
+1:   RR (Intercept) 0.9188326 0.1071738 0.7087759 1.128889 2.506363  2.031503
+2:   RR           W 1.2294934 0.1870166 0.8629477 1.596039 3.419497  2.370137
+   upper_exp  Z_score p_value
+1:  3.092220 135.5557       0
+2:  4.933453 103.9480       0
 \end{Soutput}
 \begin{Sinput}
 > 
@@ -511,80 +512,69 @@ We refer to van der Laan, Robins (2003), Neugebauer, van der Laan (2008), and Ro
 \nocite{robinsCausal}
 
 \subsection{Conditional average treatment effect (CATE) estimation with a linear working-model}
-The following estimator and estimand is inspired by Chambaz et al. (2012) and is based on discussions with Prof. Mark van der Laan.\nocite{ChambazLaanVarimp}
+ 
 
 To define a nonparametric approximation of the true CATE with a parametric linear-working model, we utilize the least-squares projection. Let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
 
-Define the risk function,
+\noindent Define the risk function,
 $$R_{CATE}(\beta) = E \left\{CATE(W) - \beta^T \underline{f}(W)\right\}^2$$
-Our estimand of interest is given by $(\beta_0^*, \beta_1^*)$ which is defined as the minimizer of $R_{CATE}$.
+Our estimand of interest is given by $\beta^*$ which is defined as the minimizer of $R_{CATE}$.
 
-Consider the simple working model $\beta^T\underline{f}(W) := \beta_0 + \beta_1^T W$. The risk function then reduces to
+\noindent Consider the simple working model $\beta^T\underline{f}(W) := \beta_0 + \beta_1^T W$. The risk function then reduces to
 $$R_{CATE}(\beta_0, \beta_1) = E \left\{CATE(W) - \beta_0 - \beta_1^T W\right\}^2$$
-which can be viewed as the ordinary least-squares regression of the true estimand $CATE(W)$ onto $W$.
-
-By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+which can be viewed as the ordinary least-squares regression of the true estimand $CATE(W)$ onto $W$. By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
 $$R_{CATE}(\beta_0, \beta_1) = E \left\{E[CATE(W)|V] - \beta_0 - \beta_1^T V\right\}^2.$$
 The risk minimizer is now the least-squares projection of the true marginal structural CATE model $E[CATE(W)|V]$ onto the linear working model. Note if $E[CATE(W)|V] =  \beta_0 + \beta_1^T V$, so that the working model is correct, then this estimand can be directly interpreted as a marginal structural CATE function.
 
-If we use the intercept model then the risk function reduces to
+\noindent  If we use the intercept model then the risk function reduces to
 $$R_{CATE}(\beta_0) = E \left\{E[CATE(W)] - \beta_0 \right\}^2.$$
-and the risk minimizer is exactly given by the nonparametric ATE $E[CATE(W)]$! Thus, the intercept model can be used for marginal ATE estimation.
+and the risk minimizer is exactly given by the nonparametric ATE $E[CATE(W)]$! Thus, the intercept model can be used for marginal ATE estimation. Quite remarkably, this estimands based on such least-squares working model projections automatically reduce to marginal structural model parameters when lower dimensional working models are used. No user or developer intervention is needed for this to happen! 
 
-Quite remarkably, this estimands based on such least-squares working model projections automatically reduce to marginal structural model parameters when lower dimensional working models are used. No user or developer intervention is needed for this to happen!
+\noindent  These estimators and estimands are inspired by Chambaz et al. (2012) and is based on discussions with Prof. Mark van der Laan.\nocite{ChambazLaanVarimp}
 
 \subsection{Conditional average treatment effect among the treated (CATT) estimation with a linear working-model}
-The following estimator and estimand is directly due to Chambaz et al. (2012).\nocite{ChambazLaanVarimp}
 
-We now define an alternative working model for the CATE that focuses on the treatment effect among the treated. Again, let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
+We now define an alternative working model for the CATE that focuses on the treatment effect among the treated. Again, let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$.
 
-Define the risk function,
+\noindent Define the risk function,
 $$R_{CATT}(\beta) = E \left\{E[Y|A,W] - A \cdot \beta^T \underline{f}(W) - E[Y|A=0,W]\right\}^2$$
 Our estimand of interest is $\beta^*$ which is defined as the minimizer of $R_{CATT}$. This working model can be viewed as the least-squares regression of the true conditional mean $E[Y|A,W]$ onto the interaction model $A \cdot \beta^T \underline{f}(W) $ using as offset the true placebo conditional mean $E[Y|A=0,W]$. It turns out that we can rewrite this risk function as 
 $$R_{CATT}(\beta) = E \left\{A \left[CATE(W) - \beta^T \underline{f}(W)  \right]  \right\}^2,$$
 which is the least-squares projection of the true CATE onto the linear working model using only the observations with $A=1$ (the treated). Because of this, we call estimands based on this risk function measures of the conditional average treatment effect among the treated (CATT).
 
-This method can also be used to estimate marginal structural models for treatment effects among the treated.
-
-By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
+This method can also be used to estimate marginal structural models for treatment effects among the treated. Specifically, by specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
 $$R_{CATT}(\beta_0, \beta_1) = E \left\{A\left[E[CATE(W)|V,A=1] - \beta_0 - \beta_1^T V\right]^2 \right\}.$$
-The risk minimizer is now the least-squares projection of the true marginal structural CATT model $E[CATE(W)|V, A=1]$ onto the linear working model.
-
-
-If we use the intercept model then the risk function reduces to
+The risk minimizer is now the least-squares projection of the true marginal structural CATT model $E[CATE(W)|V, A=1]$ onto the linear working model. Next, if we use the intercept model then the risk function reduces to
 $$R_{CATT}(\beta_0) = E \left\{ A\cdot \left[E[CATE(W)|A=1] - \beta_0 \right]^2 \right\}.$$
 and the risk minimizer is exactly given by the nonparametric ATT $E[CATE(W)|A=1]$! Thus, the intercept model can be used for marginal ATT estimation.
 
 
 
+These estimators and estimands are directly due to Chambaz et al. (2012).\nocite{ChambazLaanVarimp}
 
 \subsection{Conditional treatment-specific mean (TSM) estimation with a linear working-model}
-The following estimator and estimand is inspired by Chambaz et al. (2012) and is based on discussions with .Prof. Mark van der Laan.
-
-
+ 
 
 A similar working model-based estimand can be constructed for the conditional treatment specific mean. Let $a$ be a level of a categorical treatment assignment $A$. Again, let $\underline{f}(w)$ be an arbitrary known vector-valued function of the covariates and consider the linear parametric working-model $\beta^T \underline{f}(w)$ for $CATE(w)$. 
 
-Define the risk function,
+\noindent Define the risk function,
 $$R_{TSM}(\beta) = E \left\{E[Y|A=a,W] -  \beta^T \underline{f}(W) \right\}^2$$
-Our estimand of interest is $\beta^*$ which is defined as the minimizer of $R_{TSM}$. This estimand corresponds with the least-squares projection of $E[Y|A=a,W]$ onto the linear working model.
+Our estimand of interest is $\beta^*$ which is defined as the minimizer of $R_{TSM}$. This estimand corresponds with the least-squares projection of $E[Y|A=a,W=w]$ onto the linear working model.
 
 By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
 $$R_{TSM}(\beta_0, \beta_1) = E \left\{E[E[Y|A=a,W]|V] - \beta_0 - \beta_1^T V \right\}^2.$$
-The risk minimizer is now the least-squares projection of the true marginal structural TSM model E[E[Y|A=a,W]|V] onto the linear working model.
-
-
-If we use the intercept model then the risk function reduces to
+The risk minimizer is now the least-squares projection of the true marginal structural TSM model E[E[Y|A=a,W]|V] onto the linear working model. If we use the intercept model then the risk function reduces to
 $$R_{TSM}(\beta_0) = E \left\{E[E[Y|A=a,W]] - \beta_0  \right\}^2.$$
 and the risk minimizer is exactly given by the nonparametric TSM $E[E[Y|A=a,W]]$! Thus, the intercept model can be used for marginal TSM estimation.
 
+These estimators and estimands are inspired by Chambaz et al. (2012) and is based on discussions with Prof. Mark van der Laan.\nocite{ChambazLaanVarimp}
 
 \subsection{Conditional odds-ratio (OR) estimation with a logistic working-model}
 Define the working model
 $$P_{\beta}(Y=1|A,W) := \expit\left\{A \cdot \beta^T \underline{f}(W) + \logit(P(Y=0|A,W))\right\},$$
-which is not assumed correct.
+which is not assumed correct. 
 
-Consider the log-likelihood projection risk function
+\noindent Consider the log-likelihood projection risk function
 $$R_{OR}(\beta) = E \left\{P(Y=1|A,W)\log(P_{\beta}(Y=1|A,W)) + P(Y=0|A,W)\log(P_{\beta}(Y=0|A,W)) \right\}.$$
 We define the nonparametric OR estimand as the risk minimizer $\beta^*$ of $R_{OR}$. This estimand unfortnately does not reduce to a marginal structural model estimand when $\underline{f}(W)$ lower dimensional.
 
@@ -597,10 +587,7 @@ We define the nonparametric RR estimand as the risk minimizer $\beta^*$ of $R_{R
 
 By specifying a lower dimensional working model $\underline{f}(W) := V$ for some $V \subset W$, the risk function further reduces to
 $$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]|V] \exp\left\{ \beta^T V\right\}  -  E[E[Y|A=1,W]|V]  \beta^T V\right\}.$$
-The risk minimizer is now the projection of the true marginal structural RR model $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$ onto the log-linear working model. Thus, if the working model is correctly specified, the estimand is $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$.
-
-
-If we use the intercept model then the risk function reduces to
+The risk minimizer is now the projection of the true marginal structural RR model $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$ onto the log-linear working model. Thus, if the working model is correctly specified, the estimand is $\frac{E[E[Y|A=1,W]|V]}{E[E[Y|A=0,W]|V]}$. If we use the intercept model then the risk function reduces to
 $$R_{RR}(\beta) = E \left\{E[E[Y|A=0,W]] \exp\left\{ \beta \right\}  -  E[E[Y|A=1,W]]  \beta\right\}.$$
 and the risk minimizer is exactly given by the nonparametric marginal relative risk $\frac{E[E[Y|A=1,W]]}{E[E[Y|A=0,W]]}$! Thus, the intercept model can be used for marginal RR estimation.
 
@@ -636,12 +623,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est        se     lower    upper
-1: CATE (Intercept) 0.8577035 0.8511518 0.1181344 0.6196126 1.082691
-2: CATE           W 0.9041695 0.9781763 0.2423005 0.5032759 1.453077
+   type       param init_est tmle_est        se     lower    upper
+1: CATE (Intercept) 1.038896 1.032209 0.1066999 0.8230810 1.241337
+2: CATE           W 1.230973 1.171545 0.1692565 0.8398083 1.503282
    psi_transformed lower_transformed upper_transformed
-1:       0.8511518         0.6196126          1.082691
-2:       0.9781763         0.5032759          1.453077
+1:        1.032209         0.8230810          1.241337
+2:        1.171545         0.8398083          1.503282
 \end{Soutput}
 \begin{Sinput}
 > # CATT
@@ -664,12 +651,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est         se     lower    upper
-1: CATT (Intercept) 1.0829632 1.0842410 0.06645006 0.9540013 1.214481
-2: CATT           W 0.9066356 0.9044631 0.12490959 0.6596448 1.149281
+   type       param init_est tmle_est         se     lower    upper
+1: CATT (Intercept) 1.029281 1.030827 0.07147802 0.8907322 1.170921
+2: CATT           W 1.134408 1.136782 0.13424711 0.8736625 1.399901
    psi_transformed lower_transformed upper_transformed
-1:       1.0842410         0.9540013          1.214481
-2:       0.9044631         0.6596448          1.149281
+1:        1.030827         0.8907322          1.170921
+2:        1.136782         0.8736625          1.399901
 \end{Soutput}
 \begin{Sinput}
 > # TSM
@@ -694,12 +681,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est tmle_est         se     lower    upper
-1: CATT (Intercept) 0.9297729 0.927676 0.06166459 0.8068156 1.048536
-2: CATT           W 1.2176464 1.209762 0.13238313 0.9502956 1.469228
+   type       param  init_est  tmle_est         se     lower    upper
+1: CATT (Intercept) 1.0387156 1.0385957 0.06647905 0.9082991 1.168892
+2: CATT           W 0.9914426 0.9748958 0.13642220 0.7075132 1.242278
    psi_transformed lower_transformed upper_transformed
-1:        0.927676         0.8068156          1.048536
-2:        1.209762         0.9502956          1.469228
+1:       1.0385957         0.9082991          1.168892
+2:       0.9748958         0.7075132          1.242278
 \end{Soutput}
 \begin{Sinput}
 > # OR
@@ -722,12 +709,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param init_est tmle_est        se       lower    upper
-1:   OR (Intercept) 1.074840 1.121198 0.3165971  0.50067901 1.741717
-2:   OR           W 1.216106 1.176498 0.6299912 -0.05826187 2.411258
+   type       param init_est tmle_est        se     lower    upper
+1:   OR (Intercept)  1.48634 1.645172 0.4507338 0.7617500 2.528594
+2:   OR           W  1.87996 2.145839 0.9005735 0.3807473 3.910930
    psi_transformed lower_transformed upper_transformed
-1:        3.068528         1.6498412          5.707134
-2:        3.242998         0.9434029         11.147981
+1:        5.181901          2.142021          12.53587
+2:        8.549210          1.463378          49.94540
 \end{Soutput}
 \begin{Sinput}
 > # RR
@@ -750,12 +737,12 @@ formula ~ 1 + W
 > summary(output)
 \end{Sinput}
 \begin{Soutput}
-   type       param  init_est  tmle_est        se     lower    upper
-1:   RR (Intercept) 1.1001582 1.1014440 0.0885031 0.9279811 1.274907
-2:   RR           W 0.7841284 0.7946179 0.2020066 0.3986923 1.190543
+   type       param init_est tmle_est        se     lower    upper
+1:   RR (Intercept) 1.154087 1.154609 0.1009330 0.9567843 1.352434
+2:   RR           W 1.356124 1.386268 0.2474941 0.9011882 1.871347
    psi_transformed lower_transformed upper_transformed
-1:        3.008507          2.529397          3.578368
-2:        2.213595          1.489875          3.288868
+1:        3.172784          2.603311          3.866827
+2:        3.999893          2.462527          6.497043
 \end{Soutput}
 \begin{Sinput}
 > 
