@@ -10,7 +10,7 @@ For a in-depth description of these methods and example code, see the document "
 
 This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
 
-## Semiparametric and nonparametric generalized linear models and causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
+## Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
 
   
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to instead assume a parametric model for only the feature of the data-generating distribution that you care about. That is, assume a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
