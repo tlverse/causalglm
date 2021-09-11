@@ -8,6 +8,8 @@ devtools::install_github("tlverse/causalglm")
 
 For a in-depth description of these methods and example code, see the document "causalglm_writeup.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
 
+This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
+
 ## Semiparametric and nonparametric generalized linear models for conditional causal inference using Targeted Maximum Likelihood Estimation
 
   
