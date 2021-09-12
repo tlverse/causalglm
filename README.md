@@ -12,7 +12,7 @@ if(!require(devtools)) {
 devtools::install_github("tlverse/causalglm")
 ```
 
-This package also requires the following github packages which may or may not be installed automatically
+This package also requires the following github packages which should be installed automatically
 ``` r
 devtools::install_github("tlverse/hal9001@devel")
 devtools::install_github("tlverse/tmle3@general_submodels_devel")
