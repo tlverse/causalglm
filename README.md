@@ -19,6 +19,8 @@ devtools::install_github("tlverse/tmle3@general_submodels_devel")
 devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 ```
 
+If you get an error about github tokens or too many packages downloading, take a look at the bottom of the readme here: https://github.com/tlverse.
+
 Note a documentation bug was fixed on Sept. 11 that now allows this package to be installed without error.
 
 For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
