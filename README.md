@@ -53,7 +53,7 @@ Each estimand can be modeled with a user-specified parametric model that is eith
 
 1. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (this method is closest to glm)
 2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (or is missing some variables)
-3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a handful of variables `V` (fully adjusting for the remaining variables `W`)
+3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a number of variables `V` (fully adjusting for the remaining variables `W`)
 4. Use `causalglmnet` if the variables `W` for which to adjust are high dimensional.
  
 ### User-friendly interface
