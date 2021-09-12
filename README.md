@@ -147,7 +147,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   spglm(
     formula,
@@ -188,7 +188,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   spglm(
     formula,
@@ -280,7 +280,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   npglm(
     formula,
@@ -305,7 +305,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   npglm(
     formula,
@@ -334,7 +334,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 # CATE
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
 output <-
   msmglm(
     formula_msm,
@@ -353,7 +353,7 @@ plot_msm(output)
 # CATT
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
@@ -370,7 +370,7 @@ plot_msm(output)
 # TSM
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
@@ -390,7 +390,7 @@ summary(output[[2]])
 # RR
 Y <- rpois(n, lambda = exp( A * (1 + V + 2*V^2)  + sin(5 * W)))
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
