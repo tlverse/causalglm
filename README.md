@@ -61,8 +61,12 @@ Outputs include:
 1. Coefficient estimates (using the S3 summary function)
 2. Z-scores and p-values for coefficients 
 3. 95% confidence intervals for coefficients
+<<<<<<< HEAD
 4. Individual-level predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 5. Plotting with `plot_msm` for objects returned by `msmglm`.
+=======
+4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
+>>>>>>> 156ead56e4589a9702399b2ffaf05cd31ae7f564
 
 
 Some comments/warnings:
