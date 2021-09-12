@@ -45,9 +45,9 @@ This package supports semiparametric and nonparametric estimation for user-speci
 
  
 The semiparametric methods are run using the function `spglm` and the nonparametric methods are run using the function `npglm`. 
-A semiparametric high dimensional LASSO version of `spglm` is implemented in `causalglmnet` which allows for inference when with adaptive selection and adjustment of possible confounders. 
+A semiparametric high dimensional LASSO version of `spglm` is implemented in `causalglmnet` which allows for inference with adaptive selection and adjustment of possible confounders. 
 
-Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
+Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as used an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
  
 ### User-friendly interface
