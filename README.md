@@ -40,8 +40,8 @@ This package supports semiparametric and nonparametric estimation for user-speci
 2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression with `spglm` and `npglm`)
 3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression with `spglm` and `npglm`)
 4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with `npglm`)
-5. Conditional average treatment effect among the treated (CATT) (Only supported nonparametrically with `npglm`)
-6. Using `msmglm`, you can also learn marginal structural models for the CATE, CATT, TSM and RR with nonparametric robustness.
+5. Conditional average treatment effect among the treated (CATT). (Only supported nonparametrically with `npglm`)
+6. Robust Marginal structural models for the CATE, CATT, TSM and RR with `msmglm`.
 
  
 The semiparametric methods are run using the function `spglm` and the nonparametric methods are run using the function `npglm`. 
