@@ -258,9 +258,11 @@ output <-
     learning_method = "HAL",
     verbose = FALSE
   )
-
-summary(output) 
-head(predict(output, data = data))
+# returns a list of causalglm objects for each level of `A`
+output1 <- output[[1]]
+output2 <- output[[2]]
+summary(output1) 
+head(predict(output1, data = data))
 ```
  
 
@@ -343,6 +345,7 @@ output <-
 
 summary(output)
 plot_msm(output)
+
 # CATT
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
 data <- data.frame(V,W, A, Y)
@@ -358,6 +361,7 @@ output <-
   )
 
 summary(output)
+plot_msm(output)
 
 # TSM
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
