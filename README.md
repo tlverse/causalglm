@@ -34,11 +34,11 @@ In this package, we utilize targeted machine-learning to generalize the parametr
 
 This package supports semiparametric and nonparametric estimation for user-specified models of the following point-treatment estimands:
 
-1. Conditional average treatment effect (CATE). (Causal semiparametric linear regression)
-2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression)
-3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression)
-4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with npglm)
-5. Conditional average treatment effect among the treated (CATT) (Only supported nonparametrically with npglm)
+1. Conditional average treatment effect (CATE). (Causal semiparametric linear regression with `spglm` and `npglm`)
+2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression with `spglm` and `npglm`)
+3. Conditional relative risk (RR) for nonnegative outcomes and a binary treatment. (Causal semiparametric log-linear relative-risk regression with `spglm` and `npglm`)
+4. Conditional treatment-specific mean (TSM) for categorical treatments. (Only supported nonparametrically with `npglm`)
+5. Conditional average treatment effect among the treated (CATT) (Only supported nonparametrically with `npglm`)
 6. Using `msmglm`, you can also learn marginal structural models for the CATE, CATT, TSM and RR with nonparametric robustness.
 
  
