@@ -2,6 +2,10 @@
 
 NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
 
+For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
+
+This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
+
 
 To install this package, install the devtools CRAN package and run:
 
@@ -21,11 +25,8 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 
 If you get an error about github tokens or too many packages downloading, take a look at the bottom of the readme here: https://github.com/tlverse.
 
-Note a documentation bug was fixed on Sept. 11 that now allows this package to be installed without error.
-
-For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
-
-This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
+ 
+ 
 
 ## Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
 
