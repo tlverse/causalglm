@@ -49,6 +49,12 @@ A semiparametric high dimensional LASSO version of `spglm` is implemented in `ca
 
 Each estimand can be modeled with a user-specified parametric model that is either assumed correct (`spglm` and `causalglmnet`) or as used an approximation, i.e. working model, of the nonparametric true estimand (`npglm`). The former approach provides interpretable estimates and correct inference only when the parametric model is correct, and the latter approach provides interpretable estimates and nonparametrically correct inference even when the parametric model is incorrect.
 
+### Which method to use?
+
+1. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (this method is closest to glm)
+2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (or is missing some variables)
+3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a handful of variables `V` (fully adjusting for the remaining variables `W`)
+4. Use `causalglmnet` if the variables `W` for which to adjust are high dimensional.
  
 ### User-friendly interface
 The functions are designed to be easy to use (any feedback will be greatly appreciated). A minimalistic yet still very flexible front-end function for all routines is provided through the `spglm/npglm/causalglmnet/msmglm` functions. Check out the vignette to see how to use it! The necessary arguments are: 
@@ -65,8 +71,6 @@ Outputs include:
 3. 95% confidence intervals for coefficients
 4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 5. Plotting with `plot_msm` for objects returned by `msmglm`.
-
-
 
 
 Some comments/warnings:
