@@ -167,7 +167,8 @@ plot_msm(output)
 ```
 
 ### Conditional odds ratio estimation
-
+Note a log-linear model is used for the conditional odds ratio.
+As a consequence, the parametric model specified by `formula` is actually a model for the log conditional odds ratio.
 
 ``` r
 # odds ratio
@@ -201,7 +202,9 @@ summary(output)
 
 
 ### Conditional relative risk/treatment-effect estimation
- 
+ Note a log-linear model is used for the conditional relative risk.
+As a consequence, the parametric model specified by `formula` is actually a model for the log conditional relative risk.
+
  
 
 ``` r
