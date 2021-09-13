@@ -39,7 +39,7 @@ The statistical data-structure used throughout this package is `O = (W,A,Y)` whe
 The estimands supported by causalglm are
 
 1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=1,W] - E[Y|A=0,W]`
-2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)}{P(Y=1|A=0,W)/P(Y=0|A=0,W)}`
+2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}`
 3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=1,W]/E[Y|A=0,W]`
 4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]`
 5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=1,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=1`)
