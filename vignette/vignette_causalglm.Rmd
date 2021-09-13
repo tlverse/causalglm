@@ -486,7 +486,7 @@ output <-
   msmglm(
     formula_msm,
     output,
-    V = "V",
+    V = "V", # When reusing fits, we can specify new "V" variables
     estimand = "CATT",
     verbose = FALSE
   )
@@ -502,7 +502,7 @@ output <-
   msmglm(
     formula_msm,
     output,
-    V = "V",
+    V = "V",  # When reusing fits, we can specify new "V" variables
     estimand = "TSM",
     verbose = FALSE
   )
