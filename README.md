@@ -83,6 +83,10 @@ A longer answer is:
 
 `spglm` is a semiparametric method which means that it assumes the user-specified parametric model is correct for inference. This method should be used if you are very confident in your parametric model. `npglm` is a nonparametric method that views the user-specified parametric model as an approximation or working-model for the true nonparametric estimand. The estimands are the best causal approximation of the true conditional estimand (i.e. projections). Because of this model agnostic view, npglm provides interpretable estimates and correct inference under no conditions. The user-specified parametric model need not be correct or even a good approximation for inference! `npglm` should be used if you believe your parametric model is a good approximation but are not very confident that it is correct. Also, it never hurts to run both `spglm` and `npglm` for robustness! If the parametric model is close to correct then the two methods should give similar estimates. Finally, `msmglm` deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables `V` adjusting for all the available confounders `W` that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having `V` be a single variable) and allows for nice plots (see `plot_msm`).
 
+### Features to be added in the future
+1. Categorical treatment support for msmglm and npglm (i.e. models of the form `E[Y|A=a,W] - E[Y|A=0,W] =  f(W)`)
+2. Continuous/ordered treatment support for all methods. (i.e. models of the form `E[Y|A=a,W] - E[Y|A=0,W] = a * f(W)` where `A` is a numeric variable and `f(W)` is a user specified parametric model.)
+3. Missing outcomes
  
 ### User-friendly interface
 `causalglm` has a minimalistic yet still quite flexible front-end. Check out the vignette to see how to use it! The necessary arguments are: 
