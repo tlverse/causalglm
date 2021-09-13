@@ -91,6 +91,8 @@ A longer answer is:
 3. `W`, `A`, `Y`:  character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
 4. `estimand`: the choice of estimand, `"CATE"`, `"OR"`, `"RR"` (`"TSM"`, `"CATT"` for `npglm`)
  
+Other useful arguments are:
+5. `learning_method`: The machine-learning algorithm used to learn the nuisance function (default is HAL. See vignette and documentation)
  
 
 ### Conditional average treatment effect estimation
