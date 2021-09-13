@@ -212,6 +212,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp( A * (1 + W + 2*W^2)  + sin(5 * W)))
 data <- data.frame(W, A, Y)
 formula = ~ poly(W, degree = 2, raw = TRUE) 
+# Nonparametric robust inference
 output <-
   npglm(
     formula,
@@ -222,6 +223,7 @@ output <-
   )
 summary(output)
 
+# Semiparametric inference
 output <-
   spglm(
     formula,
@@ -232,6 +234,7 @@ output <-
   )
 summary(output)
 
+# Learn a marginal structural model with cool plots
 output <-
   msmglm(
     formula,
@@ -254,14 +257,14 @@ W2 <- runif(n, min = -1, max = 1)
 A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
 Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
 data <- data.frame(W1, W2,A,Y)
-# CATE
+# CATE 
 formula = ~ poly(W1, degree = 2, raw = TRUE)
 output <- npglm(formula,
       data,
       W = c("W1", "W2"), A = "A", Y = "Y",
       estimand = "CATE")
 summary(output)
-# CATT, lets reuse fit
+# CATT, lets reuse the fit (see vignette)
 output <- npglm(formula,
       output,
       estimand = "CATT")
