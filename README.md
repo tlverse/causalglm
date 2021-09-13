@@ -71,9 +71,9 @@ The outputs of the methods include:
 A rule of thumb for choosing between these methods is as follows:
 
 1. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (this method is closest to glm)
-2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (or is missing some variables)
-3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
-4. Use `causalglmnet` if the variables `W` for which to adjust are high dimensional.
+2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (e.g. is missing some variables)
+3. Use `msmglm` if you want to know how the treatment effect is causally affected by one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
+4. Use `causalglmnet` if the variables `W` for which to adjust are (very) high dimensional.
 
 A longer answer is:
 
