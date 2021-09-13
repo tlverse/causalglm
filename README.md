@@ -59,10 +59,11 @@ causalglm also supports the following marginal structural model estimands:
 
 causalglm consists of four main functions: 
  
-1. `spglm` for semiparametric estimation of correctly specified parametric models for the `CATE`, `RR` and `OR`
-2. `npglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
-3. `msmglm` for robust nonparametric estimation of user-specified marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
-4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
+1. `spglm` for semiparametric estimation of correctly specified parametric models for the `CATE`, `RR` and `OR` with binary treatments
+2. `npglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `CATT`, `TSM`, `RR` or `OR` with binary or categorical treatments
+3. `msmglm` for robust nonparametric estimation of user-specified marginal structural models for the `CATE`, `CATT`, `TSM` or `RR` with binary or categorical treatments
+4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle) for binary treatments.
+5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `RR` or `OR` for continuous or ordered treatments (in development)
  
 The outputs of the methods include:
 
