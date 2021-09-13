@@ -73,106 +73,124 @@
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
 npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
-  check_arguments(formula, data, W, A, Y)
-  args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
-
-  tryCatch(
-    {
-      data <- as.data.table(data)
-    },
-    error = function(...) {
-      stop("Unable to cast `data` into data.table. Make sure this is a matrix or data.frame.")
+  if(inherits(data, "npglm") || inherits(data, "msmglm")) {
+    if(verbose) {
+      print("Reusing previous fit...")
     }
-  )
-  if (!is.character(W)) {
-    stop("`W` should be a character vector of baseline covariates.")
-  } else if (!(all(W %in% colnames(data)))) {
-    stop("Not all variables in `W` were found in `data`.")
-  }
-  if (length(A) != 1) {
-    stop("`A` should be a single character specifying the treatment variable name in `data`.")
-  } else if (!(A %in% colnames(data))) {
-    stop("Variable `A` was not found in `data`.")
-  }
-  if (length(Y) != 1) {
-    stop("`Y` should be a single character specifying the treatment variable name in `data`.")
-  } else if (!(Y %in% colnames(data))) {
-    stop("Variable `Y` was not found in `data`.")
-  }
-  weights <- NULL
-
-  estimand <- match.arg(estimand)
-  learning_method <- match.arg(learning_method)
-
-  if (!is.null(weights)) {
-    data$weights <- weights
+    args <- data$args
+    args$formula <- formula
+    tmle3_input <- data$tmle3_input
+    levels_A <- data$tmle3_input$levels_A
+    if(estimand == "TSM") {
+      levels_A <- sort(unique(args$data[[args$A]]))
+    }
+    tmle3_fit <- refit_glm(data, formula, estimand = estimand, verbose = verbose)
+    data <- args$data
   } else {
-    data$weights <- 1
-  }
-
-  superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(Stack$new(
-    Lrnr_glmnet$new(), Lrnr_glm$new(), Lrnr_gam$new(), Lrnr_earth$new(),
-    Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)
-  ), full_fit = T), Lrnr_cv_selector$new(loss_squared_error))
-
-  learner_list_A <- list(
-    HAL = Lrnr_hal9001$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10, 3)), SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(), glm = Lrnr_glm$new(), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(),
-    ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, eval_metric = "logloss")), full_fit = TRUE), Lrnr_cv_selector$new(loss_loglik_binomial))
-  )
-
-  if (is.null(sl3_Learner_A)) {
-    sl3_Learner_A <- learner_list_A[[learning_method]]
-    if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
-      sl3_Learner_A <- Lrnr_cv$new(sl3_Learner_A, full_fit = TRUE)
+    
+    
+    
+    check_arguments(formula, data, W, A, Y)
+    args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
+    
+    
+    tryCatch(
+      {
+        data <- as.data.table(data)
+      },
+      error = function(...) {
+        stop("Unable to cast `data` into data.table. Make sure this is a matrix or data.frame.")
+      }
+    )
+    if (!is.character(W)) {
+      stop("`W` should be a character vector of baseline covariates.")
+    } else if (!(all(W %in% colnames(data)))) {
+      stop("Not all variables in `W` were found in `data`.")
     }
-  }
-  binary <- all(Y %in% c(0, 1))
-  if (is.null(sl3_Learner_Y)) {
-    if (learning_method == "HAL") {
-      wrap_in_Lrnr_glm_sp <- FALSE
-      # Allow for formula_HAL
-      sl3_Learner_Y <- Lrnr_hal9001$new(
-        formula_HAL = formula_HAL_Y, family = family_list[[estimand]],
-        smoothness_orders = HAL_args_Y$smoothness_orders,
-        max_degree = HAL_args_Y$max_degree,
-        num_knots = HAL_args_Y$num_knots, fit_control = HAL_fit_control
-      )
-    } else if (estimand == "RR" && !binary) {
-      superlearner_RR <- make_learner(Pipeline, Lrnr_cv$new(list(
-        Lrnr_glmnet$new(family = "poisson", formula = formula_Y), Lrnr_glm$new(family = poisson(), formula = formula_Y), Lrnr_gam$new(family = poisson()),
-        Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson")
-      ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-
-      learner_list_Y0W_RR <- list(
-        SuperLearner = superlearner_RR, glmnet = Lrnr_glmnet$new(formula = formula_Y, family = "poisson"), glm = Lrnr_glm$new(formula = formula_Y, family = poisson()), gam = Lrnr_gam$new(family = poisson()),
-        xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson", eval_metric = "error")), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-      )
-      sl3_Learner_Y <- learner_list_Y0W_RR[[learning_method]]
+    if (length(A) != 1) {
+      stop("`A` should be a single character specifying the treatment variable name in `data`.")
+    } else if (!(A %in% colnames(data))) {
+      stop("Variable `A` was not found in `data`.")
+    }
+    if (length(Y) != 1) {
+      stop("`Y` should be a single character specifying the treatment variable name in `data`.")
+    } else if (!(Y %in% colnames(data))) {
+      stop("Variable `Y` was not found in `data`.")
+    }
+    weights <- NULL
+    
+    estimand <- match.arg(estimand)
+    learning_method <- match.arg(learning_method)
+    
+    if (!is.null(weights)) {
+      data$weights <- weights
     } else {
-      superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(list(
-        Lrnr_glmnet$new(formula = formula_Y), Lrnr_glm$new(formula = formula_Y), Lrnr_gam$new(), Lrnr_earth$new(formula = formula_Y),
-        Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 5)
-      ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-      learner_list_Y <- list(
-        SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(formula = formula_Y), glm = Lrnr_glm$new(formula = formula_Y), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(formula = formula_Y),
-        ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-      )
-      sl3_Learner_Y <- learner_list_Y[[learning_method]]
+      data$weights <- 1
     }
-    if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
-      sl3_Learner_Y <- Lrnr_cv$new(sl3_Learner_Y, full_fit = TRUE)
+    
+    superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(Stack$new(
+      Lrnr_glmnet$new(), Lrnr_glm$new(), Lrnr_gam$new(), Lrnr_earth$new(),
+      Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)
+    ), full_fit = T), Lrnr_cv_selector$new(loss_squared_error))
+    
+    learner_list_A <- list(
+      HAL = Lrnr_hal9001$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10, 3)), SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(), glm = Lrnr_glm$new(), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(),
+      ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, eval_metric = "logloss")), full_fit = TRUE), Lrnr_cv_selector$new(loss_loglik_binomial))
+    )
+    
+    if (is.null(sl3_Learner_A)) {
+      sl3_Learner_A <- learner_list_A[[learning_method]]
+      if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
+        sl3_Learner_A <- Lrnr_cv$new(sl3_Learner_A, full_fit = TRUE)
+      }
     }
+    binary <- all(Y %in% c(0, 1))
+    if (is.null(sl3_Learner_Y)) {
+      if (learning_method == "HAL") {
+        wrap_in_Lrnr_glm_sp <- FALSE
+        # Allow for formula_HAL
+        sl3_Learner_Y <- Lrnr_hal9001$new(
+          formula_HAL = formula_HAL_Y, family = family_list[[estimand]],
+          smoothness_orders = HAL_args_Y$smoothness_orders,
+          max_degree = HAL_args_Y$max_degree,
+          num_knots = HAL_args_Y$num_knots, fit_control = HAL_fit_control
+        )
+      } else if (estimand == "RR" && !binary) {
+        superlearner_RR <- make_learner(Pipeline, Lrnr_cv$new(list(
+          Lrnr_glmnet$new(family = "poisson", formula = formula_Y), Lrnr_glm$new(family = poisson(), formula = formula_Y), Lrnr_gam$new(family = poisson()),
+          Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson")
+        ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
+        
+        learner_list_Y0W_RR <- list(
+          SuperLearner = superlearner_RR, glmnet = Lrnr_glmnet$new(formula = formula_Y, family = "poisson"), glm = Lrnr_glm$new(formula = formula_Y, family = poisson()), gam = Lrnr_gam$new(family = poisson()),
+          xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson", eval_metric = "error")), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
+        )
+        sl3_Learner_Y <- learner_list_Y0W_RR[[learning_method]]
+      } else {
+        superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(list(
+          Lrnr_glmnet$new(formula = formula_Y), Lrnr_glm$new(formula = formula_Y), Lrnr_gam$new(), Lrnr_earth$new(formula = formula_Y),
+          Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 5)
+        ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
+        learner_list_Y <- list(
+          SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(formula = formula_Y), glm = Lrnr_glm$new(formula = formula_Y), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(formula = formula_Y),
+          ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
+        )
+        sl3_Learner_Y <- learner_list_Y[[learning_method]]
+      }
+      if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
+        sl3_Learner_Y <- Lrnr_cv$new(sl3_Learner_Y, full_fit = TRUE)
+      }
+    }
+    if (estimand != "TSM") {
+      levels_A <- max(as.numeric(levels_A))
+    }
+    tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand, delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = levels_A)
+    learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
+    node_list <- list(weights = "weights", W = W, A = A, Y = Y)
+    
+    tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list, delta_epsilon = delta_epsilon, levels_A = levels_A)
+    tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
   }
-  if (estimand != "TSM") {
-    levels_A <- max(as.numeric(levels_A))
-  }
-  tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand, delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = levels_A)
-  learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
-  node_list <- list(weights = "weights", W = W, A = A, Y = Y)
-
-  tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list)
-  tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
-
   coefs <- tmle3_fit$summary
   coefs <- coefs[, -3]
   if (estimand %in% c("CATE", "CATT", "TSM")) {
@@ -187,21 +205,22 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
   pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
-
+  
   if (estimand == "TSM") {
+    print(levels_A)
     anum <- length(levels_A)
-
+    
     numform <- nrow(coefs) / anum
-
+    
     coefs_list <- split(coefs, rep(1:anum, each = numform))
-
+    
     output_list <- list()
     for (i in 1:anum) {
       coefs <- coefs_list[[i]]
-
+      
       tmp <- coefs$param
       formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
-
+      
       output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
       class(output) <- c("npglm", "causalglm")
       output_list[[gsub(":.*", "", tmp[1])]] <- output
@@ -210,14 +229,14 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
     output_list$levels_A <- levels_A
     return(output_list)
   }
-
+  
   tmp <- coefs$param
   if (estimand %in% c("OR", "RR")) {
     formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   } else {
     formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   }
-
+  
   output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
   class(output) <- c("npglm", "causalglm")
   return(output)

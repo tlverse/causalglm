@@ -58,20 +58,24 @@
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
 msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "TSM", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
-  tryCatch(
-    {
-      formula <- as.formula(formula)
-      check <- model.matrix(formula, as.data.frame(data)[, V, drop = F])
-    },
-    error = function(...) {
-      print(...)
-      stop("`formula` should specify a marginal structural model and only depend on variables in `V`.")
+  if(!inherits(data, "msmglm")) {
+    W <- union(W, V)
+    tryCatch(
+      {
+        formula <- as.formula(formula)
+        check <- model.matrix(formula, as.data.frame(data)[, V, drop = F])
+      },
+      error = function(...) {
+        print(...)
+        stop("`formula` should specify a marginal structural model and only depend on variables in `V`.")
+      }
+    )} else {
+      V <- data$args$V
+      W <- data$args$W
     }
-  )
-
-  W <- union(W, V)
+  
   output <- npglm(formula, data, W, A, Y, estimand, learning_method, levels_A, cross_fit, sl3_Learner_A, sl3_Learner_Y, formula_Y, formula_HAL_Y, HAL_args_Y, HAL_fit_control, delta_epsilon, verbose, ...)
-
+  
   if (estimand %in% c("TSM")) {
     levels <- output$levels_A
     for (i in seq_along(levels)) {
@@ -98,6 +102,6 @@ msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "
     formula_fit <- paste0("E[CATE(W)|V, A=1]", " = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   }
   output$formula_fit <- formula_fit
-
+  
   return(output)
 }

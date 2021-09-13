@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  11 SEP 2021 17:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  11 SEP 2021 22:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -776,45 +776,59 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [26]
+<causalglm-010.pdf, id=265, 433.62pt x 433.62pt>
+File: causalglm-010.pdf Graphic file (type pdf)
+<use causalglm-010.pdf>
+Package pdftex.def Info: causalglm-010.pdf  used on input line 1076.
+(pdftex.def)             Requested size: 354.12434pt x 354.14154pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/aer/m/n/10.95 27
  []
 
-[27] (./causalglm.bbl
+[27]
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/aer/m/n/10.95 28 []
  []
 
-[28]
+[28 <./causalglm-010.pdf>] (./causalglm.bbl
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 [] \T1/aer/m/n/10.95 29
  []
 
-[29])
-LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <13> not available
-(Font)              Font shape `T1/pzc/mb/it' tried instead on input line 1140.
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1140.
-
+[29]
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/aer/m/n/10.95 30 []
  []
 
-[30]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1140.
+[30])
+LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <13> not available
+(Font)              Font shape `T1/pzc/mb/it' tried instead on input line 1141.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1141.
+
+Overfull \hbox (10.94998pt too wide) has occurred while \output is active
+[] \T1/aer/m/n/10.95 31
+ []
+
+[31]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1141.
  (./causalglm.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1140.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1140.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1141.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1141.
 
 Package rerunfilecheck Info: File `causalglm.out' has not changed.
 (rerunfilecheck)             Checksum: 66C4FBEFBE89A02E8BACFE01D1C5147E;5786.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1140.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1141.
  ) 
 Here is how much of TeX's memory you used:
- 8212 strings out of 492616
- 118764 string characters out of 6129482
+ 8218 strings out of 492616
+ 118899 string characters out of 6129482
  209502 words of memory out of 5000000
- 11842 multiletter control sequences out of 15000+600000
+ 11846 multiletter control sequences out of 15000+600000
  52564 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  35i,9n,34p,2413b,490s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -839,10 +853,10 @@ f-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2019/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2019/texmf-
 dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2019/texmf-di
 st/fonts/type1/urw/zapfchan/uzcmi8a.pfb>
-Output written on causalglm.pdf (30 pages, 333060 bytes).
+Output written on causalglm.pdf (31 pages, 341239 bytes).
 PDF statistics:
- 416 PDF objects out of 1000 (max. 8388607)
- 359 compressed objects within 4 object streams
- 109 named destinations out of 1000 (max. 500000)
- 202 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 430 PDF objects out of 1000 (max. 8388607)
+ 370 compressed objects within 4 object streams
+ 110 named destinations out of 1000 (max. 500000)
+ 207 words of extra memory for PDF output out of 10000 (max. 10000000)
 

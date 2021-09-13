@@ -27,6 +27,7 @@ spglm(
   sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"),
   delta_epsilon = 0.1,
   verbose = TRUE,
+  warn = TRUE,
   ...
 )
 }

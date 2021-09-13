@@ -674,7 +674,7 @@ head(predict(output, data = data))
 
 
 Marginal structural models can be learned with `msmglm`. The only difference with `npglm` is that the marginal covariate of interest `V` must be provided. `V` can be a vector of covariates but plotting is only supported for univariate `V`. 
-<<>>=
+<<fig=TRUE>>=
 n <- 250
 V <- runif(n, min = -1, max = 1)
 W <- runif(n, min = -1, max = 1)

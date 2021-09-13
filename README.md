@@ -21,8 +21,6 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 
 If you get an error about github tokens or too many packages downloading, take a look at the bottom of the readme here: https://github.com/tlverse.
 
-Note a documentation bug was fixed on Sept. 11 that now allows this package to be installed without error.
-
 For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
 
 This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
@@ -97,19 +95,6 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rnorm(n, mean = A + W, sd = 0.3)
 data <- data.frame(W,A,Y)
 
-formula <- ~ 1
-output <-
-  spglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "CATE",
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output) 
-head(predict(output, data = data))
 
 formula <- ~ 1 + W
 output <-
@@ -124,6 +109,22 @@ output <-
 
 summary(output) 
 head(predict(output, data = data))
+
+# For spglm, you can pass in previous output objects to reuse the machine-learning fits.
+# This only works if the new formula is a sub formula of the original formula (only for spglm)
+formula <- ~ 1
+output <-
+  spglm(
+    formula,
+    output,
+    estimand = "CATE",
+    verbose = FALSE
+  )
+
+summary(output) 
+head(predict(output, data = data))
+
+ 
 ```
 
 ### Conditional odds ratio and partially-linear logistic regression (spglm)
@@ -239,13 +240,12 @@ output <-
 summary(output) 
 head(predict(output, data = data))
 
+# npglm (and msmglm) can reuse fits across formulas and estimands (no conditions!). Pass output to the data argument.
 output <-
   npglm(
     formula,
-    data,
-    W = "W", A = "A", Y = "Y",
+   output,
     estimand = "CATT",
-    learning_method = "HAL",
     verbose = FALSE
   )
 
@@ -256,10 +256,8 @@ head(predict(output, data = data))
 output <-
   npglm(
     formula,
-    data,
-    W = "W", A = "A", Y = "Y",
+    output,
     estimand = "TSM",
-    learning_method = "HAL",
     verbose = FALSE
   )
 # returns a list of causalglm objects for each level of `A`
@@ -326,6 +324,7 @@ The `msmglm` function is a wrapper for `npglm` that focuses purely on marginal s
 
 
 ``` r
+
 n <- 250
 V <- runif(n, min = -1, max = 1)
 W <- runif(n, min = -1, max = 1)
@@ -357,9 +356,8 @@ formula_msm = ~ poly(V, degree = 2, raw = TRUE)
 output <-
   msmglm(
     formula_msm,
-    data,
+    output,
     V = "V",
-    W = c("V","W"), A = "A", Y = "Y",
     estimand = "CATT",
     verbose = FALSE
   )
@@ -374,12 +372,9 @@ formula_msm = ~ poly(V, degree = 2, raw = TRUE)
 output <-
   msmglm(
     formula_msm,
-    data,
+    output,
     V = "V",
-    W = c("V","W"), A = "A", Y = "Y",
     estimand = "TSM",
-    learning_method = "mars",
-    formula_Y = ~ . + . * A,
     verbose = FALSE
   )
 
