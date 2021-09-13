@@ -9,7 +9,7 @@ Description: Utilizing the framework of Targeted Maximum-Likelihood estimation (
   Conditional odds ratios between a binary outcome and binary treatment variables (causal semiparametric logisic regression)
   Conditional additive treatment effects for a continuous outcome (causal semiparametric linear regression with general link functions)
   Conditional relative risk/treatment-effects for a nonnegative outcome (e.g. binary or count) (causal semiparametric relative risk regression with general link functions)
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
