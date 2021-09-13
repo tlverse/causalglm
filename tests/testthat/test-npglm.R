@@ -149,6 +149,6 @@ test_that("Testing npglm", {
   # The intercept model can be interpreted as a population-average of the conditional odds ratio.
   summary(causal_fit)
 
- 
+
   expect_equal(T, T)
 })

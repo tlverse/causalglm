@@ -68,27 +68,25 @@
 #' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
 #' @export
 spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), append_interaction_matrix = TRUE, cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, wrap_in_Lrnr_glm_sp = TRUE, weights = NULL, HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"), delta_epsilon = 0.1, verbose = TRUE, warn = TRUE, ...) {
-  
-  if(inherits(data, "spglm")) {
-     
+  if (inherits(data, "spglm")) {
     formula_orig <- data$args$formula
-    term_orig <- terms(formula_orig, data = data$args$data ) 
-    term <- terms(formula, data = data$args$data ) 
-    all_terms_orig <- attr(term_orig,"term.labels")
-    all_terms <- attr(term,"term.labels")
+    term_orig <- terms(formula_orig, data = data$args$data)
+    term <- terms(formula, data = data$args$data)
+    all_terms_orig <- attr(term_orig, "term.labels")
+    all_terms <- attr(term, "term.labels")
     check1 <- all(all_terms %in% all_terms_orig)
-    check2 <- attr(term_orig,"intercept") == attr(term,"intercept")
-    if(!(check1 && check2)) {
-      if(warn){
-      warning("Terms of new formula could not be confirmed as subsets of original formula. Make sure this formula is truly a subformula or else the results may be unreliable..")
+    check2 <- attr(term_orig, "intercept") == attr(term, "intercept")
+    if (!(check1 && check2)) {
+      if (warn) {
+        warning("Terms of new formula could not be confirmed as subsets of original formula. Make sure this formula is truly a subformula or else the results may be unreliable..")
       }
-    } 
-    if(data$estimand != estimand) {
+    }
+    if (data$estimand != estimand) {
       stop("Reusing fit is not possible for different estimands.")
     }
     args <- data$args
     args$formula <- formula
-    
+
     tmle3_input <- data$tmle3_input
     likelihood <- data$tmle3_fit$likelihood$initial_likelihood
     data <- tmle3_input$data
@@ -96,9 +94,6 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
     delta_epsilon <- tmle3_input$delta_epsilon
     learner_list <- NULL
     tmle_spec_sp <- tmle3_Spec_spCausalGLM$new(formula = formula, estimand = estimand, append_interaction_matrix = NULL, wrap_in_Lrnr_glm_sp = FALSE, binary_outcome = F, delta_epsilon = delta_epsilon, verbose = verbose, likelihood_override = likelihood)
-    
-    
-    
   } else {
     check_arguments(formula, data, W, A, Y)
     args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
@@ -116,9 +111,9 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
     } else {
       data$weights <- 1
     }
-    
-    
-    
+
+
+
     superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(Stack$new(
       Lrnr_glmnet$new(), Lrnr_glm$new(), Lrnr_gam$new(), Lrnr_earth$new(),
       Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)
@@ -127,23 +122,23 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
       Lrnr_glmnet$new(family = "poisson"), Lrnr_glm$new(family = poisson()), Lrnr_gam$new(family = poisson()),
       Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson")
     ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-    
+
     learner_list_A <- list(
       HAL = Lrnr_hal9001$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10, 3)), SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(), glm = Lrnr_glm$new(), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(),
       ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, eval_metric = "logloss")), full_fit = TRUE), Lrnr_cv_selector$new(loss_loglik_binomial))
     )
-    
+
     learner_list_Y0W <- list(
       SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(), glm = Lrnr_glm$new(), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(),
       ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
     )
-    
+
     learner_list_Y0W_RR <- list(
       SuperLearner = superlearner_RR, glmnet = Lrnr_glmnet$new(family = "poisson"), glm = Lrnr_glm$new(family = poisson()), gam = Lrnr_gam$new(family = poisson()),
       xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson", eval_metric = "error")), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
     )
-    
-    
+
+
     if (is.null(sl3_Learner_A)) {
       sl3_Learner_A <- learner_list_A[[learning_method]]
       if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
@@ -169,21 +164,20 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
         sl3_Learner_Y <- Lrnr_cv$new(sl3_Learner_Y)
       }
     }
-    
+
     tmle_spec_sp <- tmle3_Spec_spCausalGLM$new(formula = formula, estimand = estimand, append_interaction_matrix = append_interaction_matrix, wrap_in_Lrnr_glm_sp = wrap_in_Lrnr_glm_sp, binary_outcome = F, delta_epsilon = delta_epsilon, verbose = verbose)
     learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
     if (estimand == "CATE") {
       learner_list$var_Y <- sl3_Learner_var_Y
     }
-    node_list <- list( W = W, A = A, Y = Y)
+    node_list <- list(W = W, A = A, Y = Y)
     tmle3_input <- list(tmle_spec_sp = tmle_spec_sp, data = data, node_list = node_list, learner_list = learner_list, append_interaction_matrix = append_interaction_matrix, binary_outcome = binary_outcome, delta_epsilon = delta_epsilon)
-    
   }
-   
-   tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_sp, data, node_list, learner_list)))
-  
-  
-  
+
+  tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_sp, data, node_list, learner_list)))
+
+
+
   coefs <- tmle3_fit$summary
   coefs <- coefs[, -3]
   if (estimand %in% c("CATE", "CATT", "TSM")) {
@@ -198,14 +192,14 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
   pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
-  
+
   tmp <- coefs$param
   if (estimand %in% c("OR", "RR")) {
     formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   } else {
     formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   }
-  
+
   output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
   class(output) <- c("spglm", "causalglm")
   return(output)

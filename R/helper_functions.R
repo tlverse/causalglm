@@ -22,7 +22,8 @@ plot_msm <- function(object, data = object$args$data) {
     geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) +
     xlab(paste0("V = ", object$args$V)) +
     ylab("MSM(V)") +
-    ggtitle(object$formula_fit) + theme(plot.title = element_text(size=8))
+    ggtitle(object$formula_fit) +
+    theme(plot.title = element_text(size = 8))
   return(plot)
 }
 
