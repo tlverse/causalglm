@@ -2,6 +2,10 @@
 
 This package fully utilizes the powerful `tlverse/tmle3` generalized targeted learning framework as well as the machine-learning frameworks `tlverse/sl3` and `tlverse/hal9001`. We recommend taking a look at these packages and the rest of the `tlverse`! 
 
+For theoretical details and methods descriptions, see the writeup `causalglm.pdf` in the "writeup" folder.
+
+For a walk-through guide with example code, check out `vignette.Rmd` in the "vignette" folder.
+
 ## Installing
 NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
 
