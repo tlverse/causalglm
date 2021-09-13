@@ -50,12 +50,12 @@ msmglm(
 \item{learning_method}{Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 "SuperLearner": A stacked ensemble of all of the below that utilizes cross-validation to adaptively choose the best learner.
 "HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001}. See argument \code{HAL_args_Y}.
-"glm": Fit nuisances with parametric model. 
-"glmnet": Learn using lasso with glmnet.  
-"gam": Learn using generalized additive models with mgcv. 
-"mars": Multivariate adaptive regression splines with \code{earth}.  
-"ranger": Robust random-forests with the package \code{Ranger}  
-"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.  
+"glm": Fit nuisances with parametric model.
+"glmnet": Learn using lasso with glmnet.
+"gam": Learn using generalized additive models with mgcv.
+"mars": Multivariate adaptive regression splines with \code{earth}.
+"ranger": Robust random-forests with the package \code{Ranger}
+"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
 Note speed can vary significantly depending on learner choice!}
 

@@ -34,7 +34,7 @@ npglm(
 \arguments{
 \item{formula}{A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).}
 
-\item{data}{A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}. 
+\item{data}{A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
 Can also be a \code{npglm} fit/output object in which case machine-learning fits are reused (see vignette).}
 
 \item{W}{A character vector of covariates contained in \code{data}}
@@ -56,13 +56,13 @@ Specifically, this estimand is the log-likelihood projection of the true conditi
 
 \item{learning_method}{Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 "SuperLearner": A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
-"HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001}  
-"glm": Fit nuisances with parametric model.  
-"glmnet": Learn using lasso with glmnet.  
-"gam": Learn using generalized additive models with mgcv.  
-"mars": Multivariate adaptive regression splines with \code{earth}.  
-"ranger": Robust random-forests with the package \code{Ranger} 
-"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7. 
+"HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001}
+"glm": Fit nuisances with parametric model.
+"glmnet": Learn using lasso with glmnet.
+"gam": Learn using generalized additive models with mgcv.
+"mars": Multivariate adaptive regression splines with \code{earth}.
+"ranger": Robust random-forests with the package \code{Ranger}
+"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 Note speed can vary  depending on learner choice!}
 
 \item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}

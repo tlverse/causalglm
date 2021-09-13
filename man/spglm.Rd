@@ -33,8 +33,8 @@ spglm(
 \arguments{
 \item{formula}{A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).}
 
-\item{data}{A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}. 
-Or a \code{spglm} fit object in which case previous ML fits are reused in computation. 
+\item{data}{A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
+Or a \code{spglm} fit object in which case previous ML fits are reused in computation.
 Note, only pass in a previous fit object for the same estimand and for subformulas. (See vignette)}
 
 \item{W}{A character vector of covariates contained in \code{data}}
@@ -51,15 +51,15 @@ Note, only pass in a previous fit object for the same estimand and for subformul
 \item{learning_method}{Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 "SuperLearner: A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
 "HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001}. See arguments\code{HAL_args_Y0W}.
-"glm": Fit nuisances with parametric model.  
-"glmnet": Learn using lasso with glmnet. 
-"gam": Learn using generalized additive models with mgcv.  
-"mars": Multivariate adaptive regression splines with \code{earth}.  
-"ranger": Robust random-forests with the package \code{Ranger}  
-"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7. 
+"glm": Fit nuisances with parametric model.
+"glmnet": Learn using lasso with glmnet.
+"gam": Learn using generalized additive models with mgcv.
+"mars": Multivariate adaptive regression splines with \code{earth}.
+"ranger": Robust random-forests with the package \code{Ranger}
+"xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 Note speed can vary significantly depending on learner choice!}
 
-\item{append_interaction_matrix}{Default: TRUE. This argument is passed to \code{Lrnr_glm_semiparametric}. 
+\item{append_interaction_matrix}{Default: TRUE. This argument is passed to \code{Lrnr_glm_semiparametric}.
 This is a boolean for whether to estimate the conditional mean/regression of Y by combining observations with A=0,A=1 (`TRUE`),
 or to first E[Y|A=0,W] nonparametrically with \code{sl3_Learner_Y} or \code{learning_method} and then learning the parametric component with offsetted parametric regression (`FALSE`).
 If `TRUE` the design matrix passed to the regression algorithm/learner for `Y` is `cbind(W,A*V)` where `V  = model.matrix(formula, as.data.frame(W))` is the design matrix specified by the argument \code{formula}.
