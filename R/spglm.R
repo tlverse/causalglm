@@ -5,25 +5,27 @@
 #' Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.
 #' @param formula A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).
 #' @param data A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
+#' Or a \code{spglm} fit object in which case previous ML fits are reused in computation.
+#' Note, only pass in a previous fit object for the same estimand and for subformulas. (See vignette)
 #' @param W A character vector of covariates contained in \code{data}
 #' @param A A character name for the treatment assignment variable contained in \code{data}
 #' @param Y A character name for the outcome variable contained in \code{data} (outcome can be continuous, nonnegative or binary depending on method)
 #' @param learning_method Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 #' "SuperLearner: A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
-#' "HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001} Good for most sample sizes when propertly tuned. See arguments \code{max_degree_Y0W} and \code{num_knots_Y0W}.
-#' "glm": Fit nuisances with parametric model. Best for smaller sample sizes (e.g. n =30-100). See arguments \code{glm_formula_A}, \code{glm_formula_Y} and \code{glm_formula_Y0}.
-#' "glmnet": Learn using lasso with glmnet. Best for smaller sample sizes (e.g. n =30-100)
-#' "gam": Learn using generalized additive models with mgcv. Good for small-to-medium-small sample sizes.
-#' "mars": Multivariate adaptive regression splines with \code{earth}. Good for small-to-medium-small sample sizes.
-#' "ranger": Robust random-forests with the package \code{Ranger} Good for medium-to-large sample sizes.
-#' "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7. Good for medium-to-large sample sizes.
-#' We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
+#' "HAL": Adaptive robust automatic machine-learning using the Highly Adaptive Lasso \code{hal9001}. See arguments\code{HAL_args_Y0W}.
+#' "glm": Fit nuisances with parametric model.
+#' "glmnet": Learn using lasso with glmnet.
+#' "gam": Learn using generalized additive models with mgcv.
+#' "mars": Multivariate adaptive regression splines with \code{earth}.
+#' "ranger": Robust random-forests with the package \code{Ranger}
+#' "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 #' Note speed can vary significantly depending on learner choice!
 #' @param estimand Estimand/parameter to estimate. Choices are:
-#' CATE: Estimate conditional average treatment effect with \code{\link[tmle3]{Param_spCATE}} assuming it satisfies parametric model \code{formula}.
-#' OR: Estimate conditional odds ratio with \code{\link[tmle3]{Param_spOR}} assuming it satisfies parametric model \code{formula}.
-#' RR: Estimate conditional relative risk with \code{\link[tmle3]{Param_spRR}} assuming it satisfies parametric model \code{formula}.
-#' @param append_interaction_matrix Default: TRUE. This argument is passed to \code{Lrnr_glm_semiparametric}. This is a boolean for whether to estimate the conditional mean/regression of Y by combining observations with A=0,A=1 (`TRUE`),
+#' `CATE`: Estimate conditional average treatment effect with \code{\link[tmle3]{Param_spCATE}} assuming it satisfies parametric model \code{formula}.
+#' `OR`: Estimate conditional odds ratio with \code{\link[tmle3]{Param_spOR}} assuming it satisfies parametric model \code{formula}.
+#' `RR`: Estimate conditional relative risk with \code{\link[tmle3]{Param_spRR}} assuming it satisfies parametric model \code{formula}.
+#' @param append_interaction_matrix Default: TRUE. This argument is passed to \code{Lrnr_glm_semiparametric}.
+#' This is a boolean for whether to estimate the conditional mean/regression of Y by combining observations with A=0,A=1 (`TRUE`),
 #' or to first E[Y|A=0,W] nonparametrically with \code{sl3_Learner_Y} or \code{learning_method} and then learning the parametric component with offsetted parametric regression (`FALSE`).
 #' If `TRUE` the design matrix passed to the regression algorithm/learner for `Y` is `cbind(W,A*V)` where `V  = model.matrix(formula, as.data.frame(W))` is the design matrix specified by the argument \code{formula}.
 #' Therefore, it may not be necessary to use learners that model (treatment) interactions when this argument is TRUE.
@@ -47,27 +49,22 @@
 #' For some learners, it may also be unnecessary to include interactions in this case.
 #' #' If you wish to cross-fit the learner \code{sl3_Learner} then do: sl3_Learner <- Lrnr_cv$new(sl3_Learner).
 #' Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.
-#' @param wrap_in_Lrnr_glm_sp Mostly for internal use. Whether \code{sl3_Learner_Y} should be wrapped in a \code{Lrnr_glm_semiparametric} object.
-#' @param weights An optional vector of weights to use in procedure.
+#' @param wrap_in_Lrnr_glm_sp Mostly for internal use (should be TRUE usually). Whether \code{sl3_Learner_Y} should be wrapped in a \code{Lrnr_glm_semiparametric} object.
 #' @param HAL_args_Y0W A list of parameters for the semiparametric Highly Adaptive Lasso estimator for E[Y|A=0,W].
 #' Possible parameters are:
 #' 1. `smoothness_orders`: Smoothness order for HAL estimator of E[Y|A=0,W] (see \code{\link[hal9001]{fit_hal}})
 #' smoothness_order_Y0W = 1 is piece-wise linear. smoothness_order_Y0W = 0 is piece-wise constant.
 #' 2. `max_degree`: Max interaction degree for HAL estimator of E[Y|A=0,W] (see \code{\link[hal9001]{fit_hal}})
 #' 3. `num_knots`: A vector of the number of knots by interaction degree for HAL estimator of E[Y|A=0,W] (see \code{\link[hal9001]{fit_hal}}). Used to generate spline basis functions.
-#' num_knots_Y0W = c(1) is equivalent to main term glmnet/LASSO. (Assuming max_degree_Y0W = 1)
-#' num_knots_Y0W = c(1,1) is equivalent to glmnet/LASSO with both main-terms and all two-way interactions (e.g. Y~ W1 + W1 + W1*W2 + ...).  (Assuming max_degree_Y0W = 2)
-#' num_knots_Y0W = c(10) is an additive piece-wise linear model with 10 knot points.  (Assuming max_degree_Y0W = 1)
-#' num_knots_Y0W = c(10,5) is a bi-additive model with the same one-way basis functions as above, but also two-way interaction piece-wise linear basis functions generated by main-term one-way basis functions with 5 knots. (Assuming max_degree_Y0W = 2)
-#' num_knots_Y0W = c(10,5,1) generates same basis functions as above and also the three-way interaction basis functions with only a single knot point at the origin (e.g. the triple interaction `W1*W2*W3`) (Assuming max_degree_Y0W = 3)
 #' @param HAL_fit_control See the argument `fit_control` of (see \code{\link[hal9001]{fit_hal}}).
 #' @param sl3_Learner_var_Y A \code{sl3}-Learner for the conditional variance of `Y`. Only used if `estimand = "CATE"` and by default is estimated using Poisson-link LASSO regression with `Lrnr_glmnet`.
 #' If conditional variance is constant, set `sl3_Learner_var_Y = Lrnr_mean$new()`.
 #' @param delta_epsilon Step size of iterative targeted maximum likelihood estimator. `delta_epsilon = 1 ` leads to large step sizes and fast convergence. `delta_epsilon = 0.005` leads to slower convergence but possibly better performance.
 #' Useful to set to a large value in high dimensions.
-#' @param ... Other arguments to pass to main routine (spCATE, spOR, spRR)
+#' @param ... Not used
 #' @export
-spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), append_interaction_matrix = TRUE, cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, wrap_in_Lrnr_glm_sp = TRUE, weights = NULL, HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"), delta_epsilon = 0.1, verbose = TRUE, warn = TRUE, ...) {
+spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), append_interaction_matrix = TRUE, cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, wrap_in_Lrnr_glm_sp = TRUE, HAL_args_Y0W = list(smoothness_orders = 1, max_degree = 1, num_knots = c(10, 5, 1)), HAL_fit_control = list(parallel = F), sl3_Learner_var_Y = Lrnr_glmnet$new(family = "poisson"), delta_epsilon = 0.1, verbose = TRUE, warn = TRUE, ...) {
+  weights <- NULL
   if (inherits(data, "spglm")) {
     formula_orig <- data$args$formula
     term_orig <- terms(formula_orig, data = data$args$data)

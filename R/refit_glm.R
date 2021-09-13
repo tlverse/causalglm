@@ -1,4 +1,5 @@
 
+#' internal use to reuse fits
 refit_glm <- function(fit_object, formula, estimand = fit_object$estimand, verbose = TRUE) {
   likelihood <- fit_object$tmle3_fit$likelihood$initial_likelihood
   tmle3_input <- fit_object$tmle3_input
