@@ -85,11 +85,11 @@ A longer answer is:
 
  
 ### User-friendly interface
- A minimalistic yet still very flexible front-end function for all routines is provided through the `spglm/npglm/causalglmnet/msmglm` functions. Check out the vignette to see how to use it! The necessary arguments are: 
-1. A formula object for the `CATE`, `OR`, or `RR` (also `TSM`, `CATT` for `npglm`)
-2. A data.frame containing the data
-3. Variable names: `W`, `A`, `Y` are character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
-4. Choice of estimand: `"CATE"`, `"OR"`, `"RR"` (also `"TSM"`, `"CATT"` for `npglm`)
+`causalglm` has a minimalistic yet still quite flexible front-end. Check out the vignette to see how to use it! The necessary arguments are: 
+1. `formula`: a formula object for the `CATE`, `OR`, or `RR` (also `TSM`, `CATT` for `npglm`)
+2. `data`: a data.frame containing the data
+3. `W`, `A`, `Y`:  character vectors that store the variable names for the baseline variables, treatment variable and outcome variable.
+4. `estimand`: the choice of estimand, `"CATE"`, `"OR"`, `"RR"` (`"TSM"`, `"CATT"` for `npglm`)
  
  
 
