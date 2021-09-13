@@ -34,9 +34,9 @@
 \usepackage{natbib}
  
 \title{%
-  \pkg{causalglm}: A \pkg{tlverse} \proglang{R} package for robust generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning
+  \pkg{causalglm}: A \pkg{tlverse} \proglang{R} package for interpretable and robust causal inference for heterogeneous treatment effects using generalized linear models and targeted machine-learning. 
   }
-\Plaintitle{causalglm: robust generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted machine-learning with the tlverse ecosystem}
+\Plaintitle{causalglm: Interpretable and robust causal inference for heterogeneous treatment effects using generalized linear models and targeted machine-learning}
 \author{Lars van der Laan }
 \date{September 2021}
 
@@ -48,7 +48,7 @@
 %% - \Plaintitle{} without LaTeX markup (if any)
 %% - \Shorttitle{} with LaTeX markup (if any), used as running title
  
-\Shorttitle{\pkg{causalglm}: interpretable causal inference for heterogeneous treatment effects}
+\Shorttitle{\pkg{causalglm}: interpretable and robust causal inference for heterogeneous treatment effects}
 
 %% - \Abstract{} almost as usual
 \Abstract{
