@@ -71,7 +71,9 @@ msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "
       }
     )
   } else {
-    V <- data$args$V
+    if(missing(V)) {
+      V <- data$args$V
+    }
     W <- data$args$W
   }
 
