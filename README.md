@@ -92,6 +92,7 @@ A longer answer is:
 4. `estimand`: the choice of estimand, `"CATE"`, `"OR"`, `"RR"` (`"TSM"`, `"CATT"` for `npglm`)
  
 Other useful arguments are:
+
 5. `learning_method`: The machine-learning algorithm used to learn the nuisance function (default is HAL. See vignette and documentation)
  
 
