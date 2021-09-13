@@ -87,23 +87,19 @@ A longer answer is:
  
  
 
-### Conditional average treatment effect and partially-linear least-squares regression (spglm)
-`spglm` with `estimand == "CATE"` performs estimation in the so-called "partially linear regression model" which *only* assumes
+### Conditional average treatment effect estimation
 
-`CATE(W) = E[Y|A=1,W] - E[Y|A=0,W] ~ a user-specified parametric model.`
-
-This is equivalent to the semiparametric linear regression model `E[Y|A,W] = A CATE(W) + E[Y|A=0,W]` where `CATE(W) = E[Y|A=1,W] - E[Y|A=0,W]` has a user-specified parametric form and `E[Y|A=0,W]` is an unspecified nuisance function that is learned nonparametrically using, for instance, machine-learning. In other words, only the treatment interaction terms in the linear model for `E[Y|A,W]` are modeled parametrically.  Here is some different ways you can model the CATE:
 
 ``` r
 library(causalglm)
 n <- 250
 W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rnorm(n, mean = A + W, sd = 0.3)
+Y <- rnorm(n, mean = A * (1 + W + 2*W^2) + sin(5*W), sd = 0.3)
 data <- data.frame(W,A,Y)
 
-
-formula <- ~ 1 + W
+# Semiparametric
+formula <- ~ poly(W, degree = 2, raw = FALSE)
 output <-
   spglm(
     formula,
@@ -117,13 +113,27 @@ output <-
 summary(output) 
 head(predict(output, data = data))
 
-# For spglm, you can pass in previous output objects to reuse the machine-learning fits.
-# This only works if the new formula is a sub formula of the original formula (only for spglm)
-formula <- ~ 1
+# Nonparametric
+formula <- ~ poly(W, degree = 2, raw = FALSE)
 output <-
-  spglm(
+  npglm(
     formula,
-    output,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "HAL",
+    verbose = FALSE
+  )
+
+summary(output) 
+head(predict(output, data = data))
+ 
+ # Inference for best linear approximation
+formula <- ~ 1 + W
+output <-
+  npglm(
+    formula,
+    output, # Reuse ML fits of previous output by passing in the output as the data argument
     estimand = "CATE",
     verbose = FALSE
   )
@@ -131,196 +141,144 @@ output <-
 summary(output) 
 head(predict(output, data = data))
 
+
+# Learn a marginal structural model for the CATE as a function of `V`.
+formula <- ~ poly(W, degree = 2, raw = FALSE)
+output <-
+  msmglm(
+    formula,
+    data,
+    V = "W",
+    W = "W", A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "HAL",
+    verbose = FALSE
+  )
+
+summary(output) 
+plot_msm(output)
  
 ```
 
-### Conditional odds ratio and partially-linear logistic regression (spglm)
-When Y is binary, the adjusted causal odds ratio between A and Y may be of interest. Use the function `spglm` with `estimand = "OR"`. The model used is the so-called "partially-linear logistic regression model" which *only* assumes
+### Conditional odds ratio estimation
 
-`logOR(W) := log[ {P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)} ] ~ user-specified parametric model`.
-
-That is, the user specifies a parametric model for the log odds between A and Y and nothing else is assumed known. 
-
-This is equivalent to assuming the semiparametric logistic regression model
-
-`P(Y=1|A,W) = expit{A*logOR(W) + logit(P(Y=1|A=0,W))}`
-
-where `P(Y=1|A=0,W)` is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the logistic regression model for `P(Y=1|A,W)` are modeled parametrically.
 
 ``` r
-library(causalglm)
+# odds ratio
 n <- 250
 W <- runif(n, min = -1,  max = 1)
 A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
+# Nonparametric robust inference
+output <-
+  npglm(
+    ~1+W,
+    data,
+    W = c("W"), A = "A", Y = "Y",
+    estimand = "OR" 
+  )
+summary(output)
 
-formula <- ~ 1 + W
+# Semiparametric inference
+output <-
+  spglm(
+    ~1+W,
+    data,
+    W = c("W"), A = "A", Y = "Y",
+    estimand = "OR" 
+  )
+summary(output)
+```
+
+ 
+
+
+### Conditional relative risk/treatment-effect estimation
+ 
+ 
+
+``` r
+# relative risk
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rpois(n, lambda = exp( A * (1 + W + 2*W^2)  + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula = ~ poly(W, degree = 2, raw = TRUE) 
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+
 output <-
   spglm(
     formula,
     data,
     W = "W", A = "A", Y = "Y",
-    estimand = "OR" ,
-    learning_method = "HAL",
+    estimand = "RR",
     verbose = FALSE
   )
-
 summary(output)
-head(predict(output, data = data))
+
+output <-
+  msmglm(
+    formula,
+    data,
+    V = "W",
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+ 
+```
+
+### More conditional treatment effect estimation with npglm and msmglm (the CATT and TSM)
+
+``` r
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+# CATE
+formula = ~ poly(W1, degree = 2, raw = TRUE)
+output <- npglm(formula,
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE")
+summary(output)
+# CATT, lets reuse fit
+output <- npglm(formula,
+      output,
+      estimand = "CATT")
+summary(output)
+# TSM, note this provides a list of npglm objects for each level of `A`.
+outputs <- npglm(formula,
+      output,
+      estimand = "TSM")
+summary(outputs[[1]])
+summary(outputs[[2]])
+
+
+formula = ~ poly(W1, degree = 2, raw = TRUE)
+output <- msmglm(formula,
+      data,
+      V = "W1",
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE")
+summary(output)
+plot_msm(output)
 ```
 
  
-
-
-### Conditional relative risk/treatment-effect and partially-linear log-linear regression (spglm)
- 
- When Y is binary, a count, or more generally nonnegative, the relative risk of Y with respect to A can be estimated. Use the function `spglm` with `estimand = "RR"`.
-
-The model used is the so-called "partially-linear log-linear/poisson regression model" which *only* assumes
-
-`log RR(W) := log{E[Y|A=1,W] / E[Y|A=0,W]} ~ user-specified parametric model`.
-
-That is, we only assume the user specified parametric model (at the log scale) for the relative risk of Y with respect to A.
-
-This is equivalent to assuming the semiparametric log-linear regression model
-`E[Y|A,W] = E[Y|A=0,W] exp(log RR(W)) = E[Y|A=0,W] RR(W)`,
-where `log RR(W)` is parametric and `E[Y|A=0,W]` is the background/placebo outcome model which is unspecified and learned using machine-learning. In other words, only the treatment interaction terms in the log-linear regression model for `E[Y|A,W]` are modeled parametrically.
-
-
-``` r
-library(causalglm)
-n <- 250
-W <- runif(n, min = -1,  max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
-data <- data.frame(W, A, Y)
-
-formula <- ~ 1 + W
-output <-
-  spglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "RR" ,
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output)
-head(predict(output, data = data))
-```
-
-
-## Robust nonparametric inference for generalized linear models with npglm: CATE, CATT, TSM, RR, and OR
-
-Rather than assuming a semiparametric model, we can instead make no assumptions on any functional forms (that is, assume a nonparametric model) and instead use a parametric or semiparametric model as an approximate "working model". This allows for interpretable coefficient-based estimates and inference that are correct under no assumptions on the functional form of the estimand. 
-
-This nonparametric view is implemented in the function `npglm`. The estimates obtained are for the best approximation of the true estimand in the parametric "working model". That is, the estimands are the coefficients of the causal projection of the true estimand onto the parametric working model, where the projection will be defined next.  Even when you believe the working model is correct, this function may still be of interest for robustness. 
-
- 
-
-### Robust nonparametric inference for the CATE, CATT, and TSM (conditional treatment effects with npglm)
-
-``` r
-library(causalglm)
-n <- 250
-W <- runif(n, min = -1,  max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rnorm(n, mean = A + W, sd = 0.3)
-data <- data.frame(W,A,Y)
-
-formula <- ~ 1 + W
-output <-
-  npglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "CATE",
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output) 
-head(predict(output, data = data))
-
-# npglm (and msmglm) can reuse fits across formulas and estimands (no conditions!). Pass output to the data argument.
-output <-
-  npglm(
-    formula,
-   output,
-    estimand = "CATT",
-    verbose = FALSE
-  )
-
-summary(output) 
-head(predict(output, data = data))
-
-
-output <-
-  npglm(
-    formula,
-    output,
-    estimand = "TSM",
-    verbose = FALSE
-  )
-# returns a list of causalglm objects for each level of `A`
-output1 <- output[[1]]
-output2 <- output[[2]]
-summary(output1) 
-head(predict(output1, data = data))
-```
- 
-
-### Robust nonparametric inference for the OR (conditional odds ratio with npglm)
-
-``` r
-library(causalglm)
-n <- 250
-W <- runif(n, min = -1,  max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
-data <- data.frame(W, A, Y)
-
-formula <- ~ 1 + W
-output <-
-  npglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "OR" ,
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output)
-head(predict(output, data = data))
-```
-
-
-### Robust nonparametric inference for the RR (conditional relative-risk with npglm)
-``` r
-library(causalglm)
-n <- 250
-W <- runif(n, min = -1,  max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
-data <- data.frame(W, A, Y)
-
-formula <- ~ 1 + W
-output <-
-  npglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "RR" ,
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output)
-head(predict(output, data = data))
-```
 
 ## Learn marginal structural models for conditional treatment effects with `msmglm`
 
