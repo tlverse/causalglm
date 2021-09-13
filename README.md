@@ -2,6 +2,10 @@
 
 NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
 
+For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
+
+This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
+
 
 To install this package, install the devtools CRAN package and run:
 
@@ -21,9 +25,13 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 
 If you get an error about github tokens or too many packages downloading, take a look at the bottom of the readme here: https://github.com/tlverse.
 
+
 For an in-depth description of these methods and example code, see the document "causalglm.pdf" in the "writeup" folder. This readme is largely a condensed version of this writeup. For example code and a walk-through guide, also see the "vignette.Rmd" document in the "vignette" folder.  
 
 This package fully utilizes the powerful tlverse/tmle3 generalized targeted learning framework as well as the machine-learning frameworks tlverse/sl3 and tlverse/hal9001.
+
+ 
+ 
 
 ## Semiparametric and nonparametric generalized linear models and interpretable causal inference for heterogeneous treatment effects using targeted maximum likelihood estimation 
 
@@ -32,7 +40,7 @@ It is possible to get robust and efficient inference for causal quantities using
 
 In this package, we utilize targeted machine-learning to generalize the parametric generalized linear models commonly used for treatment effect estimation (e.g. the R package glm) to the world of semi and nonparametric models. There is little-to-no loss in precision/p-values/confidence-interval-widths with these semiparametric methods relative to parametric generalized linear models, but the bias reduction from these methods can be substantial. Simulations suggest that these methods can work well with small sample sizes. Among other learning options, we employ the Highly Adaptive Lasso and ensemble machine-learning (Super-Learning) that adapts the aggressiveness of the ML algorithms with sample size, thereby allowing for robust and correct inference in a diverse range of settings. All methods utilize targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011).
 
-This package supports semiparametric and nonparametric estimation for user-specified models of the following point-treatment estimands:
+This package supports semiparametric and nonparametric robust estimation for user-specified parametric models of the following point-treatment estimands:
 
 1. Conditional average treatment effect (CATE). (Causal semiparametric linear regression with `spglm` and `npglm`)
 2. Conditional odds ratio (OR) between two binary variables. (Causal semiparametric logistic regression with `spglm` and `npglm`)
@@ -51,7 +59,7 @@ Each estimand can be modeled with a user-specified parametric model that is eith
 
 1. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (this method is closest to glm)
 2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (or is missing some variables)
-3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a handful of variables `V` (fully adjusting for the remaining variables `W`)
+3. Use `msmglm` if you want to know how the treatment effect is causally affected by a one or a number of variables `V` (fully adjusting for the remaining variables `W`)
 4. Use `causalglmnet` if the variables `W` for which to adjust are high dimensional.
  
 ### User-friendly interface
@@ -148,7 +156,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   spglm(
     formula,
@@ -189,7 +197,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   spglm(
     formula,
@@ -278,7 +286,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   npglm(
     formula,
@@ -303,7 +311,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 Y <- rpois(n, lambda = exp(A + A * W + sin(5 * W)))
 data <- data.frame(W, A, Y)
 
-formula ~ 1 + W
+formula <- ~ 1 + W
 output <-
   npglm(
     formula,
@@ -333,7 +341,7 @@ A <- rbinom(n, size = 1, prob = plogis(W))
 # CATE
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
 output <-
   msmglm(
     formula_msm,
@@ -352,7 +360,7 @@ plot_msm(output)
 # CATT
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
@@ -368,7 +376,7 @@ plot_msm(output)
 # TSM
 Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
@@ -385,7 +393,7 @@ summary(output[[2]])
 # RR
 Y <- rpois(n, lambda = exp( A * (1 + V + 2*V^2)  + sin(5 * W)))
 data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+formula_msm <- ~ poly(V, degree = 2, raw = TRUE) 
 output <-
   msmglm(
     formula_msm,
