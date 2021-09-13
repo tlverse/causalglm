@@ -1,0 +1,514 @@
+---
+title: "vignette"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction to causalglm
+
+```{r, echo = F, include = F}
+#devtools::install_github("tlverse/causalglm")
+library(causalglm)
+```
+
+causalglm is an R package for robust generalized linear models and interpretable causal inference for heterogeneous (or conditional) treatment effects. Specifically, causalglm very significantly relaxes the assumptions needed for useful causal estimates and correct inference by employing semi and nonparametric models and adaptive machine-learning through targeted maximum likelihood estimation (TMLE). See the writeup causalglm.pdf for a more theoretical overview of the methods implemented in this package. 
+
+The statistical data-structure used throughout this package is $O = (W,A,Y)$ where $W$ represents a random vector of baseline (pretreatment) covariates/confounders, $A$ is a usually binary treatment assignment with values in $c(0,1)$, and $Y$ is some outcome variable. For marginal structural models, we also consider a subvector $V \subset W$ that represents a subset of baseline variables that are of interest.
+
+The estimands supported by causalglm are
+
+\begin{enumerate}
+\item Conditional average treatment effect (CATE) for arbitrary outcomes: $E[Y|A=1,W] - E[Y|A=0,W]$
+\item Conditional odds ratio (OR) for binary outcomes: $\frac{P(Y=1|A=1,W)/P(Y=0|A=1,W)}{P(Y=1|A=0,W)/P(Y=0|A=0,W)}$
+\item Conditional relative risk (RR) for binary, count or nonnegative outcomes: E[Y|A=1,W]/E[Y|A=0,W]
+\item Conditional treatment-specific mean (TSM) : $E[Y|A=a,W$
+\item Conditional average treatment effect among the treated (CATT) : the best approximation of E[Y|A=1,W] - E[Y|A=0,W] based on a user-specified formula/parametric model among the treated (i.e. observations with $A=1$)
+\end{enumerate}
+
+causalglm also supports the following marginal structural model estimands:
+
+\begin{enumerate}
+\item Marginal structural models for the CATE: E[CATE(W)|V] := E[E[Y|A=1,W] - E[Y|A=0,W]|V]
+\item Marginal structural models for the RR: E[E[Y|A=1,W]|V]/E[E[Y|A=0,W]|V]
+\item Marginal structural models for the TSM : $E[E[Y|A=a,W]|V]$
+\item Marginal structural models for the CATT : $E[CATE(W)|V, A=1] := E[E[Y|A=1,W] - E[Y|A=0,W]|V, A=1]$
+\end{enumerate}
+
+
+causalglm consists of four main functions: 
+\begin{enumerate}
+\item spglm for semiparametric estimation of correctly specified parametric models for the CATE, RR and OR
+\item npglm for robust nonparametric estimation for user-specified approximation models for the CATE, CATT, TSM, RR or OR
+\item msmglm for robust nonparametric estimation for user-specified marginal structural models for the CATE, CATT, TSM or RR
+\item causalglmnet for high dimensional confounders $W$ (a custom wrapper function for spglm focused on big data where standard ML may struggle)
+\end{enumerate}
+
+spglm is a semiparametric method which means that it assumes the user-specified parametric model is correct for inference. This method should be used if you are very confident in your parametric model. npglm is a nonparametric method that views the user-specified parametric model as an approximation or working-model for the true nonparametric estimand. The estimands are the best causal approximation of the true conditional estimand (i.e. projections). Because of this model agnostic view, npglm provides interpretable estimates and correct inference under no conditions. The user-specified parametric model need not be correct or even a good approximation for inference! npglm should be used if you believe your parametric model is a good approximation but are not very confident that it is correct. Also, it never hurts to run both spglm and npglm for robustness! If the parametric model is close to correct then the two methods should give similar estimates. Finally, msmglm deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables $V$ adjusting for all the available confounders $W$ that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having $V$ be a single variable) and allows for nice plots (see plot_msm).
+
+## Overview of features using `estimand = "CATE"` as an example
+
+We will begin with the conditional average treatment effect estimand (CATE) and use it to illustrate the features of causalglm. Afterwards, we will go through all the other available estimands.
+
+We will use the following simulated data throughout this part.
+
+```{r}
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+```
+
+### spglm with CATE
+
+All methods in causalglm have a similar argument setup. Mainly, they require a formula that specifies a parametric form for the conditional estimand,  a data.frame with the data, and character vectors containing the names of the variables $W$, $A$ and $Y$. The estimand is specified with the argument $estimand$ and the learning method is specified with the $learning\_method$ argument.
+```{r}
+formula <- ~ poly(W1, degree = 2, raw = T) # A correctly specified polynomial model of degree 2
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE", # Options are CATE, RR, OR
+      learning_method = "HAL" # A bunch of options. Default is a custom semiparametric Highly Adaptive Lasso (HAL) spline estimator.
+      )
+
+
+```
+
+`output` contains a `spglm` fit object. It contains estimates information and tlverse/tmle3 objects that store the fit likelihood, tmle_tasks, and target parameter objects. There are a number of extractor functions that should suffice for almost everyone. The `summary`, `coefs`, `print` and `predict` functions should be useful. They work as follows.
+
+```{r}
+# Print tells you the object, estimand, and a fit formula/equation for the estimand
+print(output)
+
+```
+
+Summary provides the coefficient estimates (tmle_est), 95\% confidence intervals (lower, upper), and p-values (p\_value). The coef function provides pretty much the same thing as summary.
+```{r}
+summary(output)  # Summary gives you the estimates and inference
+
+```
+
+The predict function allows you get individual-level treatment effect predictions and 95\% prediction (confidence) intervals.
+Specifically, for each observation, the individual CATE estimate derived from the coefficient estimates is given and a 95\% confidence interval + p-values for it.
+```{r}
+preds <- predict(output, data = data)
+preds <- predict(output) # By default, training data is used.
+head(preds)
+```
+
+
+It is common to want to obtain multiple fits using multiple formulas. We recommend doing this with npglm since it always provides correct interpretable inference even when these models are wrong. It is computationally expensive to recall spglm for each formula since the machine-learning is redone. Instead, we can reuse the machine-learning fits from previous calls to spglm. Due to the semiparametric nature of spglm, the way this works for spglm differs from npglm and msmglm. For spglm, you can pass a previous spglm fit object through the `data` argument with a new formula. The previous fits will then automatically be reused. The catch for spglm is that the new formula must be a subset of the original formula from the previous fit. Thus, one should first fit the most complex formula that contains all terms of interest and then call spglm with the desired subformulas. Lets see how this works. Fortunately, npglm and msmglm also allow for reusing fits and they even work across estimands and for arbitrary formulas (not just subformulas).
+
+```{r}
+# Start with big formula
+formula_full <- ~ poly(W1, degree = 3, raw = T)  
+output_full <- spglm(formula_full, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE", 
+      learning_method = "HAL"  
+      )
+summary(output_full)
+
+# This will give a warning since the term names for `poly(W1, degree = 2, raw = T)` are not a subset of the term names for `poly(W1, degree = 3, raw = T)  `. However, we know they are subformulas so we can ignore this.
+# Use argument warn = FALSE to turn this off.
+subformula <- ~ poly(W1, degree = 2, raw = T)  # one less degree
+output<- spglm(subformula, 
+      data = output_full, # replace data with output_full
+      estimand = "CATE" # No need to specify the variables again.
+      )
+summary(output)
+
+
+subformula <- ~ 1 + W1  # one less degree
+output<- spglm(subformula, 
+      data = output_full, # replace data with output_full
+      estimand = "CATE", warn = FALSE # No need to specify the variables again.
+      )
+summary(output)
+
+subformula <- ~ 1  # one less degree
+output<- spglm(subformula, 
+      data = output_full, # replace data with output_full
+      estimand = "CATE", warn = FALSE # No need to specify the variables again.
+      )
+summary(output)
+# That was fast! Look how different the estimates are when the model is misspecified! (npglm would do better here)
+```
+
+Currently all learning was done with HAL (default and recommended in most cases).
+There are a number of other options. All methods in this package require machine-learning of $P(A=1|W)$ (the propensity score) and $E[Y|A,W]$ (the conditinal mean outcome). For spglm, $E[Y|A,W]$ is learned in a semiparametric way. By default, the learning algorithm is provided the design matrix $cbind(W, A\cdot formula(W))$ where $W$ is a matrix with columns being the baseline variable observations and $A\cdot formula(W)$ is a matrix with columns being the treatment interaction observations specified by the formula argument. Specifically, the design matrix is constructed as follows:
+
+```{r}
+formula <- ~ 1 + W1
+AW <- model.matrix(formula, data)
+design_mat_sp_Y <- as.matrix(cbind(data[,c("W1", "W2")],AW))
+head(as.data.frame(design_mat_sp_Y))
+```
+Since the design matrix automatically contains the treatment interaction terms, additive learners like glm, glmnet or gam can in principle perform well (since they will model treatment interactions). Note that the final regression fit based on this design matrix will be projected onto the semiparametric model using glm.fit to ensure all model constraints are satisfied (this is not important and happens behind the scenes).
+
+This learning method corresponds with the default argument specification `append\_design\_matrix = TRUE`. The other option `append\_design\_matrix = FALSE` performs treatment-stratified estimation. Specifically, the machine-learning algorithm is used to learn the placebo conditional mean $E[Y|A=0,W]$ by performing the regression of $Y$ on $W$ using only the observations with $A=0$. Next, this initial estimator of $E[Y|A=0,W]$ is used as an offset in a glm-type regression of $Y$ on $A\cdot formula(W)$. This two-stage approach does not pool data across treatment arms and is thus not preferred.  
+
+Now that we got the nitty and gritty details out of the way. Lets use some different algorithms. We see that glm and glmnet perform very badly because of model misspecification. (The true model is quite nonlinear in the noninteraction terms). This motivates using causalglm over conventional methods like glm.
+
+
+```{r}
+formula <- ~ poly(W1, degree = 2, raw = T)  
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "glm"  
+      )
+summary(output)
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "glmnet"  
+      )
+summary(output)
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "gam"  
+      )
+
+summary(output)
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "mars"  
+      )
+
+summary(output)
+output <- spglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "xgboost"  
+      )
+summary(output)
+```
+
+
+
+### npglm with CATE
+npglm is a model-robust version of spglm that we personally recommend (at least as a robustness check).
+npglm works similarly to spglm. Fitting and extractor functions are pretty much the same.
+
+```{r}
+
+formula <- ~ poly(W1, degree = 2, raw = T)  
+output <- npglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "HAL"  
+      )
+
+summary(output)
+head(predict(output))
+
+```
+
+npglm can reuse fits across both formulas and estimands with no restrictions. This is because the conditional mean and propensity score are learned fully nonparametrically (the previous semiparametric learning method no longer applies). The nice thing about npglm is that all models are viewed as approximations and thus each model below is interpretable as the best approximation. The intercept model is actually a nonparametric estimate for the marginal ATE! (See writeup.) Additionally, the inference for each model is correct (we don't require correctly specified parametric models!).
+```{r}
+
+formula <- ~ 1 # We can start with simplest model. npglm does not care.
+output_full <- npglm(formula, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "HAL"  
+      )
+
+summary(output)
+ 
+
+formula <- ~  1 + W1
+output <- npglm(formula, 
+      output_full,
+      estimand = "CATE"
+      )
+summary(output)
+formula <- ~ poly(W1, degree = 2, raw = T)  
+output <- npglm(formula, 
+      output_full,
+      estimand = "CATE"
+      )
+summary(output)
+formula <- ~ poly(W1, degree = 3, raw = T)  
+output <- npglm(formula, 
+      output_full,
+      estimand = "CATE"
+      )
+summary(output)
+```
+
+
+### causalglmnet with CATE
+causalglmnet is a wrapper for spglm that uses the LASSO with glmnet for all estimation. This is made for high dimensional settings. It is used in the same way as spglm.
+```{r}
+formula <- ~ poly(W1, degree = 3, raw = T)  
+output <- causalglmnet(formula, 
+       data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE"
+      )
+summary(output)
+```
+
+### msmglm with CATE
+msmglm is for learning marginal structural models (e.g. marginal estimands like the ATE, ATT, and marginal relative risk). It operates in the same way as npglm. It is also a nonparametrically robust method that does not require correct model specification and estimates the best approximation. The only difference is that the marginal covariate(s) of interest $V$ need to be specified. It also has a useful plotting feature that displays 95% confidence bands (only if $V$ is one-dimensional). This method is used if you have many confounders $W$ for which to adjust but only care about the treatment effect association with a subset of variables $V$. This can be used to build causal predictors that only utilize a handful of variables.
+
+
+```{r}
+
+formula <-  ~ poly(W1, degree = 3, raw = T)   
+output <- msmglm(formula, 
+      data,
+      V = "W1",
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "HAL"  
+      )
+
+summary(output)
+plot_msm(output)
+
+formula <-  ~ 1 + W1 # Best linear approximation
+output <- msmglm(formula, 
+      data,
+      V = "W1",
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "HAL"  
+      )
+
+summary(output)
+plot_msm(output)
+
+# This gives a nonparametric estimate for the marginal ATE
+formula <-  ~ 1
+output <- msmglm(formula, 
+      data,
+      V = "W1",
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",  
+      learning_method = "HAL"  
+      )
+
+summary(output)
+ 
+```
+
+
+
+
+
+## Learning other estimands.
+
+All of the vignette discussed so far can be applied to other estimands by specifying a different "estimand" argument.
+
+Let us begin with npglm (msmglm acts in the same exact way). Both npglm and msmglm support the CATE, OR, RR, CATT and TSM
+
+```{r}
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+# CATE
+formula = ~ poly(W1, degree = 2, raw = TRUE)
+output <- npglm(formula,
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE")
+summary(output)
+# CATT, lets reuse fit
+output <- npglm(formula,
+      output,
+      estimand = "CATT")
+summary(output)
+# TSM, note this provides a list of npglm objects for each level of `A`.
+outputs <- npglm(formula,
+      output,
+      estimand = "TSM")
+summary(outputs[[1]])
+summary(outputs[[2]])
+
+```
+
+Both the OR and RR estimands provide the original coefficient estimates and their exponential transforms. This is because the parametric model/formula is actually for the log RR and log OR (that is log-linear models). The predict function gives the exponential of the linear predictor (so actually predicts the OR and RR).
+```{r}
+
+# odds ratio
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+output <-
+  npglm(
+    ~1+W,
+    data,
+    W = c("W"), A = "A", Y = "Y",
+    estimand = "OR" 
+  )
+summary(output)
+
+output <-
+  spglm(
+    ~1+W,
+    data,
+    W = c("W"), A = "A", Y = "Y",
+    estimand = "OR" 
+  )
+summary(output)
+
+ 
+summary(output)
+# relative risk
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rpois(n, lambda = exp( A * (1 + W + 2*W^2)  + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula = ~ poly(W, degree = 2, raw = TRUE) 
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+
+output <-
+  spglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+
+output <-
+  msmglm(
+    formula,
+    data,
+    V = "W",
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+ 
+
+```
+
+## Custom learners with sl3
+
+We refer to the documentation of the tlverse/sl3 package for how learners work. To specify custom learners for the propensity score use the argument sl3\_learner\_A and to specify custom learners for the outcome conditional mean use the argument sl3\_learner\_Y. For spglm, keep in mind the argument "append\_design\_matrix" when choosing learners. A good rule of thumb for spglm is to think of sl3\_learner\_Y as a learner for $E[Y|A=0,W]$. For msmglm and npglm, the learning is fully nonparametric and the regression is performed how you would expect (a standard design matrix containing $W$ and $A$ is passed to the learner). For msmglm and npglm, make sure the learner models interactions, specifically treatment interactions, as these are crucial for fitting the conditional treatment effect estimands well.
+
+
+```{r}
+library(sl3)
+lrnr_A <- Lrnr_gam$new()
+lrnr_Y <- Lrnr_xgboost$new(max_depth = 4)
+lrnr_Y <- Lrnr_cv$new(lrnr_Y, full_fit = TRUE) #cross-fit xgboost
+
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+# CATE
+formula = ~ poly(W1, degree = 2, raw = TRUE)
+output <- npglm(formula,
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",
+      sl3_Learner_A = lrnr_A,
+      sl3_Learner_Y = lrnr_Y)
+
+```
+
+## Other arguments
+
+See the documentation for other arguments for all methods. We note that the remaining arguments will likely not be needed for the average user.
+
+
+```{r}
+
+n <- 250
+V <- runif(n, min = -1, max = 1)
+W <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+
+# CATE
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
+output <-
+  msmglm(
+    formula_msm,
+    data,
+   V = "V",
+    W = c("V","W"), A = "A", Y = "Y",
+    estimand = "CATE",
+    learning_method = "glm",
+    formula_Y = ~ . + . * A,
+    verbose = FALSE
+  )
+
+summary(output)
+plot_msm(output)
+
+# CATT
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    output,
+    V = "V",
+    estimand = "CATT",
+    verbose = FALSE
+  )
+
+summary(output)
+plot_msm(output)
+
+# TSM
+Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
+data <- data.frame(V,W, A, Y)
+formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
+output <-
+  msmglm(
+    formula_msm,
+    output,
+    V = "V",
+    estimand = "TSM",
+    verbose = FALSE
+  )
+
+summary(output[[1]])
+summary(output[[2]])
+ plot_msm(output[[1]])
+
+```
