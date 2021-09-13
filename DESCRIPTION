@@ -1,6 +1,6 @@
 Package: causalglm
 Type: Package
-Title: Interpretable and robust causal inference for heterogeneous treatment effects using generalized linear models and targeted machine-learning. 
+Title: Interpretable and robust causal inference for heterogeneous treatment effects using generalized linear models with targeted machine-learning. 
 Version: 0.1.0
 Author: Lars van der Laan
 Maintainer: Lars van der Laan <vanderlaanlars@yahoo.com>
