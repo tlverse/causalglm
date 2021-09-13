@@ -46,7 +46,7 @@ The estimands supported by causalglm are
 2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}`
 3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=1,W]/E[Y|A=0,W]`
 4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]`
-5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=1,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=1`)
+5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=1,W] - E[Y|A=0,W]` among the treated (i.e. observations with `A=1`) based on a user-specified formula/parametric model 
  
 
 causalglm also supports the following marginal structural model estimands:
