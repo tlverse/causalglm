@@ -10,13 +10,15 @@
 | Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Machine-learning               |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Supports Machine-learning to reduce bias|   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 | CATE | Y | Y | Y |Y |Y | Y|
 | OR | Y | Y | Y |Y |Y | Y|
-| RR | Y | Y | Y |Y |Y |N |
+| RR | Y | Y | Y |Y |Y | N*1 |
 | TSM | Y | Y | N |N |N | Y |
-| CATT| Y | Y | N |N |N |Y? |
+| CATT| Y | Y | N |N |N |Y|
 
+*1: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
+ 
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
 
