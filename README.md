@@ -186,12 +186,16 @@ table(A)
 Y <- rnorm(n, mean = A * (1 + W  ) + W , sd = 0.5)
 data <- data.table(W,A,Y)
 # Model is E[Y|A=treatment_level, W] -  E[Y|A=control_level, W] = formula(W)
-output_init <- npglm(formula = ~1+W, data, W = "W", A = "A", Y = "Y", estimand = "CATE", learning_method = "mars", treatment_level = 1, control_level = 0)
+output_init <- npglm(formula = ~1+W, data, 
+W = "W", A = "A", Y = "Y", estimand = "CATE", 
+learning_method = "mars", 
+treatment_level = 1, control_level = 0)
 summary(output_init)
  
  
 # Reuse fits
-output <- npglm(~1+W, output_init , estimand = "CATE",   treatment_level = 2, control_level = 0)
+output <- npglm(~1+W, output_init , estimand = "CATE",  
+treatment_level = 2, control_level = 0)
 
  
 summary(output)
@@ -211,7 +215,9 @@ quantile(A)
 Y <- rnorm(n, mean =   (A>0) + A * (1 + W  ) + W , sd = 0.5)
 data <- data.table(W,A,Y)
 # Model is CATE(A,W) = formula_binary(W) 1(A > 0) + A * formula_continuous(W)
-out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, data =data, W = "W", A = "A", Y = "Y")
+out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, 
+data =data, 
+W = "W", A = "A", Y = "Y")
 
 summary(out)
 
