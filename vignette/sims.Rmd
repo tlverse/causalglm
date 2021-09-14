@@ -9,10 +9,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-library(causalGLM)
+library(causalglm)
 n <- 1500 # n large enough to be in (deep) asymptotic regime
-nsims <- 1000 # There is quite a lot of randomness in coverage. Large sim numbers gives more correct coverage probabilities
-learning_method <- "HAL" # Recommended machine-learning algorithm (barring computational constraints)
+nsims <- 100  # There is quite a lot of randomness in coverage. Large sim numbers gives more correct coverage probabilities
+learning_method <- "mars" # Recommended machine-learning algorithm (barring computational constraints)
 ```
 
 # Simulation 95% CI coverage test for semiparametric and nonparametric CATE and CATT
@@ -71,12 +71,12 @@ for(i in 1:nsims){
   Y <- data_list$Y
   beta0 <- data_list$beta_logOR
   
-  out <- spglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
+  out <- spglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = T, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes <- cbind(passes, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes), HAL_fit_control = list(parallel = TRUE))
   
-    out <- npglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = FALSE, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
+    out <- npglm(formula, data, W, A, Y, estimand = "OR", learning_method = learning_method, verbose = T, delta_epsilon = 0.05, HAL_fit_control = list(parallel = TRUE))
  
   passes1 <- cbind(passes1, out$coefs$lower <= beta0 & beta0 <= out$coefs$upper )
   print(rowMeans(passes1))

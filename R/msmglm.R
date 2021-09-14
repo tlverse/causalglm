@@ -23,7 +23,12 @@
 #' `CATT`: Provides nonparametrically-robust inference for the user-specified marginal structural model of `E[CATE(W)|V, A=1] := E[E[Y|A=1,W] - E[Y|A=0,W]|V, A=1]`.
 #' `TSM`: Provides nonparametrically-robust inference for the user-specified marginal structural model of  `E[E[Y|A=a,W]|V]`.
 #' `RR`: Provides nonparametrically-robust inference for the user-specified marginal structural relative risk model of  `E[E[Y|A=1,W]|V] / E[E[Y|A=0,W]|V]`.
-#' @param levels_A Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.
+#' @param treatment_level A value/level of \code{A} that represents the treatment arm value. By default, the maximum level.
+#' The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+#' This is mainly useful when \code{A} is categorical.
+#' @param control_level A value/level of \code{A} that represents the control arm value. By default, the maximum level.
+#' The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+#' This is mainly useful when \code{A} is categorical.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
 #'  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}

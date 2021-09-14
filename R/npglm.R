@@ -33,7 +33,12 @@
 #' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} using the parametric model \code{formula}.
 #' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
 #' `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
-#' @param levels_A Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.
+#' @param treatment_level A value/level of \code{A} that represents the treatment arm value. By default, the maximum level.
+#' The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+#' This is mainly useful when \code{A} is categorical.
+#' @param control_level A value/level of \code{A} that represents the control arm value. By default, the maximum level.
+#' The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+#' This is mainly useful when \code{A} is categorical.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
 #'  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}

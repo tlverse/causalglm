@@ -66,6 +66,14 @@ Specifically, this estimand is the log-likelihood projection of the true conditi
 "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 Note speed can vary  depending on learner choice!}
 
+\item{treatment_level}{A value/level of \code{A} that represents the treatment arm value. By default, the maximum level.
+The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+This is mainly useful when \code{A} is categorical.}
+
+\item{control_level}{A value/level of \code{A} that represents the control arm value. By default, the maximum level.
+The estimands are defined relative to \code{treatment_level} and \code{control_level}.
+This is mainly useful when \code{A} is categorical.}
+
 \item{cross_fit}{Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 learning_method = `SuperLearner` is always cross-fitted (default).
  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}
@@ -102,8 +110,6 @@ Useful to set to a large value in high dimensions.}
 \item{verbose}{Passed to \code{tmle3} routines. Prints additional information if TRUE.}
 
 \item{...}{Not used}
-
-\item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}
 }
 \description{
 npglm
