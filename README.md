@@ -96,7 +96,7 @@ Here is a summary of the methods:
 | Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Supports inference with machine-learning and variable selection|   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| High dimensional confounders   |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Inference with High dimensional confounders   |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 | CATE | Y | Y | Y |Y |Y | Y|
 | OR | Y | Y | Y |Y |Y | Y|
 | RR | Y | Y | Y |Y |Y | N*1 |
