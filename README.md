@@ -9,8 +9,7 @@
 | Continuous or ordered treatment|   N  |    N    |   N   |    Y    |     N        |  Y  |
 | Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
-| Causal (unconfounded) estimates|   Y  |    Y    |   N   |    Y    |     N        |  N  |
-  under model mispecification
+| Causal (unconfounded) estimates </li><li>  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Machine-learning               |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 
 
