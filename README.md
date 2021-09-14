@@ -1,23 +1,5 @@
 
-
-| ----method (Top) / feature (Right) ---| npglm | msmglm | spglm | contglm | causalglmnet | glm |
-|--------------------------------|------|---------|-------|---------|--------------|-----|
-| Semiparametric inference       |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Robust nonparametric inference |   Y  |    Y    |   N   |    Y    |     Y        |  N  |            
-| Binary treatment               |   Y  |    Y    |   Y   |    N    |     Y        |  Y  |
-| Categorical treatment          |   Y  |    Y    |   N   |    N    |     N        |  Y  |
-| Continuous or ordered treatment|   N  |    N    |   N   |    Y    |     N        |  Y  |
-| Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
-| Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Supports Machine-learning to reduce bias|   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| CATE | Y | Y | Y |Y |Y | Y|
-| OR | Y | Y | Y |Y |Y | Y|
-| RR | Y | Y | Y |Y |Y | N*1 |
-| TSM | Y | Y | N |N |N | Y |
-| CATT| Y | Y | N |N |N |Y|
-
-*1: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
+ 
  
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
@@ -90,6 +72,9 @@ causalglm consists of five main functions:
 4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
 5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
 
+ 
+
+
 The outputs of the methods include:
 
 1. Coefficient estimates (using the S3 summary function)
@@ -97,6 +82,32 @@ The outputs of the methods include:
 3. 95% confidence intervals for coefficients
 4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 5. Plotting with `plot_msm` for objects returned by `msmglm`.
+
+Here is a summary of the methods:
+
+| ----method (Top) / feature (Left) ---| npglm | msmglm | spglm | contglm | causalglmnet | glm |
+|--------------------------------|------|---------|-------|---------|--------------|-----|
+| Semiparametric inference       |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Robust nonparametric inference |   Y  |    Y    |   N   |    Y    |     Y        |  N  |            
+| Binary treatment               |   Y  |    Y    |   Y   |    N    |     Y        |  Y  |
+| Categorical treatment          |   Y  |    Y    |   N   |    N    |     N        |  Y  |
+| Continuous or ordered treatment|   N  |    N    |   N   |    Y    |     N        |  Y  |
+| Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
+| Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Supports inference with machine-learning and variable selection|   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| High dimensional confounders   |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| CATE | Y | Y | Y |Y |Y | Y|
+| OR | Y | Y | Y |Y |Y | Y|
+| RR | Y | Y | Y |Y |Y | N*1 |
+| TSM | Y | Y | N |N |N | Y |
+| CATT| Y | Y | N |N |N |Y|
+| p-values and confidence intervals | Y | Y | Y |Y |Y | Y|
+| Individual treatment effects with confidence intervals | Y | Y | Y |Y |Y | N|
+
+*1: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
+
+
 
 A rule of thumb for choosing between these methods is as follows:
 
