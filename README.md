@@ -173,31 +173,42 @@ plot_msm(output)
  
 ```
 
-
 ### CATE with categorical treatments
 (Same idea for CATT, TSM and RR)
 ``` r
 n <- 500
 W <- runif(n, min = -1, max = 1)
-A <- rbinom(n, size = 1, prob = 0.66*plogis(W))
-A[A==1] <- 2
-A[A==0] <- rbinom(n, size = 1, prob = plogis(W))
-table(A)
-Y <- rnorm(n, mean = A * (1 + W  ) + W , sd = 0.5)
-data <- data.table(W,A,Y)
-# Model is E[Y|A=treatment_level, W] -  E[Y|A=control_level, W] = formula(W)
-output_init <- npglm(formula = ~1+W, data, 
-W = "W", A = "A", Y = "Y", estimand = "CATE", 
-learning_method = "mars", 
-treatment_level = 1, control_level = 0)
-summary(output_init)
- 
- 
-# Reuse fits
-output <- npglm(~1+W, output_init , estimand = "CATE",  
-treatment_level = 2, control_level = 0)
+A <- rbinom(n, size = 1, prob = 0.66 * plogis(W))
+A[A == 1] <- 2
+A[A == 0] <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rnorm(n, mean = A * (1 + W) + W , sd = 0.5)
+data <- data.table(W, A, Y)
 
- 
+# Model is E[Y|A=treatment_level, W] -  E[Y|A=control_level, W] = formula(W)
+
+output_init <- npglm(
+  formula = ~ 1 + W,
+  data,
+  W = "W", A = "A", Y = "Y",
+  estimand = "CATE",
+  learning_method = "mars",
+  treatment_level = 1,
+  control_level = 0
+)
+
+summary(output_init)
+
+
+# Reuse fits
+output <- npglm(
+  ~ 1 + W,
+  data = output_init ,
+  estimand = "CATE",
+  treatment_level = 2,
+  control_level = 0
+)
+
+
 summary(output)
 
 ```
@@ -206,18 +217,22 @@ summary(output)
 ### CATE with continuous treatments
 
 ``` r
-n <- 1000
+n <- 500
 W <- runif(n, min = -1, max = 1)
-Abinary <- rbinom(n ,size = 1, plogis(W))
+Abinary <- rbinom(n , size = 1, plogis(W))
 A <- rgamma(n, shape = 1, rate = exp(W))
 A <- A * Abinary
-quantile(A)
-Y <- rnorm(n, mean =   (A>0) + A * (1 + W  ) + W , sd = 0.5)
-data <- data.table(W,A,Y)
+Y <- rnorm(n, mean =   (A > 0) + A * (1 + W) + W , sd = 0.5)
+data <- data.table(W, A, Y)
+
 # Model is CATE(A,W) = formula_binary(W) 1(A > 0) + A * formula_continuous(W)
-out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, 
-data =data, 
-W = "W", A = "A", Y = "Y")
+
+out <- contglm(
+  formula_continuous = ~ 1 + W,
+  formula_binary = ~ 1,
+  data = data,
+  W = "W", A = "A", Y = "Y"
+)
 
 summary(out)
 
@@ -225,6 +240,7 @@ summary(out)
 head(predict(out))
 
 ```
+
 
 ### Conditional odds ratio estimation
 Note a log-linear model is used for the conditional odds ratio.
