@@ -48,7 +48,7 @@ The estimands supported by causalglm are
 4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]` (categorical treatments)
 5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=a,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=a`) (categorical treatments)
 
-All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. 
+All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. For binary and categorical treatments, the model used for all estimands is of the form `E[Y|A=a,W] - E[Y|A=0,W] = formula(W)` where `formula` is specified by the user. For continuous treatments (only supported by `contglm`), the model used is `E[Y|A=a,W] - E[Y|A=0,W] = 1(A > 0) * formula_binary(W) + A * formula_continuous`
 
 causalglm also supports the following marginal structural model estimands:
  
