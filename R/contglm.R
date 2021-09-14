@@ -1,13 +1,14 @@
 
 
 
-#' npglm
-#' Nonparametric robust generalized linear models for interpretable causal inference.
-#' Supports flexible working-model-based estimation of the  conditional average treatment effect (CATE and CATT), treatment-specific mean (TSM), conditional odds ratio (OR), and conditional relative risk (RR),
-#' ... where a user-specified working parametric model for the estimand is viewed as an approximation of the true estimand and nonparametrically correct inference is given for these approximations.
-#' The estimates and inference obtained by `npglm` are robust and nonparametrically correct, which comes at a small cost in confidence interval width relative to `spglm`.
-#' Highly Adaptive Lasso (HAL) (see \code{\link[hal9001]{fit_hal}}), a flexible and adaptive spline regression estimator, is recommended for medium-small to large sample sizes.
-#' @param formula A R formula object specifying the parametric form of CATE, OR, or RR (depending on method).
+#' contglm
+#' Robust generalized linear models for interpretable causal inference for continuous or ordered treatments. 
+#' Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
+#' @param formula_continuous An R formula object specifying the continuous component of the parametric form of the continuous treatment CATE.
+#' That is, \code{formula_binary} specifies the interaction with `A` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
+#' @param formula_binary An R formula object specifying the binary component of the parametric form of the continuous treatment CATE.
+#' That is, \code{formula_binary} specifies the interaction with `1(A>0)` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
+#' By default, the same as \code{formula_continuous}
 #' @param data A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
 #' Can also be a \code{npglm} fit/output object in which case machine-learning fits are reused (see vignette).
 #' @param W A character vector of covariates contained in \code{data}
@@ -23,28 +24,18 @@
 #' "ranger": Robust random-forests with the package \code{Ranger}
 #' "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 #' Note speed can vary  depending on learner choice!
-#' @param estimand Estimand/parameter to estimate. Choices are:
-#' `CATE`: Estimate the best parametric approximation of the conditional average treatment effect with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-#' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model.
-#' `CATT`: Estimate the best parametric approximation of the conditional average treatment effect among the treated with \code{\link[tmle3]{Param_npCATE}} using the parametric model \code{formula}.
-#' Specifically, this estimand is the least-squares projection of the true CATE onto the parametric working model using only the observations with `A=1` (among the treated).
-#' `TSM`: Estimate the best parametric approximation of the conditional treatment-specific mean `E[Y|A=a,W]` for `a` in \code{levels_A}.
-#' Specifically, this estimand is the least-squares projection of the true TSM onto the parametric working model.
-#' `OR`: Estimate the best parametric approximation of the conditional odds ratio with \code{\link[tmle3]{Param_npOR}} using the parametric model \code{formula}.
-#' Specifically, this estimand is the log-likelihood projection of the true conditional odds ratio onto the partially-linear logistic regression model with the true `E[Y|A=0,W]` used as offset.
-#' `RR`: Projection of the true conditional relative risk onto a exponential working-model using log-linear/poisson regression.
-#' @param levels_A Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.
+#' @param estimand Estimand/parameter to estimate. Currently only the `CATE` is supported.
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
 #'  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}
 #'  All other learning_methods are only cross-fitted if `cross_fit=TRUE`.
 #'  Note, it is not necessary to cross-fit glm, glmnet, gam or mars as long as the dimension of W is not too high.
 #'  In smaller samples and lower dimensions, it may in fact hurt to cross-fit.
-#' @param sl3_Learner_A A \code{sl3} Learner object to use to estimate nuisance function P(A=1|W) with machine-learning.
+#' @param sl3_Learner_A A \code{sl3} Learner object to use to estimate nuisance functions `P(A>0|W)` and `E[A|W]`` with machine-learning.
 #' Note, \code{cross_fit} is automatically set to FALSE if this argument is provided.
 #' If you wish to cross-fit the learner \code{sl3_Learner_A} then do: sl3_Learner_A <- Lrnr_cv$new(sl3_Learner_A).
 #' Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.
-#' @param sl3_Learner_Y A \code{sl3} Learner object to use to nonparametrically [Y|A,W] with machine-learning.
+#' @param sl3_Learner_Y A \code{sl3} Learner object to use to nonparametrically E[Y|A,W] with machine-learning.
 #' Note, \code{cross_fit} is automatically set to FALSE if this argument is provided.
 #' Cross-fitting is recommended for all tree-based algorithms like random-forests and gradient-boosting.
 #' @param formula_Y Only used if `learning_method %in% c("glm", "earth", "glmnet")`. A R \code{formula} object that specifies the design matrix to be passed to the Learner specified by learning_method: "glm", "earth", "glmnet".
@@ -64,7 +55,7 @@
 #'
 #'
 #' @export
-npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), levels_A = sort(unique(data[[A]])), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+npglm <- function(formula_continuous, formula_binary = formula_continuous, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   if (inherits(data, "npglm") || inherits(data, "msmglm")) {
     if (verbose) {
       print("Reusing previous fit...")
@@ -72,38 +63,36 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
     args <- data$args
     args$formula <- formula
     tmle3_input <- data$tmle3_input
-    levels_A <- data$tmle3_input$levels_A
-    if (estimand == "TSM") {
-      levels_A <- sort(unique(args$data[[args$A]]))
-    }
+    
     tmle3_fit <- refit_glm(data, formula, estimand = estimand, verbose = verbose)
     data <- args$data
   } else {
-    check_arguments(formula, data, W, A, Y)
-    args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
-
- 
+    check_arguments(formula_continuous, data, W, A, Y)
+    check_arguments(formula_binary, data, W, A, Y)
+    args <- list(formula_binary = formula_binary, formula_continuous = formula_continuous, data = data, W = W, A = A, Y = Y)
+    
+    
     weights <- NULL
-
+    
     estimand <- match.arg(estimand)
     learning_method <- match.arg(learning_method)
-
+    
     if (!is.null(weights)) {
       data$weights <- weights
     } else {
       data$weights <- 1
     }
-
+    
     superlearner_default <- make_learner(Pipeline, Lrnr_cv$new(Stack$new(
       Lrnr_glmnet$new(), Lrnr_glm$new(), Lrnr_gam$new(), Lrnr_earth$new(),
       Lrnr_ranger$new(), Lrnr_xgboost$new(verbose = 0, max_depth = 3), Lrnr_xgboost$new(verbose = 0, max_depth = 4), Lrnr_xgboost$new(verbose = 0, max_depth = 5)
     ), full_fit = T), Lrnr_cv_selector$new(loss_squared_error))
-
+    
     learner_list_A <- list(
       HAL = Lrnr_hal9001$new(max_degree = 2, smoothness_orders = 1, num_knots = c(10, 3)), SuperLearner = superlearner_default, glmnet = Lrnr_glmnet$new(), glm = Lrnr_glm$new(), gam = Lrnr_gam$new(), mars = Lrnr_earth$new(),
       ranger = Lrnr_cv$new(Lrnr_ranger$new(), full_fit = TRUE), xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, eval_metric = "logloss"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, eval_metric = "logloss")), full_fit = TRUE), Lrnr_cv_selector$new(loss_loglik_binomial))
     )
-
+    
     if (is.null(sl3_Learner_A)) {
       sl3_Learner_A <- learner_list_A[[learning_method]]
       if (learning_method %in% c("glm", "glmnet", "mars") && cross_fit) {
@@ -126,7 +115,7 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
           Lrnr_glmnet$new(family = "poisson", formula = formula_Y), Lrnr_glm$new(family = poisson(), formula = formula_Y), Lrnr_gam$new(family = poisson()),
           Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson")
         ), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
-
+        
         learner_list_Y0W_RR <- list(
           SuperLearner = superlearner_RR, glmnet = Lrnr_glmnet$new(formula = formula_Y, family = "poisson"), glm = Lrnr_glm$new(formula = formula_Y, family = poisson()), gam = Lrnr_gam$new(family = poisson()),
           xgboost = make_learner(Pipeline, Lrnr_cv$new(Stack$new(Lrnr_xgboost$new(verbose = 0, max_depth = 3, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 4, objective = "count:poisson", eval_metric = "error"), Lrnr_xgboost$new(verbose = 0, max_depth = 5, objective = "count:poisson", eval_metric = "error")), full_fit = TRUE), Lrnr_cv_selector$new(loss_squared_error))
@@ -147,14 +136,12 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
         sl3_Learner_Y <- Lrnr_cv$new(sl3_Learner_Y, full_fit = TRUE)
       }
     }
-    if (estimand != "TSM") {
-      levels_A <- max(as.numeric(levels_A))
-    }
-    tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand, delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = levels_A)
-    learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
-    node_list <- list(weights = "weights", W = W, A = A, Y = Y)
-
-    tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list, delta_epsilon = delta_epsilon, levels_A = levels_A)
+     
+    tmle_spec_np <- tmle3_Spec_contCATE$new(formula_continuous = formula_continuous, formula_binary = formula_binary,  delta_epsilon = delta_epsilon, verbose = verbose, include_A_binary = TRUE)
+    learner_list <- list(A = sl3_Learner_A, A_binary = sl3_Learner_A, Y = sl3_Learner_Y)
+    node_list <- list(  W = W, A = A, Y = Y)
+    
+    tmle3_input <- list(tmle_spec  = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list, delta_epsilon = delta_epsilon )
     tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
   }
   coefs <- tmle3_fit$summary
@@ -171,39 +158,15 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
   pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
-
-  if (estimand == "TSM") {
-    print(levels_A)
-    anum <- length(levels_A)
-
-    numform <- nrow(coefs) / anum
-
-    coefs_list <- split(coefs, rep(1:anum, each = numform))
-
-    output_list <- list()
-    for (i in 1:anum) {
-      coefs <- coefs_list[[i]]
-
-      tmp <- coefs$param
-      formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
-
-      output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
-      class(output) <- c("npglm", "causalglm")
-      output_list[[gsub(":.*", "", tmp[1])]] <- output
-    }
-    output_list$estimand <- "TSM"
-    output_list$levels_A <- levels_A
-    return(output_list)
-  }
-
+   
   tmp <- coefs$param
   if (estimand %in% c("OR", "RR")) {
     formula_fit <- paste0("log ", coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   } else {
-    formula_fit <- paste0(coefs$type[1], "(W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
+    formula_fit <- paste0(coefs$type[1], "(A,W) = ", paste0(signif(coefs$tmle_est, 3), " * ", tmp, collapse = " + "))
   }
-
+  
   output <- list(estimand = estimand, formula_fit = formula_fit, coefs = coefs, tmle3_fit = tmle3_fit, tmle3_input = tmle3_input, args = args)
-  class(output) <- c("npglm", "causalglm")
+  class(output) <- c("contglm", "causalglm")
   return(output)
 }
