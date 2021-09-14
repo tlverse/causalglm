@@ -1,17 +1,20 @@
 
 
-| function       | Nonparametric robust inference | Assigned to   | Current Status | Finished | 
-|----------------|---------------|---------------|----------------|-----------|
-| npglm | > 5 hours  |  | in progress | - [x] ok?
-| msmglm Cache   | > 5 hours  |  | in progress | [x] item1<br/>[ ] item2
-| spglm  Cache   | > 5 hours  |  | in progress | <ul><li>- [x] item1</li><li>- [ ] item2</li></ul>
-| contglm  Cache   | > 5 hours  |  | in progress | <ul><li>- [x] item1</li><li>- [ ] item2</li></ul>
-| causalglmnet Cache   | > 5 hours  |  | in progress | <ul><li>[x] item1</li><li>[ ] item2</li></ul>
+| ----method (Top) / feature (Right) ---| npglm | msmglm | spglm | contglm | causalglmnet | glm |
+|--------------------------------|------|---------|-------|---------|--------------|-----|
+| Semiparametric inference       |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Robust nonparametric inference |   Y  |    Y    |   N   |    Y    |     Y        |  N  |            
+| Binary treatment               |   Y  |    Y    |   Y   |    N    |     Y        |  Y  |
+| Categorical treatment          |   Y  |    Y    |   N   |    N    |     N        |  Y  |
+| Continuous or ordered treatment|   N  |    N    |   N   |    Y    |     N        |  Y  |
+| Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
+| Causal (unconfounded) estimates|   Y  |    Y    |   N   |    Y    |     N        |  N  |
+  under model mispecification
+| Machine-learning               |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 
 
-- [x] works
-- [x] works too
-
+ 
 
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
