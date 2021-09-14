@@ -11,11 +11,11 @@
 | Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Machine-learning               |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| CATE | Y | Y | Y |Y |Y | |
-| OR | Y | Y | Y |Y |Y | |
+| CATE | Y | Y | Y |Y |Y | Y|
+| OR | Y | Y | Y |Y |Y | Y|
 | RR | Y | Y | Y |Y |Y |N |
-| TSM | Y | Y | N |N |N | |
-| CATT| Y | Y | N |N |N | |
+| TSM | Y | Y | N |N |N | Y |
+| CATT| Y | Y | N |N |N |Y? |
 
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
