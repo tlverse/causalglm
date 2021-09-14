@@ -11,7 +11,7 @@
 | Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Machine-learning               |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-
+| Inference for cond. relative-risk for any error distribution | Y | Y | Y |Y |Y |N |
 
  
 
