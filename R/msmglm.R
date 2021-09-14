@@ -52,14 +52,12 @@
 #' @param verbose Passed to \code{tmle3} routines. Prints additional information if TRUE.
 #' @param ... Not used
 #' @export
-msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "TSM", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), treatment_level = max(data[[A]]), control_level = min(data[[A]]),  cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ .^2")), formula_HAL_Y =NULL, HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
-   
-  
+msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "TSM", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), treatment_level = max(data[[A]]), control_level = min(data[[A]]), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ .^2")), formula_HAL_Y = NULL, HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   if (!inherits(data, "msmglm")) {
-    if(is.null(formula_HAL_Y)) {
+    if (is.null(formula_HAL_Y)) {
       formula_HAL_Y <- paste0("~ . + h(.,", A, ")")
     }
-    if(length(unique(data[[A]])) > 2) {
+    if (length(unique(data[[A]])) > 2) {
       formula_HAL_Y <- paste0("~ . + h(.,.)")
     }
     if (missing(V)) {
@@ -77,7 +75,7 @@ msmglm <- function(formula, data, V, W = V, A, Y, estimand = c("CATE", "CATT", "
         stop("`formula` should specify a marginal structural model and only depend on variables in `V`.")
       }
     )
-  }  
+  }
 
   output <- npglm(formula, data, W, A, Y, estimand, learning_method, treatment_level, control_level, cross_fit, sl3_Learner_A, sl3_Learner_Y, formula_Y, formula_HAL_Y, HAL_args_Y, HAL_fit_control, delta_epsilon, verbose, ...)
 

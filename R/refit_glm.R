@@ -7,7 +7,7 @@ refit_glm <- function(fit_object, formula, estimand = fit_object$estimand, treat
   node_list <- tmle3_input$node_list
   learner_list <- NULL
   delta_epsilon <- tmle3_input$delta_epsilon
- 
+
   if (inherits(fit_object, "npglm") || inherits(fit_object, "msmglm")) {
     tmle_spec <- tmle3_Spec_npCausalGLM$new(likelihood_override = likelihood, formula = formula, estimand = estimand, delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = treatment_level, control_level = control_level)
   } else {

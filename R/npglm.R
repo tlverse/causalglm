@@ -64,9 +64,7 @@
 #'
 #'
 #' @export
-npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), treatment_level = max(data[[A]]), control_level = min(data[[A]]),   cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = ~.^2, formula_HAL_Y = NULL, HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
-   
-  
+npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), treatment_level = max(data[[A]]), control_level = min(data[[A]]), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = ~ .^2, formula_HAL_Y = NULL, HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   if (inherits(data, "npglm") || inherits(data, "msmglm")) {
     if (verbose) {
       print("Reusing previous fit...")
@@ -77,24 +75,23 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
     A <- old_output$args$A
     args$formula <- formula
     tmle3_input <- old_output$tmle3_input
-     
+
     if (estimand == "TSM") {
       treatment_level <- union(treatment_level, control_level)
       levels_A <- treatment_level
     }
     tmle3_fit <- refit_glm(old_output, formula, estimand = estimand, treatment_level = treatment_level, control_level = control_level, verbose = verbose)
-     
   } else {
-    if(is.null(formula_HAL_Y)) {
+    if (is.null(formula_HAL_Y)) {
       formula_HAL_Y <- paste0("~ . + h(.,", A, ")")
     }
-    if(length(unique(data[[A]])) > 2) {
+    if (length(unique(data[[A]])) > 2) {
       formula_HAL_Y <- paste0("~ . + h(.,.)")
     }
     check_arguments(formula, data, W, A, Y)
     args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
 
- 
+
     weights <- NULL
 
     estimand <- match.arg(estimand)
@@ -159,7 +156,7 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
         sl3_Learner_Y <- Lrnr_cv$new(sl3_Learner_Y, full_fit = TRUE)
       }
     }
-    if(length(unique(data[[A]])) > 2 ) {
+    if (length(unique(data[[A]])) > 2) {
       sl3_Learner_A <- Lrnr_pooled_hazards$new(sl3_Learner_A)
     }
     if (estimand == "TSM") {
@@ -168,10 +165,10 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
     } else {
       levels_A <- NULL
     }
-    
+
     tmle_spec_np <- tmle3_Spec_npCausalGLM$new(formula = formula, estimand = estimand, delta_epsilon = delta_epsilon, verbose = verbose, treatment_level = treatment_level, control_level = control_level)
     learner_list <- list(A = sl3_Learner_A, Y = sl3_Learner_Y)
-    node_list <- list( W = W, A = A, Y = Y)
+    node_list <- list(W = W, A = A, Y = Y)
 
     tmle3_input <- list(tmle_spec_np = tmle_spec_np, data = data, node_list = node_list, learner_list = learner_list, delta_epsilon = delta_epsilon, levels_A = levels_A, treatment_level = treatment_level, control_level = control_level)
     tmle3_fit <- suppressMessages(suppressWarnings(tmle3(tmle_spec_np, data, node_list, learner_list)))
@@ -192,7 +189,6 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
   coefs$p_value <- pvalue
 
   if (estimand == "TSM") {
-    
     anum <- length(levels_A)
 
     numform <- nrow(coefs) / anum
