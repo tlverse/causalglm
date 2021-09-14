@@ -80,6 +80,7 @@ A rule of thumb for choosing between these methods is as follows:
 2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (e.g. is missing some variables)
 3. Use `msmglm` if you want to know how the treatment effect is causally affected by one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
 4. Use `causalglmnet` if the variables `W` for which to adjust are (very) high dimensional.
+5. Use `contglm` if your treatment is continuous or ordered and you are interested in the treatment effect per unit dose.
 
 A longer answer is:
 
