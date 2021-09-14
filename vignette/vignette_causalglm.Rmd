@@ -536,3 +536,12 @@ summary(out)
 # The CATE predictions are now a function of `A`
 head(predict(out))
 ```
+
+
+
+
+# Variable importance
+
+
+
+
