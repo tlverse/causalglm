@@ -4,7 +4,14 @@
 \alias{refit_glm}
 \title{internal use to reuse fits}
 \usage{
-refit_glm(fit_object, formula, estimand = fit_object$estimand, verbose = TRUE)
+refit_glm(
+  fit_object,
+  formula,
+  estimand = fit_object$estimand,
+  treatment_level = NULL,
+  control_level = NULL,
+  verbose = TRUE
+)
 }
 \description{
 internal use to reuse fits

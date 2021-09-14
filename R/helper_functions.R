@@ -57,7 +57,21 @@ predict.causalglm <- function(object, data = object$args$data, transformed = TRU
   W <- object$args$W
   formula <- object$args$formula
   estimand <- object$estimand
-  V <- model.matrix(formula, as.data.frame(data))
+  if(inherits(object, "contglm")) {
+    formula_continuous <- object$args$formula_continuous
+    formula_binary <- object$args$formula_binary
+    A <- data[[object$args$A]] 
+    A <- A - min(A)
+    V0 <- (A > 0) * model.matrix(formula_binary, as.data.frame(data))
+    VA <- A * model.matrix(formula_continuous, as.data.frame(data))
+    V <- cbind(V0, VA)
+    colnames(V) <- c(paste0("1(A>0)*", colnames(V0)),
+                     paste0("A*", colnames(VA))
+                     )
+  } else {
+    V <- model.matrix(formula, as.data.frame(data))
+  }
+
   n <- nrow(object$args$data)
 
   estimates <- object$coefs$tmle_est

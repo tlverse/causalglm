@@ -38,32 +38,34 @@ causalglm is an R package for robust generalized linear models and interpretable
 
 Throughout the development of causalglm, we greatly focused on making this package and all its methods as easy to use and understand as possible. Our goal is that this package can be used by a wide audience including amateurs, practioners, statisticians, causal-inference experts and nonexperts.
 
-The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a usually binary treatment assignment with values in `c(0,1)`, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V \subset W` that represents a subset of baseline variables that are of interest.
+The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a binary, categorical or continuous treatment assignment, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V \subset W` that represents a subset of baseline variables that are of interest.
 
 The estimands supported by causalglm are
 
-1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=1,W] - E[Y|A=0,W]`
-2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}`
-3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=1,W]/E[Y|A=0,W]`
-4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]`
-5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=1,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=1`)
- 
+1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=a,W] - E[Y|A=0,W]` (categorical and continuous treatments)
+2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}` (binary treatments)
+3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=a,W]/E[Y|A=0,W]` (categorical treatments)
+4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]` (categorical treatments)
+5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=a,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=a`) (categorical treatments)
+
+All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. 
 
 causalglm also supports the following marginal structural model estimands:
  
-1. Marginal structural models for the CATE: `E[CATE(W)|V] := E[E[Y|A=1,W] - E[Y|A=0,W]|V]`
-2. Marginal structural models for the RR: `E[E[Y|A=1,W]|V]/E[E[Y|A=0,W]|V]`
-3. Marginal structural models for the TSM : `E[E[Y|A=a,W]|V]`
-4. Marginal structural models for the CATT : `E[CATE(W)|V, A=1] := E[E[Y|A=1,W] - E[Y|A=0,W]|V, A=1]`
+1. Marginal structural models for the CATE: `E[CATE(W)|V] := E[E[Y|A=a,W] - E[Y|A=0,W]|V]` (categorical treatments)
+2. Marginal structural models for the RR: `E[E[Y|A=a,W]|V]/E[E[Y|A=0,W]|V]` (categorical treatments)
+3. Marginal structural models for the TSM : `E[E[Y|A=a,W]|V]` (categorical treatments)
+4. Marginal structural models for the CATT : `E[CATE(W)|V, A=a] := E[E[Y|A=a,W] - E[Y|A=0,W]|V, A=a]` (categorical treatments)
  
 
-causalglm consists of four main functions: 
+causalglm consists of five main functions: 
  
 1. `spglm` for semiparametric estimation of correctly specified parametric models for the `CATE`, `RR` and `OR`
 2. `npglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
 3. `msmglm` for robust nonparametric estimation of user-specified marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
 4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
- 
+5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE` as a function of a continuous or ordered numeric treatment.
+
 The outputs of the methods include:
 
 1. Coefficient estimates (using the S3 summary function)
@@ -94,6 +96,8 @@ A longer answer is:
 Other useful arguments are:
 
 5. `learning_method`: The machine-learning algorithm used to learn the nuisance function (default is HAL. See vignette and documentation)
+6. `treatment_level` for specifying what value of a possibly categorical `A` is the treatment of interest (`A=a`).
+7. `control_level` for specifying what value of a possibly categorical `A` is the control of interest (`A=0`).
  
 
 ### Conditional average treatment effect estimation

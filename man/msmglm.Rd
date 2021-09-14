@@ -15,12 +15,13 @@ msmglm(
   estimand = c("CATE", "CATT", "TSM", "RR"),
   learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger",
     "xgboost"),
-  levels_A = sort(unique(data[[A]])),
+  treatment_level = max(data[[A]]),
+  control_level = min(data[[A]]),
   cross_fit = FALSE,
   sl3_Learner_A = NULL,
   sl3_Learner_Y = NULL,
-  formula_Y = as.formula(paste0("~ . + . *", A)),
-  formula_HAL_Y = paste0("~ . + h(.,", A, ")"),
+  formula_Y = as.formula(paste0("~ .^2")),
+  formula_HAL_Y = NULL,
   HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)),
   HAL_fit_control = list(parallel = F),
   delta_epsilon = 0.025,
@@ -59,8 +60,6 @@ msmglm(
 We recommend performing simulations checking 95% CI coverage when choosing learners (especially in smaller sample sizes).
 Note speed can vary significantly depending on learner choice!}
 
-\item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}
-
 \item{cross_fit}{Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 learning_method = `SuperLearner` is always cross-fitted (default).
  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}
@@ -97,6 +96,8 @@ Useful to set to a large value in high dimensions.}
 \item{verbose}{Passed to \code{tmle3} routines. Prints additional information if TRUE.}
 
 \item{...}{Not used}
+
+\item{levels_A}{Only used if \code{estimand} = `TSM` in which case the TSM is learned for all levels in \code{levels_A}.}
 }
 \description{
 Marginal structural generalized linear models with robust inference based on nonparametric projections.

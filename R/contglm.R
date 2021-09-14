@@ -55,8 +55,11 @@
 #'
 #'
 #' @export
-npglm <- function(formula_continuous, formula_binary = formula_continuous, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
-  if (inherits(data, "npglm") || inherits(data, "msmglm")) {
+contglm <- function(formula_continuous, formula_binary = formula_continuous, data, W, A, Y, estimand = c("CATE" ), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"),  cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+  
+  formula <- NULL
+  
+  if (inherits(data, "contglm")) {
     if (verbose) {
       print("Reusing previous fit...")
     }
@@ -69,7 +72,7 @@ npglm <- function(formula_continuous, formula_binary = formula_continuous, data,
   } else {
     check_arguments(formula_continuous, data, W, A, Y)
     check_arguments(formula_binary, data, W, A, Y)
-    args <- list(formula_binary = formula_binary, formula_continuous = formula_continuous, data = data, W = W, A = A, Y = Y)
+    args <- list(formula_binary = formula_binary, formula_continuous = formula_continuous, formula = formula, data = data, W = W, A = A, Y = Y)
     
     
     weights <- NULL

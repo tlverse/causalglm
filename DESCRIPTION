@@ -28,7 +28,7 @@ Depends:
   R6,
   tmle3
 RoxygenNote: 7.1.1
-Remotes: github::tlverse/hal9001@devel, github::tlverse/sl3@Larsvanderlaan-formula_fix, github::tlverse/tmle3@general_submodels_devel
+Remotes: github::tlverse/hal9001@devel, github::tlverse/sl3@Larsvanderlaan-formula_fix, github::tlverse/tmle3@categoricalNP
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -451,64 +451,88 @@ output <- npglm(formula,
 
 See the documentation for other arguments for all methods. We note that the remaining arguments will likely not be needed for the average user.
 
+# Effects of categorical treatments with npglm and msmglm
+
+For `msmglm` and `npglm`, the CATE, CATT, TSM and RR can be learned for categorical treatments relative to a control treatment. To do this, you need to specify the arguments treatment\_level and control\_level. The estimands are then user-specified parametric models in $W$ for
+$$W \mapsto E[Y|A=a,W] - E[Y|A=0,W]$$
+$$W \mapsto E[Y|A=a,W] $$
+$$W \mapsto  E[Y|A=a,W]/ E[Y|A=0,W]$$
+where $a$ is the specified treatment level.
 
 ```{r}
-
 n <- 250
 V <- runif(n, min = -1, max = 1)
 W <- runif(n, min = -1, max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
+A <- rbinom(n, size = 1, prob = 0.66*plogis(W))
+A[A==1] <- 2
+A[A==0] <- rbinom(n, size = 1, prob = plogis(W))
+table(A)
+Y <- rnorm(n, mean = A * (1 + W  ) + W , sd = 0.5)
+data <- data.table(W,A,Y)
 
-# CATE
-Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
-data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) # A second degree polynomial
-output <-
-  msmglm(
-    formula_msm,
-    data,
-   V = "V",
-    W = c("V","W"), A = "A", Y = "Y",
-    estimand = "CATE",
-    learning_method = "glm",
-    formula_Y = ~ . + . * A,
-    verbose = FALSE
-  )
+output_init <- npglm(~1+W, data, W = "W", A = "A", Y = "Y", estimand = "CATE", learning_method = "mars", treatment_level = 1, control_level = 0)
+summary(output_init)
+
+output <- msmglm(~1+W, data, V = "W", W = "W", A = "A", Y = "Y", estimand = "CATE", learning_method = "mars", treatment_level = 1, control_level = 0)
 
 summary(output)
-plot_msm(output)
 
-# CATT
-Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V + sin(5 * W), sd = 0.5)
-data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
-output <-
-  msmglm(
-    formula_msm,
-    output,
-    V = "V", # When reusing fits, we can specify new "V" variables
-    estimand = "CATT",
-    verbose = FALSE
-  )
 
+# Reuse fits
+output <- npglm(~1+W, output_init , estimand = "CATT",   treatment_level = 2, control_level = 0)
+
+ 
 summary(output)
-plot_msm(output)
 
-# TSM
-Y <- rnorm(n, mean = A * (1 + V + 2*V^2) + W + V, sd = 0.5)
-data <- data.frame(V,W, A, Y)
-formula_msm = ~ poly(V, degree = 2, raw = TRUE) 
-output <-
-  msmglm(
-    formula_msm,
-    output,
-    V = "V",  # When reusing fits, we can specify new "V" variables
-    estimand = "TSM",
-    verbose = FALSE
-  )
 
-summary(output[[1]])
-summary(output[[2]])
- plot_msm(output[[1]])
+output <- npglm(~1+W, output_init , estimand = "TSM",   treatment_level = c(0,1,2))
 
+ 
+lapply(output, summary)
+
+```
+
+
+```{r}
+n <- 250
+V <- runif(n, min = -1, max = 1)
+W <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = 0.66*plogis(W))
+A[A==1] <- 2
+A[A==0] <- rbinom(n, size = 1, prob = plogis(W))
+table(A)
+Y <- rpois(n, lambda = exp( A * (1 + W)  + sin(5 * W)))
+data <- data.table(W,A,Y)
+
+output_init <- npglm(~1+W, data, W = "W", A = "A", Y = "Y", estimand = "RR", learning_method = "gam", treatment_level = 1, control_level = 0)
+summary(output_init)
+
+
+
+output <- npglm(~1+W, output_init , estimand = "RR",   treatment_level = 2, control_level = 0)
+
+ 
+summary(output)
+```
+# Effects of a continuous treatment with contglm
+
+The function `contglm` supports treatment effects for continuous treatments. Currently, only the CATE estimand is supported. Specifically, `contglm` computes estimates and nonparametric inference for the best approximation of the true CATE $E[Y|A=a,W] - E[Y|A=0,W]$ with respect to the parametric working model $E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) \cdot \beta^T \underline{f}(W) + a \cdot \beta^T \underline{g}(W)$ where $\underline{f}(W)$ and $\underline{g}(W)$ are user-specified parametric models. $\underline{f}(W)$ is specified with the argument `formula\_binary` and captures the treatment effect caused by being treated or not treated ($1(A>0)$). $\underline{g}(W)$ is specified with the argument `formula_continuous` and captures the treatment effect caused by dosage of continuous effects in the treatment $A$. Note $A$ should be a nonnegative treatment value with $A=0$ being the placebo group and $A>0$ being a continuous or ordered numeric dose value.
+
+Thus, unlike other functions, both the argument `formula\_continuous` and `formula\_binary` need to be specified.
+
+```{r}
+n <- 1000
+W <- runif(n, min = -1, max = 1)
+Abinary <- rbinom(n ,size = 1, plogis(W))
+A <- rgamma(n, shape = 1, rate = exp(W))
+A <- A * Abinary
+quantile(A)
+Y <- rnorm(n, mean =   (A>0) + A * (1 + W  ) + W , sd = 0.5)
+data <- data.table(W,A,Y)
+out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, data =data, W = "W", A = "A", Y = "Y")
+
+summary(out)
+
+# The CATE predictions are now a function of `A`
+head(predict(out))
 ```
