@@ -33,8 +33,8 @@ The estimands supported by causalglm are
 causalglm also supports the following marginal structural model estimands:
 
 \begin{enumerate}
-\item Marginal structural models for the CATE: E[CATE(W)|V] := E[E[Y|A=1,W] - E[Y|A=0,W]|V]
-\item Marginal structural models for the RR: E[E[Y|A=1,W]|V]/E[E[Y|A=0,W]|V]
+\item Marginal structural models for the CATE: $E[CATE(W)|V] := E[E[Y|A=1,W] - E[Y|A=0,W]|V]$
+\item Marginal structural models for the RR: $E[E[Y|A=1,W]|V]/E[E[Y|A=0,W]|V]$
 \item Marginal structural models for the TSM : $E[E[Y|A=a,W]|V]$
 \item Marginal structural models for the CATT : $E[CATE(W)|V, A=1] := E[E[Y|A=1,W] - E[Y|A=0,W]|V, A=1]$
 \end{enumerate}
@@ -491,9 +491,10 @@ output <- npglm(~1+W, output_init , estimand = "TSM",   treatment_level = c(0,1,
 lapply(output, summary)
 
 ```
-
+ 
 
 ```{r}
+ 
 n <- 250
 V <- runif(n, min = -1, max = 1)
 W <- runif(n, min = -1, max = 1)
@@ -516,32 +517,63 @@ summary(output)
 ```
 # Effects of a continuous treatment with contglm
 
-The function `contglm` supports treatment effects for continuous treatments. Currently, only the CATE estimand is supported. Specifically, `contglm` computes estimates and nonparametric inference for the best approximation of the true CATE $E[Y|A=a,W] - E[Y|A=0,W]$ with respect to the parametric working model $E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) \cdot \beta^T \underline{f}(W) + a \cdot \beta^T \underline{g}(W)$ where $\underline{f}(W)$ and $\underline{g}(W)$ are user-specified parametric models. $\underline{f}(W)$ is specified with the argument `formula\_binary` and captures the treatment effect caused by being treated or not treated ($1(A>0)$). $\underline{g}(W)$ is specified with the argument `formula_continuous` and captures the treatment effect caused by dosage of continuous effects in the treatment $A$. Note $A$ should be a nonnegative treatment value with $A=0$ being the placebo group and $A>0$ being a continuous or ordered numeric dose value.
+The function `contglm` supports treatment effects for continuous treatments. Currently, the CATE, OR and RR estimands are supported. Specifically, `contglm` computes estimates and nonparametric inference for the best approximation of the true CATE $E[Y|A=a,W] - E[Y|A=0,W]$ ( for instance ) with respect to the parametric working model $E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) \cdot \beta^T \underline{f}(W) + a \cdot \beta^T \underline{g}(W)$ where $\underline{f}(W)$ and $\underline{g}(W)$ are user-specified parametric models. $\underline{f}(W)$ is specified with the argument `formula\_binary` and captures the treatment effect caused by being treated or not treated ($1(A>0)$). $\underline{g}(W)$ is specified with the argument `formula_continuous` and captures the treatment effect caused by dosage of continuous effects in the treatment $A$. Note $A$ should be a nonnegative treatment value with $A=0$ being the placebo group and $A>0$ being a continuous or ordered numeric dose value.
 
 Thus, unlike other functions, both the argument `formula\_continuous` and `formula\_binary` need to be specified.
 
+For the OR and RR, the models are
+$$\log OR(a,W) := \log P(Y=1|A=a,W)/P(Y=0|A=a,W) - \log P(Y=1|A=0,W)/P(Y=0|A=0,W)$$
+$$=  1(a>0) * formula\_binary(W) + a * formula\_continuous(W)$$
+
+and
+
+$$\log RR(a,W) := log E[Y|A=a,W]   - \log E[Y|A=0,W] $$
+$$=  1(a>0) * formula\_binary(W) + a * formula\_continuous(W)$$
+ 
+
+
 ```{r}
+# Model is log OR(a,W) = 
+# log P(Y=1|A=a,W)/P(Y=0|A=a,W) - log P(Y=1|A=0,W)/P(Y=0|A=0,W) 
+# ~ 1(a>0) * formula_binary(W) + a * formula_continuous(W)
 n <- 1000
 W <- runif(n, min = -1, max = 1)
 Abinary <- rbinom(n ,size = 1, plogis(W))
-A <- rgamma(n, shape = 1, rate = exp(W))
+A <- pmin(rgamma(n, shape = 1, rate = exp(W)),1)
 A <- A * Abinary
 quantile(A)
-Y <- rnorm(n, mean =   (A>0) + A * (1 + W  ) + W , sd = 0.5)
+Y <- rbinom(n, size = 1,  plogis((A>0) + A * (1 + W  ) + W)) 
 data <- data.table(W,A,Y)
-out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, data =data, W = "W", A = "A", Y = "Y")
+out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, estimand = "OR", data =data, W = "W", A = "A", Y = "Y")
+
+summary(out)
+
+
+# The OR predictions are now a function of `A`
+head(predict(out))
+```
+
+```{r}
+# Model is log RR(a,W) = 
+# log E[Y|A=a,W]   - log E[Y|A=0,W] 
+# ~ 1(a>0) * formula_binary(W) + a * formula_continuous(W)
+n <- 1000
+W <- runif(n, min = -1, max = 1)
+Abinary <- rbinom(n ,size = 1, plogis(W))
+A <- pmin(rgamma(n, shape = 1, rate = exp(W)), 1)
+A <- A * Abinary
+quantile(A)
+Y <- rpois(n,  exp((A>0) + A * (1 + W  ) + W))
+table(Y)
+data <- data.table(W,A,Y)
+out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, data =data, W = "W", A = "A", Y = "Y",
+               estimand = "RR")
 
 summary(out)
 
 # The CATE predictions are now a function of `A`
 head(predict(out))
 ```
-
-
-
-
-# Variable importance
-
-
+ 
 
 

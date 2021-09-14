@@ -46,12 +46,12 @@ The statistical data-structure used throughout this package is `O = (W,A,Y)` whe
 The estimands supported by causalglm are
 
 1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=a,W] - E[Y|A=0,W]` (categorical and continuous treatments)
-2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}` (binary treatments)
-3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=a,W]/E[Y|A=0,W]` (categorical treatments)
+2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}` (binary treatments and continuous treatments)
+3. Conditional relative risk (RR) for binary, count or nonnegative outcomes: `E[Y|A=a,W]/E[Y|A=0,W]` (categorical and continuous treatments)
 4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]` (categorical treatments)
 5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=a,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=a`) (categorical treatments)
 
-All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. For binary and categorical treatments, the model used for all estimands is of the form `E[Y|A=a,W] - E[Y|A=0,W] = formula(W)` where `formula` is specified by the user. For continuous treatments (only supported by `contglm`), the model used is `E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`
+All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE`, `OR` and `RR` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. For binary and categorical treatments, the model used for all estimands is of the form `E[Y|A=a,W] - E[Y|A=0,W] = formula(W)` where `formula` is specified by the user. For continuous treatments (only supported by `contglm`), the working models used are `CATE(a,W) := E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, `log OR(a,W) := log {P(Y=1|A=a,W)/P(Y=0|A=a,W) } - log {P(Y=1|A=0,W)/P(Y=0|A=0,W) }= 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, and `log RR(a,W) := log E[Y|A=a,W]  - log E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)` Note estimates and inference are provided for the best approximation of the estimand by these working models. Thus, the outputs of `contglm` can be viewed as the best linear approximation to the continuous treatment estimand.
 
 causalglm also supports the following marginal structural model estimands:
  
@@ -65,9 +65,9 @@ causalglm consists of five main functions:
  
 1. `spglm` for semiparametric estimation of correctly specified parametric models for the `CATE`, `RR` and `OR`
 2. `npglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
-3. `msmglm` for robust nonparametric estimation of user-specified marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
+3. `msmglm` for robust nonparametric estimation of user-specified (approximate) marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
 4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
-5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE` as a function of a continuous or ordered numeric treatment.
+5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
 
 The outputs of the methods include:
 
@@ -220,6 +220,7 @@ summary(output)
 
 ### CATE with continuous treatments
 
+Change the `estimand` argument to estimate the RR and OR.
 ``` r
 n <- 500
 W <- runif(n, min = -1, max = 1)
@@ -235,7 +236,8 @@ out <- contglm(
   formula_continuous = ~ 1 + W,
   formula_binary = ~ 1,
   data = data,
-  W = "W", A = "A", Y = "Y"
+  W = "W", A = "A", Y = "Y",
+  estimand = "CATE"
 )
 
 summary(out)

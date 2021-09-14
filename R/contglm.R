@@ -3,11 +3,11 @@
 
 #' contglm
 #' Robust generalized linear models for interpretable causal inference for continuous or ordered treatments.
-#' Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
+#' Currently, only supports models for the CATE, the log OR, and the log RR of the form: `1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
 #' @param formula_continuous An R formula object specifying the continuous component of the parametric form of the continuous treatment CATE.
-#' That is, \code{formula_binary} specifies the interaction with `A` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
-#' @param formula_binary An R formula object specifying the binary component of the parametric form of the continuous treatment CATE.
-#' That is, \code{formula_binary} specifies the interaction with `1(A>0)` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
+#' That is (using CATE as example), \code{formula_binary} specifies the interaction with `A` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
+#' @param formula_binary An R formula object specifying the binary component of the parametric form of the continuous treatment estimand.
+#' That is (using CATE as example), \code{formula_binary} specifies the interaction with `1(A>0)` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
 #' By default, the same as \code{formula_continuous}
 #' @param data A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
 #' Can also be a \code{npglm} fit/output object in which case machine-learning fits are reused (see vignette).
@@ -24,7 +24,10 @@
 #' "ranger": Robust random-forests with the package \code{Ranger}
 #' "xgboost": Learn using a default cross-validation tuned xgboost library with max_depths 3 to 7.
 #' Note speed can vary  depending on learner choice!
-#' @param estimand Estimand/parameter to estimate. Currently only the `CATE` is supported.
+#' @param estimand Estimand/parameter to estimate. Options are:
+#' `CATE`: conditional treatment effect using working model `CATE(a,W) = E[Y|A=a,W] - E[Y|A=0,W] = 1(a>0) * f(W) + a * g(W)`
+#' `OR`: conditional odds ratio using working model `log OR(a,W) = log P(Y=1|A=a,W)/P(Y=0|A=a,W) - log P(Y=1|A=0,W)/P(Y=0|A=0,W)  = 1(a>0) * f(W) + a * g(W)`
+#' `RR`: conditional relative risk using working model `log RR(a,W) = log E[Y|A=a,W] - log E[Y|A=0,W] = 1(a>0) * f(W) + a * g(W)`
 #' @param cross_fit Whether to cross-fit the initial estimator. This is always set to FALSE if argument \code{sl3_Learner_A} and/or \code{sl3_Learner_Y} is provided.
 #' learning_method = `SuperLearner` is always cross-fitted (default).
 #'  learning_method = `xgboost` and `ranger` are always cross-fitted regardless of the value of \code{cross_fit}
@@ -55,7 +58,7 @@
 #'
 #'
 #' @export
-contglm <- function(formula_continuous, formula_binary = formula_continuous, data, W, A, Y, estimand = c("CATE"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
+contglm <- function(formula_continuous, formula_binary = formula_continuous, data, W, A, Y, estimand = c("CATE", "OR", "RR"), learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger", "xgboost"), cross_fit = FALSE, sl3_Learner_A = NULL, sl3_Learner_Y = NULL, formula_Y = as.formula(paste0("~ . + . *", A)), formula_HAL_Y = paste0("~ . + h(.,", A, ")"), HAL_args_Y = list(smoothness_orders = 1, max_degree = 2, num_knots = c(15, 10, 1)), HAL_fit_control = list(parallel = F), delta_epsilon = 0.025, verbose = TRUE, ...) {
   formula <- NULL
 
   if (inherits(data, "contglm")) {
@@ -139,7 +142,40 @@ contglm <- function(formula_continuous, formula_binary = formula_continuous, dat
       }
     }
 
-    tmle_spec_np <- tmle3_Spec_contCATE$new(formula_continuous = formula_continuous, formula_binary = formula_binary, delta_epsilon = delta_epsilon, verbose = verbose, include_A_binary = TRUE)
+    if (estimand == "CATE") {
+      fA <- function(x) {
+        x
+      }
+      dfA <- function(x) {
+        1
+      }
+      submodel <- NULL
+    } else if (estimand == "RR") {
+      fA <- function(x) {
+        log(x)
+      }
+      dfA <- function(x) {
+        1 / x
+      }
+      submodel <- NULL
+    } else if (estimand == "OR") {
+      fA <- function(x) {
+        log(x) - log(1 - x)
+      }
+      dfA <- function(x) {
+        1 / (x * (1 - x))
+      }
+      submodel <- "binomial"
+    }
+
+    tmle_spec_np <- tmle3_Spec_contglm$new(
+      formula_continuous = formula_continuous, formula_binary = formula_binary,
+      fA = fA, dfA = dfA,
+      submodel = submodel,
+      delta_epsilon = delta_epsilon, verbose = verbose, include_A_binary = TRUE
+    )
+
+    # tmle_spec_np <- tmle3_Spec_contCATE$new(formula_continuous = formula_continuous, formula_binary = formula_binary, delta_epsilon = delta_epsilon, verbose = verbose, include_A_binary = TRUE)
     learner_list <- list(A = sl3_Learner_A, A_binary = sl3_Learner_A, Y = sl3_Learner_Y)
     node_list <- list(W = W, A = A, Y = Y)
 

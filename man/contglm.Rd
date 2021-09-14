@@ -4,7 +4,7 @@
 \alias{contglm}
 \title{contglm
 Robust generalized linear models for interpretable causal inference for continuous or ordered treatments.
-Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.}
+Currently, only supports models for the CATE, the log OR, and the log RR of the form: `1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.}
 \usage{
 contglm(
   formula_continuous,
@@ -13,7 +13,7 @@ contglm(
   W,
   A,
   Y,
-  estimand = c("CATE"),
+  estimand = c("CATE", "OR", "RR"),
   learning_method = c("HAL", "SuperLearner", "glm", "glmnet", "gam", "mars", "ranger",
     "xgboost"),
   cross_fit = FALSE,
@@ -30,10 +30,10 @@ contglm(
 }
 \arguments{
 \item{formula_continuous}{An R formula object specifying the continuous component of the parametric form of the continuous treatment CATE.
-That is, \code{formula_binary} specifies the interaction with `A` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.}
+That is (using CATE as example), \code{formula_binary} specifies the interaction with `A` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.}
 
-\item{formula_binary}{An R formula object specifying the binary component of the parametric form of the continuous treatment CATE.
-That is, \code{formula_binary} specifies the interaction with `1(A>0)` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
+\item{formula_binary}{An R formula object specifying the binary component of the parametric form of the continuous treatment estimand.
+That is (using CATE as example), \code{formula_binary} specifies the interaction with `1(A>0)` in the model `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)`.
 By default, the same as \code{formula_continuous}}
 
 \item{data}{A data.frame or matrix containing the numeric values corresponding with the nodes \code{W}, \code{A} and \code{Y}.
@@ -45,7 +45,10 @@ Can also be a \code{npglm} fit/output object in which case machine-learning fits
 
 \item{Y}{A character name for the outcome variable contained in \code{data} (outcome can be continuous, nonnegative or binary depending on method)}
 
-\item{estimand}{Estimand/parameter to estimate. Currently only the `CATE` is supported.}
+\item{estimand}{Estimand/parameter to estimate. Options are:
+`CATE`: conditional treatment effect using working model `CATE(a,W) = E[Y|A=a,W] - E[Y|A=0,W] = 1(a>0) * f(W) + a * g(W)`
+`OR`: conditional odds ratio using working model `log OR(a,W) = log P(Y=1|A=a,W)/P(Y=0|A=a,W) - log P(Y=1|A=0,W)/P(Y=0|A=0,W)  = 1(a>0) * f(W) + a * g(W)`
+`RR`: conditional relative risk using working model `log RR(a,W) = log E[Y|A=a,W] - log E[Y|A=0,W] = 1(a>0) * f(W) + a * g(W)`}
 
 \item{learning_method}{Machine-learning method to use. This is overrided if argument \code{sl3_Learner} is provided. Options are:
 "SuperLearner": A stacked ensemble of all of the below that utilizes cross-validation to adaptivelly choose the best learner.
@@ -98,5 +101,5 @@ Useful to set to a large value in high dimensions.}
 \description{
 contglm
 Robust generalized linear models for interpretable causal inference for continuous or ordered treatments.
-Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
+Currently, only supports models for the CATE, the log OR, and the log RR of the form: `1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
 }
