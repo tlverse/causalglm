@@ -1,4 +1,4 @@
-# `causalglm` : interpretable and robust causal inference for heterogeneous treatment effects
+# causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
 This package fully utilizes the powerful `tlverse/tmle3` generalized targeted learning framework as well as the machine-learning frameworks `tlverse/sl3` and `tlverse/hal9001`. We recommend taking a look at these packages and the rest of the `tlverse`! 
 
