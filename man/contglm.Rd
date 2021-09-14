@@ -3,7 +3,7 @@
 \name{contglm}
 \alias{contglm}
 \title{contglm
-Robust generalized linear models for interpretable causal inference for continuous or ordered treatments. 
+Robust generalized linear models for interpretable causal inference for continuous or ordered treatments.
 Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.}
 \usage{
 contglm(
@@ -97,6 +97,6 @@ Useful to set to a large value in high dimensions.}
 }
 \description{
 contglm
-Robust generalized linear models for interpretable causal inference for continuous or ordered treatments. 
+Robust generalized linear models for interpretable causal inference for continuous or ordered treatments.
 Currently, only supports robust CATE estimation of a user-specified model of the form `E[Y|A=a,W] - E[Y|A=0,W] = 1(A>0) * f(W) + A * g(W)` with `f` and `g` user-specified.
 }

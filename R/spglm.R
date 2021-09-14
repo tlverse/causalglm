@@ -93,6 +93,9 @@ spglm <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), lear
     tmle_spec_sp <- tmle3_Spec_spCausalGLM$new(formula = formula, estimand = estimand, append_interaction_matrix = NULL, wrap_in_Lrnr_glm_sp = FALSE, binary_outcome = F, delta_epsilon = delta_epsilon, verbose = verbose, likelihood_override = likelihood)
   } else {
     check_arguments(formula, data, W, A, Y)
+    if(length(unique(data[[A]])) > 2) {
+      stop("`spglm` does not support categorical or continuous treatments. Use `npglm` and `contglm` instead.")
+    } 
     args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
     estimand <- match.arg(estimand)
     learning_method <- match.arg(learning_method)
