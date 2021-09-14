@@ -86,7 +86,7 @@ test_that("Testing msmglm", {
 
   # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
   #
-  causal_fit <- msmglm(formula = formula_CATE, data = data, V = V, A = A, Y = Y, estimand = "CATT", learning_method = "HAL")
+  causal_fit <- msmglm(formula = formula_CATE, data = data, V =W, A = A, Y = Y, estimand = "CATT", learning_method = "HAL")
   # We got pretty close!
   coefs <- causal_fit$coefs
 
@@ -115,7 +115,7 @@ test_that("Testing msmglm", {
 
   # This will take a few seconds learning_method = HAL is a regularized sparse/smoothness adaptive regression spline algorithm. To make it faster change: learning_method or max_degree_Y0W or num_knots_Y0W or parallel.
   #
-  causal_fit <- msmglm(formula = formula_RR, data = data, V = V, A = A, Y = Y, estimand = "RR", learning_method = "glm")
+  causal_fit <- msmglm(formula = formula_RR, data = data, V = W, A = A, Y = Y, estimand = "RR", learning_method = "glm")
   # We got pretty close!
   coefs <- causal_fit$coefs
 
