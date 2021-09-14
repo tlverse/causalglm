@@ -1,3 +1,18 @@
+
+
+| function       | Nonparametric robust inference | Assigned to   | Current Status | Finished | 
+|----------------|---------------|---------------|----------------|-----------|
+| npglm | > 5 hours  |  | in progress | - [x] ok?
+| msmglm Cache   | > 5 hours  |  | in progress | [x] item1<br/>[ ] item2
+| spglm  Cache   | > 5 hours  |  | in progress | <ul><li>- [x] item1</li><li>- [ ] item2</li></ul>
+| contglm  Cache   | > 5 hours  |  | in progress | <ul><li>- [x] item1</li><li>- [ ] item2</li></ul>
+| causalglmnet Cache   | > 5 hours  |  | in progress | <ul><li>[x] item1</li><li>[ ] item2</li></ul>
+
+
+- [x] works
+- [x] works too
+
+
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
 
