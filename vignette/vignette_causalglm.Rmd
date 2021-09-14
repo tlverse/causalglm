@@ -531,12 +531,39 @@ $$\log RR(a,W) := log E[Y|A=a,W]   - \log E[Y|A=0,W] $$
 $$=  1(a>0) * formula\_binary(W) + a * formula\_continuous(W)$$
  
 
+```{r}
+# CATE
+n <- 500
+W <- runif(n, min = -1, max = 1)
+Abinary <- rbinom(n , size = 1, plogis(W))
+A <- rgamma(n, shape = 1, rate = exp(W))
+A <- A * Abinary
+Y <- rnorm(n, mean =   (A > 0) + A * (1 + W) + W , sd = 0.5)
+data <- data.table(W, A, Y)
+
+# Model is CATE(A,W) = formula_binary(W) 1(A > 0) + A * formula_continuous(W)
+
+out <- contglm(
+  formula_continuous = ~ 1 + W,
+  formula_binary = ~ 1,
+  data = data,
+  W = "W", A = "A", Y = "Y",
+  estimand = "CATE"
+)
+
+summary(out)
+
+# The CATE predictions are now a function of `A`
+### head(predict(out))
+
+```
 
 ```{r}
+# OR 
 # Model is log OR(a,W) = 
 # log P(Y=1|A=a,W)/P(Y=0|A=a,W) - log P(Y=1|A=0,W)/P(Y=0|A=0,W) 
 # ~ 1(a>0) * formula_binary(W) + a * formula_continuous(W)
-n <- 1000
+n <- 5000
 W <- runif(n, min = -1, max = 1)
 Abinary <- rbinom(n ,size = 1, plogis(W))
 A <- pmin(rgamma(n, shape = 1, rate = exp(W)),1)
@@ -550,10 +577,11 @@ summary(out)
 
 
 # The OR predictions are now a function of `A`
-head(predict(out))
+#head(predict(out))
 ```
 
 ```{r}
+# RR
 # Model is log RR(a,W) = 
 # log E[Y|A=a,W]   - log E[Y|A=0,W] 
 # ~ 1(a>0) * formula_binary(W) + a * formula_continuous(W)
@@ -571,8 +599,8 @@ out <- contglm(formula_continuous = ~1+W, formula_binary = ~1, data =data, W = "
 
 summary(out)
 
-# The CATE predictions are now a function of `A`
-head(predict(out))
+# The RR predictions are now a function of `A`
+#head(predict(out))
 ```
  
 
