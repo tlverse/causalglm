@@ -180,9 +180,11 @@ The semiparametric partially-linear log-linear model only assumes that $$\log RR
 \section{Nonparametric working-model-based estimands for model-free inference}
 In this section, we introduce nonparametrically-defined estimands based on projections of the true conditional treatment-effect estimands onto parametric working-models. We consider the estimands based on binary and categorical treatments separately from the estimands based on continuous treatments.
 
-\subsection{Working-model-based nonparametric estimands for binary or categorical treatments}
+\subsection{Working-model-based nonparametric estimands for binary or categorical treatments}\label{section::estimandNPcat}
 Let $a$ be a given treatment level of $A$ that is of interest. Consider the least-squares projection estimand,
-$$\beta_{a,CATE} := \argmin_{\beta} E\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2$$
+\begin{equation}
+\beta_{a,CATE} := \argmin_{\beta} E\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \label{eqn::estimandNPCATE}
+\end{equation}
 where $\beta_{a,CATE}^T \underline{f}(w)$ is the best linear approximation of the true $CATE_a(W)$ relative to the average squared-error loss. Clearly, when the parametric working-model $\beta^T \underline{f}(w)$ is correctly specified, $\beta_{a,CATE}$ reduces to the same estimand considered by the parametric and semiparametric methods. When the working-model is incorrect, the causal interpretation of $\beta_{a,CATE}$ as an approximation is clear. Importantly, $\beta_{a,CATE}$ is invariant with respect to the treatment-assignment probability $P(A=a|W)$, which crucially ensures this nonparametric estimand is not affected by confounding.
 
 This same estimand also has the property that it reduces to the best approximation of a $V-specific$ marginal structural working model when the parametric form is lower-dimensional and satisfies $\underline{f}(W=w) \equiv \underline{f}(V=v)$. To see this, note that minimizing $E\left(CATE_a(W) - \beta^T \underline{f}(V) \right)^2$ is equivalent to minimizing $E\left\{\left( \beta^T \underline{f}(V) \right)^2 - 2 \beta^T \underline{f}(V)CATE_a(W) \right\}$. Applying the law of iterated conditional expectations and applying the equivalence in reverse, we find
@@ -196,10 +198,11 @@ which is exactly the nonparametric marginal average treatment effect estimand!
 Based on the least-squares projection, we can define natural working-model estimands for the conditional treatment-specific mean (TSM) and the conditional average treatment effect among the treated:
 
 \begin{equation}
-\beta_{a,CATT} := \argmin_{\beta} E\left\{\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \mid A =a \right\},
+\beta_{a,CATT} := \argmin_{\beta} E\left\{\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \mid A =a \right\}, \label{eqn::estimandNPCATT}
 \end{equation}
 \begin{equation}
 \beta_{a,TSM} := \argmin_{\beta} E\left(E[Y|A=a,W]- \beta^T \underline{f}(W) \right)^2.
+\label{eqn::estimandNPTSM}
 \end{equation}
 
 Both these working model estimands similarly reduce to projections of the true marginal structural model estimands for lower dimensional working-models. Specifically, we have the identities
@@ -211,6 +214,7 @@ $$ \argmin_{\beta} E\left(E[Y|A=a,W]- \beta^T \underline{f}(V) \right)^2 =  \arg
 Next, we consider the nonparametric working-model-based estimands for conditional relative risk (RR) which will utilize projections based on the poisson (log-linear) log-likelihood loss function. Specifically, define the poisson-likelihood-type projection estimand:
 \begin{equation}
 \beta_{a,RR} := \argmin_{\beta} E \left\{E[Y|A=0,W] \cdot e^{\beta^T \underline{f}(W)} - E[Y|A=a,W] \cdot \beta^T \underline{f}(W) \right\}.
+\label{eqn::estimandNPRR}
 \end{equation}
 It can be verified when $\beta^T \underline{f}(W)$ is correctly specified for the conditional relative risk that $\beta_{a,RR}$ indeed reduces to the true coefficient vector. While this estimand is motivated by the poisson and log-linear loss functions, we note that it is well-defined nonparametrically and we make no assumptions on the error distribution of our outcome. One reason for choosing this projection to define the estimand is because it reduces to the projection of a marginal structural model for the relative treatment effect when $\underline{f}(W=w) \equiv \underline{f}(V=v)$ is lower-dimensional. Specifically, we have the identity
 $$\argmin_{\beta} E \left\{E[Y|A=0,W] \cdot e^{\beta^T \underline{f}(V)} - E[Y|A=a,W] \cdot \beta^T \underline{f}(V) \right\}$$
@@ -225,10 +229,11 @@ Consider the estimand,
 \begin{equation}
 \beta_{a,OR} = \argmin_{\beta} -1 \cdot E\bigg\{P(Y=1|A=a,W)\log \left\{P_{\beta}(Y=1|A=a,W)\right\} $$
 $$+ P(Y=0|A=a,W)\log \left\{1-P_{\beta}(Y=1|A=a,W)\right\} \bigg\},
+\label{eqn::estimandNPOR}
 \end{equation}
 which is the log-likelihood projection of $P(Y=1|A=a,W)$ onto the working model $P_{\beta}(Y=1|A=a,W)$. Since  $P_{\beta}(Y=1|A=0,W) = P_{\beta}(Y=1|A=0,W)$ is correctly specified, this projection is targeted towards $\beta^T \underline{f}(w)$ which is a log-linear working model for the conditional odds ratio $OR_a(w)$. This estimand only reduces to a $V$-specific marginal structural working model conditional odds ratio estimand when $P(Y=1|A=0,W) = P(Y=1|A=0,V)$, which may not be true in practice but is still a useful property to have.
 
-\subsection{Robust working-model-based nonparametric estimands for continuous treatments}
+\subsection{Robust working-model-based nonparametric estimands for continuous treatments}\label{section::estimandNPcont}
 
 When $A$ represents a continuous or ordered numeric treatment, we utilize working-models that also model the treatment-dependence of the conditional treatment effect estimand. For computational reasons, it is beneficial to solely consider least-squares-type projections for all estimands. Specifically, for a given link function $g:\mathbb{R} \rightarrow \mathbb{R}$, we consider working models of the form
 $$g(E[Y|A=a,W=w]) - g(E[Y|A=0,W=w]) = 1(a>0)\cdot \beta_0^T \underline{f}_0(w) +  a \cdot \beta_1^T \underline{f}_1(w),$$
@@ -244,4 +249,223 @@ $$ (\beta_{0,RR}, \beta_{1,RR}) :=  \argmin_{\beta_0, \beta_1} E \left\{ \log RR
 For the log-odds link $g(p) = \log p - \log (1-p)$, we obtain as estimand the least-squares projection of the true conditional log OR
 $$ (\beta_{0,OR}, \beta_{1,OR}) :=  \argmin_{\beta_0, \beta_1} E \left\{ \log OR_{A}(W)  - 1(A>0)\cdot \beta_0^T \underline{f}_0(W) +  A \cdot \beta_1^T \underline{f}_1(W)\right\}^2.$$
 
+\section{Model-robust causal inference with npglm and msmglm}
+\textit{npglm} is one of the main functions of \pkg{causalglm} and implements statistically efficient estimators for the nonparametrically-defined working-model-based conditional treatment effect estimands defined in Section \ref{section::estimandNPcat}. \textit{msmglm} is a specialized wrapper function for \textit{npglm} that focuses on marginal structural working model estimation and provides additional plotting features for such models. Both methods have user-friendly front-end and only require the following arguments:
+\begin{enumerate}
+\item \textit{formula} : An R formula object that specifies a parametric working model for the conditional treatment-effect estimand.
+\item \textit{data}: A data.frame containing the baseline, treatment and outcome variables.
+\item $W$: A character vector containing the names of the variables in \textit{data} for which to adjust (i.e. possible confounders).
+\item $A$:  A character string giving the name of the treatment variable of interest in \textit{data}.
+\item $Y$: A character string giving the name of the outcome variable of interest in \textit{data}.
+\item \textit{estimand}: A character string specifying the estimand - \textit{CATE, OR, RR, CATT, TSM}.
+\end{enumerate}
+
+Additionally, the following optional arguments are useful.
+\begin{enumerate}
+\item \textit{learning\_method} : A character string specifying one of the built-in machine-learning algorithms for nuisance function estimation. The nuisance functions are $P(A=1|W)$ and $E[Y|A,W]$. By default, the Highly Adaptive Lasso (Benkeser, van der Laan, 2016) using the package \pkg{tlverse/hal9001} (Coyle et al., 2021) is used.
+\item \textit{treatment\_level}: A value/level of the treatment $A$ that encodes the treatment arm of interest. (useful for categorical treatments )
+\item \textit{control\_level}: A value/level of the treatment $A$ that encodes the control arm. (useful for categorical treatments)
+\item $sl3\_Learner\_A$: A \pkg{sl3} learner object that specifies a custom estimator for the treatment-assignment probability $P(A=1|W)$. (Overrides \textit{learning\_method})
+\item $sl3\_Learner\_Y$: A \pkg{sl3} learner object that specifies a custom estimator for the true outcome conditional mean $E[Y|A,W]$. (Overrides \textit{learning\_method})
+\end{enumerate}
+
+
+Let's see npglm and msmglm in action! Let us start with estimation of the CATE estimand as defined by equation \label{eqn::estimandNPCATE}. We will use the following simulated dataset. Note the true conditional average treatment effect is $CATE_1(W) = 1 + W_1 + 2 \cdot W_1^2 + W_2$.
+
+```{r, echo = F }
+library(causalglm)
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2 + W2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+```
+
+Let us specify a correct working model for the CATE.
+```{r}
+formula_CATE <- ~ poly(W1, degree = 2, raw = TRUE) + W2
+output <- npglm(
+      formula_CATE, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE", 
+      learning_method = "HAL", # Default
+      verbose = FALSE
+      )
+
+
+```
+
+"output" is a \textit{npglm} fit object which supports a number of useful extraction methods. Using the "summary" function, we can extract coefficient estimates, p-values, and 95\% confidence intervals. Using the "predict" function, we can obtain individual-level treatment effect predictions with 95\% confidence intervals.
+
+
+```{r}
+summary(output)
+head(predict(output, data = data))[1:3,c(5,7,8,9,10)]
+```
+
+In some settings, we may only be interested in the relation between the variable $V := W_1$ and the treatment effect. However, we would still like to adjust for the possible confounder $W_2$. For this, the \textit{msmglm} function comes in handy. Let us specify an approximate working marginal structural model for the $W_1$-specific CATE. \textit{msmglm} requires the additional specification of the argument $V$. The output object supports the summary and predict functions and also supports a useful plotting function "plot\_msm" when $V$ is one-dimensional. plot\_msm plots the fit marginal structural working model as a function of $V$ and provides 95\% pointwise confidence intervals.
+```{r}
+formula_msm <- ~ poly(W1, degree = 2, raw = TRUE)  
+output <- msmglm(
+      formula_msm, 
+      data,
+      V = c("W1"),
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE", 
+      learning_method = "mars", # Lets use multivariate adaptive regression splines instead
+      verbose = FALSE
+      )
+summary(output)
+head(predict(output, data = data))[1:3,c(-1,-2,-3,-5)]
+
+plot_msm(output)
+
+```
+
+Now, consider a similar dataset with a categorical treatment.
+```{r, echo = F }
+library(causalglm)
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = 0.66*plogis(W1+W2))
+A[A==1] <- 2
+A[A==0] <- rbinom(n, size = 1, prob = plogis(W1+W2))
+table(A)
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2 + W2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+```
+
+Let us compute the CATT and TSM estimands as defined in equations \ref{eqn::estimandNPCATT} and \ref{eqn::estimandNPTSM}. Since $A$ is categorical, we need to specify the treatment and control levels of interest to fully specify the estimand. Note that a single call to npglm will fully fit all nuisance functions using machine-learning and it is therefore a waste to recall "npglm" or "msmglm" with new treatment and control levels. To leverage previous fits, we can pass a previous "npglm" or "msmglm" object as the "data".  argument. The data and variable names are extracted from the old object. This also allows us to fit multiple different working models quickly. Let us change the learning algorithm to CV-tuned "xgboost".
+
+
+```{r}
+# Working model for E[Y|A=1,W] - E[Y|A=0,W]
+formula_CATT <- ~ poly(W1, degree = 3, raw = TRUE) + W2
+output_initial <- npglm(
+      formula_CATT, 
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATT", 
+      learning_method = "xgboost", # Lets use xgboost
+      treatment_level = 1, # Specify the treatment level
+      control_level = 0, # Specify the control level
+      verbose = FALSE
+      )
+summary(output_initial)
+
+# Working model for E[Y|A=2,W] - E[Y|A=0,W]
+formula_CATT <- ~ poly(W1, degree = 2, raw = TRUE) + W2
+output <- npglm(
+      formula_CATT, 
+      data = output_initial, # replace data with previous output
+      estimand = "CATT", 
+      treatment_level = 2,  # Specify new treatment levels
+      control_level = 0,
+      verbose = FALSE
+      )
+summary(output)
+
+
+# Lets use a different formula and reuse previous fits
+# We can even reuse fits across npglm and msmglm
+formula_CATT <- ~1 + W2  
+output <- msmglm(
+      formula_CATT, 
+      data = output_initial, # replace data with previous output
+      estimand = "CATT", 
+      V = "W2",
+      treatment_level = 2,  # Specify new treatment levels
+      control_level = 0,
+      verbose = FALSE
+      )
+summary(output)
+```
+
+The TSM estimand is slightly different than other methods. It does not require specification of a control level. Instead, you can specify multiple treatment levels and conditional treatment-specific mean working-model estimates are returned for each level in the form of a list of "msmglm" objects.
+
+```{r}
+# Marginal structural model for TSM
+formula_TSM <- ~ 1  
+# Code is similar for npglm
+output <- msmglm( 
+      formula_TSM, 
+      output_initial,
+      V = c(),
+      estimand = "TSM", 
+      learning_method = "HAL", # Default
+      verbose = FALSE,
+      treatment_level = c(0,1,2) # Computes TSM for all treatment levels
+      )
+# The output is a list of msmglm objects for each treatment level in this case.
+output_A0 <- output[[1]]
+output_A1 <- output[[2]]
+output_A2 <- output[[3]]
+summary(output_A0)
+summary(output_A1)
+summary(output_A2)
+
+```
+
+The relative risk and odds ratio estimands defined in equations \ref{eqn::estimandNPRR} and \ref{eqn::estimandNPOR} can be estimated in the same way as above.
+```{r}
+
+# odds ratio
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+data <- data.frame(W, A, Y)
+output <-
+  npglm(
+    ~1+W,
+    data,
+    W = c("W"), A = "A", Y = "Y",
+    estimand = "OR" 
+  )
+summary(output)
  
+  
+# relative risk
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rpois(n, lambda = exp( A * (1 + W + 2*W^2)  + sin(5 * W)))
+data <- data.frame(W, A, Y)
+formula = ~ poly(W, degree = 2, raw = TRUE) 
+output <-
+  npglm(
+    formula,
+    data,
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+summary(output)
+
+ 
+
+output <-
+  msmglm(
+    formula,
+    data,
+    V = "W",
+    W = "W", A = "A", Y = "Y",
+    estimand = "RR",
+    verbose = FALSE
+  )
+ 
+ 
+
+```
+
+
+
+
+
+
+
+
+

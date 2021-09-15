@@ -318,7 +318,7 @@ parametric working-models. We consider the estimands based on binary and
 categorical treatments separately from the estimands based on continuous
 treatments.
 
-\subsection{Working-model-based nonparametric estimands for binary or categorical treatments}
+\subsection{Working-model-based nonparametric estimands for binary or categorical treatments}\label{section::estimandNPcat}
 
 Let \(a\) be a given treatment level of \(A\) that is of interest.
 Consider the least-squares projection estimand,
@@ -418,7 +418,7 @@ structural working model conditional odds ratio estimand when
 \(P(Y=1|A=0,W) = P(Y=1|A=0,V)\), which may not be true in practice but
 is still a useful property to have.
 
-\subsection{Robust working-model-based nonparametric estimands for continuous treatments}
+\subsection{Robust working-model-based nonparametric estimands for continuous treatments}\label{section::estimandNPcont}
 
 When \(A\) represents a continuous or ordered numeric treatment, we
 utilize working-models that also model the treatment-dependence of the
@@ -447,6 +447,36 @@ least-squares projection of the true conditional log RR
 For the log-odds link \(g(p) = \log p - \log (1-p)\), we obtain as
 estimand the least-squares projection of the true conditional log OR
 \[ (\beta_{0,OR}, \beta_{1,OR}) :=  \argmin_{\beta_0, \beta_1} E \left\{ \log OR_{A}(W)  - 1(A>0)\cdot \beta_0^T \underline{f}_0(W) +  A \cdot \beta_1^T \underline{f}_1(W)\right\}^2.\]
+
+\section{Model-robust causal inference with npglm and msmglm}
+
+\textit{npglm} is one of the main functions of \pkg{causalglm} and
+implements statistically efficient estimators for the
+nonparametrically-defined working-model-based conditional treatment
+effect estimands defined in Section \ref{section::estimandNPcat}.
+\textit{msmglm} is a specialized wrapper function for \textit{npglm}
+that focuses on marginal structural working model estimation and
+provides additional plotting features for such models. Both methods have
+user-friendly front-end and only require the following arguments:
+
+\begin{enumerate}
+\item \textit{formula} : An R formula object that specifies a parametric working model for the conditional treatment-effect estimand.
+\item \textit{data}: A data.frame containing the baseline, treatment and outcome variables.
+\item $W$: A character vector containing the names of the variables in \textit{data} for which to adjust (i.e. possible confounders).
+\item $A$:  A character string giving the name of the treatment variable of interest in \textit{data}.
+\item $Y$: A character string giving the name of the outcome variable of interest in \textit{data}.
+\item \textit{estimand}: A character string specifying the estimand - \textit{CATE, OR, RR, CATT, TSM}.
+\end{enumerate}
+
+Additionally, the following optional arguments are useful.
+
+\begin{enumerate}
+\item \textit{learning\_method} : A character string specifying one of the built-in machine-learning algorithms for nuisance function estimation. The nuisance functions are $P(A=1|W)$ and $E[Y|A,W]$.
+\item \textit{treatment\_level}: A value/level of the treatment $A$ that encodes the treatment arm of interest. (useful for categorical treatments )
+\item \textit{control\_level}: A value/level of the treatment $A$ that encodes the control arm. (useful for categorical treatments)
+\item $sl3\_Learner\_A$: A \pkg{sl3} learner object that specifies a custom estimator for the treatment-assignment probability $P(A=1|W)$. (Overrides \textit{learning\_method})
+\item $sl3\_Learner\_Y$: A \pkg{sl3} learner object that specifies a custom estimator for the true outcome conditional mean $E[Y|A,W]$. (Overrides \textit{learning\_method})
+\end{enumerate}
 
 
 
