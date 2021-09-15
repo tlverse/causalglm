@@ -95,13 +95,13 @@ Here is a summary of the methods:
 | Marginal structural models     |   Y  |       Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Supports inference with machine-learning and variable selection |   Y  | |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Inference with High dimensional confounders  |   Y  |  |   Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
+| Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Inference with High dimensional confounders  |   Y  |    Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
 | CATE |   Y  | | Y | Y | Y |Y |Y | Y|
-| OR |   Y  | | Y | Y | Y |Y |Y | Y|
-| RR |   Y  | | Y | Y | Y |Y |Y | N*2 |
-| TSM |   Y  | | Y | Y | N |N |N | Y |
-| CATT |   Y  | | Y | Y | N |N |N |Y|
+| OR |   Y  | Y | Y | Y |Y |Y | Y|
+| RR |   Y   | Y | Y | Y |Y |Y | N*2 |
+| TSM |   Y   | Y | Y | N |N |N | Y |
+| CATT |   Y   | Y | Y | N |N |N |Y|
 | p-values and confidence intervals |   Y  | | Y | Y | Y |Y |Y | Y|
 | Individual treatment effects with confidence intervals |   Y  | | Y | Y | Y |Y |Y | N|
 
