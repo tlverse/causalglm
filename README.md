@@ -107,6 +107,8 @@ Here is a summary of the methods:
 
 *1: All methods but glm support the LASSO for estimation of all nuisance parameters and can thus be used in very high dimensions. 
 However, causalglmnet uses a customized LASSO learner that should perform better than the other methods in high dimensions.
+
+
 *2: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
 
 
