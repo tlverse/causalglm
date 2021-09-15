@@ -85,25 +85,25 @@ The outputs of the methods include:
 
 Here is a summary of the methods:
 
-| ----method (Top) / feature (Left) ---| npglm | msmglm | spglm | contglm | causalglmnet | glm |
+| ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
 |--------------------------------|------|---------|-------|---------|--------------|-----|
-| Semiparametric inference       |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Robust nonparametric inference |   Y  |    Y    |   N   |    Y    |     Y        |  N  |            
-| Binary treatment               |   Y  |    Y    |   Y   |    N    |     Y        |  Y  |
-| Categorical treatment          |   Y  |    Y    |   N   |    N    |     N        |  Y  |
-| Continuous or ordered treatment|   N  |    N    |   N   |    Y    |     N        |  Y  |
-| Marginal structural models     |   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Interpretable estimates        |   Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
-| Causal (unconfounded) estimates  under model mispecification|   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Supports inference with machine-learning and variable selection|   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Inference with High dimensional confounders   |   Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
-| CATE | Y | Y | Y |Y |Y | Y|
-| OR | Y | Y | Y |Y |Y | Y|
-| RR | Y | Y | Y |Y |Y | N*2 |
-| TSM | Y | Y | N |N |N | Y |
-| CATT| Y | Y | N |N |N |Y|
-| p-values and confidence intervals | Y | Y | Y |Y |Y | Y|
-| Individual treatment effects with confidence intervals | Y | Y | Y |Y |Y | N|
+| Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Robust nonparametric inference |   Y  |      Y  |    Y    |   N   |    Y    |     Y        |  N  |            
+| Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
+| Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
+| Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
+| Marginal structural models     |   Y  |       Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
+| Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Supports inference with machine-learning and variable selection |   Y  | |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Inference with High dimensional confounders  |   Y  |  |   Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
+| CATE |   Y  | | Y | Y | Y |Y |Y | Y|
+| OR |   Y  | | Y | Y | Y |Y |Y | Y|
+| RR |   Y  | | Y | Y | Y |Y |Y | N*2 |
+| TSM |   Y  | | Y | Y | N |N |N | Y |
+| CATT |   Y  | | Y | Y | N |N |N |Y|
+| p-values and confidence intervals |   Y  | | Y | Y | Y |Y |Y | Y|
+| Individual treatment effects with confidence intervals |   Y  | | Y | Y | Y |Y |Y | N|
 
 *1: All methods but glm support the LASSO for estimation of all nuisance parameters and can thus be used in very high dimensions. 
 However, causalglmnet uses a customized LASSO learner that should perform better than the other methods in high dimensions.
