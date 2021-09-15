@@ -89,11 +89,11 @@ Here is a summary of the methods:
 | ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
 |--------------------------------------|-----------------------|------|---------|-------|---------|--------------|-----|
 | Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Robust nonparametric working-model-based inference |   Y  |      Y  |    Y    |   N   |    Y    |     Y        |  N  |            
+| Robust nonparametric working-model-based inference |   Y  |      Y  |    Y    |   N   |    Y    |     N        |  N  |            
 | Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
 | Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
 | Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
-| Marginal structural models     |   Y  |       Y  |    Y    |   N   |    N    |     N        |  N  |
+| Marginal structural working models     |   Y  |       Y  |    Y    |   N   |    N    |     N        |  N  |
 | Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
