@@ -97,13 +97,13 @@ Here is a summary of the methods:
 | Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 | Inference with High dimensional confounders  |   Y  |    Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
-| CATE |   Y  | | Y | Y | Y |Y |Y | Y|
+| CATE |   Y   | Y | Y | Y |Y |Y | Y|
 | OR |   Y  | Y | Y | Y |Y |Y | Y|
 | RR |   Y   | Y | Y | Y |Y |Y | N*2 |
 | TSM |   Y   | Y | Y | N |N |N | Y |
 | CATT |   Y   | Y | Y | N |N |N |Y|
-| p-values and confidence intervals |   Y  | | Y | Y | Y |Y |Y | Y|
-| Individual treatment effects with confidence intervals |   Y  | | Y | Y | Y |Y |Y | N|
+| p-values and confidence intervals |   Y  |  Y | Y | Y |Y |Y | Y|
+| Individual treatment effects with confidence intervals |   Y  |  Y | Y | Y |Y |Y | N|
 
 *1: All methods but glm support the LASSO for estimation of all nuisance parameters and can thus be used in very high dimensions. 
 However, causalglmnet uses a customized LASSO learner that should perform better than the other methods in high dimensions.
