@@ -92,7 +92,7 @@ Here is a summary of the methods:
 | Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
 | Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
 | Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
-| Marginal structural models     |   Y  |       Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Marginal structural models     |   Y  |       Y  |    Y    |   N   |    N    |     N        |  N  |
 | Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
 | Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
 | Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
