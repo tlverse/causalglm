@@ -1,7 +1,7 @@
 
  
  
-# causalglm : interpretable and robust causal inference for heterogeneous treatment effects
+# causalglm : interpretable and model-robust causal inference for heterogeneous treatment effects
 
 
 It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and model misspecificaton, they can give biased answers. One way of mitigating this challenge is to only parametrically model the feature of the data-generating distribution that you care about. It is not even necessary to assume your parametric model is correct! Instead, view it as a "working" or "approximation" model and define your estimand as the best causal approximation of the true nonparametric estimand with respect to your parametric working model. This allows for causal estimates and robust inference under no parametric assumptions on the functional form of any feature of the data generating distribution. Alternatively, you can assume a semiparametric model that only assumes the parametric form of the relevant part of the data distribution is correct. Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
