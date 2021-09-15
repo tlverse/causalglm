@@ -4,7 +4,7 @@
 # causalglm : interpretable and robust causal inference for heterogeneous treatment effects
 
 
-It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to only parametrically model the feature of the data-generating distribution that you care about. That is, use a semiparametric model! Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
+It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and misspecificaton, they can give biased answers. One way of mitigating this challenge is to only parametrically model the feature of the data-generating distribution that you care about. It is not even necessary to assume your parametric model is correct! Instead, view it as a "working model" and define your estimand as the best causal approximation of the true nonparametric estimand with respect to your parametric model. This allows for causal estimates and robust inference under no  parametric assumptions on the functional form of any feature of the data generating distribution. Alternatively, you can assume a semiparametric model that only assumes the parametric form of the relevant part of the data distribution is correct. Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
 
 
 This package fully utilizes the powerful `tlverse/tmle3` generalized targeted learning framework as well as the machine-learning frameworks `tlverse/sl3` and `tlverse/hal9001`. We recommend taking a look at these packages and the rest of the `tlverse`! 
@@ -40,13 +40,13 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 ## What is causalglm?
 
 
-causalglm is an R package for robust generalized linear models and interpretable causal inference for heterogeneous (or conditional) treatment effects. Specifically, causalglm very significantly relaxes the assumptions needed for useful causal estimates and correct inference by employing semi and nonparametric models and adaptive machine-learning through targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011), while still robustly utilizing user-specified parametric forms for the conditional estimands and thus allowing for interpretable inference. Because of this, `causalglm` methods can (and often do in real-world settings) significantly reduce bias relative to conventional fully parametric methods like `glm`, and the cost in variance/confidence-interval-width is negligible. As another consequence, causalglm can be used in high dimensional settings and provides valid inference even when adaptive variable selection is used with, for example, the LASSO. See the writeup causalglm.pdf for a more theoretical overview of the methods implemented in this package. Also see the vignette for an overview of all the functionalities of causalglm. 
+causalglm is an R package for robust generalized linear working models and interpretable causal inference for heterogeneous (or conditional) treatment effects. Specifically, causalglm very significantly relaxes the assumptions needed for useful causal estimates and correct inference by employing semi and nonparametric models and adaptive machine-learning through targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011). By viewing user-specified parametric forms for the conditional estimands as approximations, `causalglm`  allows for interpretable coefficient-based conditional inference while still maximally adjusting for confounding (ensuring that the parametric approximations are truly causal). Because of this, `causalglm` methods can (and often do in real-world settings) significantly reduce bias and improve inference relative to conventional fully parametric methods like `glm`, and the cost in variance/confidence-interval-width is negligible. As another consequence, causalglm can be used in high dimensional settings and provides valid inference even when adaptive variable selection is used with, for example, the LASSO. See the writeup causalglm.pdf for a more theoretical overview of the methods implemented in this package. Also see the vignette for an overview of all the functionalities of causalglm. 
 
 Throughout the development of causalglm, we greatly focused on making this package and all its methods as easy to use and understand as possible. Our goal is that this package can be used by a wide audience including amateurs, practioners, statisticians, causal-inference experts and nonexperts.
 
 The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a binary, categorical or continuous treatment assignment, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V \subset W` that represents a subset of baseline variables that are of interest.
 
-The estimands supported by causalglm are
+`causalglm` supports causal working-model-based estimands for the
 
 1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=a,W] - E[Y|A=0,W]` (categorical and continuous treatments)
 2. Conditional odds ratio (OR) for binary outcomes: `{P(Y=1|A=1,W)/P(Y=0|A=1,W)} / {P(Y=1|A=0,W)/P(Y=0|A=0,W)}` (binary treatments and continuous treatments)
@@ -54,23 +54,23 @@ The estimands supported by causalglm are
 4. Conditional treatment-specific mean (TSM) : `E[Y|A=a,W]` (categorical treatments)
 5. Conditional average treatment effect among the treated (CATT) : the best approximation of `E[Y|A=a,W] - E[Y|A=0,W]` based on a user-specified formula/parametric model among the treated (i.e. observations with `A=a`) (categorical treatments)
 
-All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE`, `OR` and `RR` through `contglm`. Each method allows for arbitrary user-specified parametric models for the estimands. For binary and categorical treatments, the model used for all estimands is of the form `E[Y|A=a,W] - E[Y|A=0,W] = formula(W)` where `formula` is specified by the user. For continuous treatments (only supported by `contglm`), the working models used are `CATE(a,W) := E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, `log OR(a,W) := log {P(Y=1|A=a,W)/P(Y=0|A=a,W) } - log {P(Y=1|A=0,W)/P(Y=0|A=0,W) }= 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, and `log RR(a,W) := log E[Y|A=a,W]  - log E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)` Note estimates and inference are provided for the best approximation of the estimand by these working models. Thus, the outputs of `contglm` can be viewed as the best linear approximation to the continuous treatment estimand.
+All methods support binary treatments. Most methods support categorical treatments. And, continuous treatments are only supported for the `CATE`, `OR` and `RR` through `contglm`. Each method allows for arbitrary user-specified parametric working models for the estimands. For binary and categorical treatments, the working model used for all estimands is of the form `E[Y|A=a,W] - E[Y|A=0,W] = formula(W)` where `formula` is specified by the user. For continuous treatments (only supported by `contglm`), the working models used are `CATE(a,W) := E[Y|A=a,W] - E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, `log OR(a,W) := log {P(Y=1|A=a,W)/P(Y=0|A=a,W) } - log {P(Y=1|A=0,W)/P(Y=0|A=0,W) }= 1(a > 0) * formula_binary(W) + a * formula_continuous(W)`, and `log RR(a,W) := log E[Y|A=a,W]  - log E[Y|A=0,W] = 1(a > 0) * formula_binary(W) + a * formula_continuous(W)` Since estimates and inference are provided for the best approximation of the estimand by these working models, the outputs of `contglm` can be viewed as the best linear approximation to the continuous treatment estimand.
 
-causalglm also supports the following marginal structural model estimands:
+causalglm also supports the following working marginal structural model estimands:
  
-1. Marginal structural models for the CATE: `E[CATE(W)|V] := E[E[Y|A=a,W] - E[Y|A=0,W]|V]` (categorical treatments)
-2. Marginal structural models for the RR: `E[E[Y|A=a,W]|V]/E[E[Y|A=0,W]|V]` (categorical treatments)
-3. Marginal structural models for the TSM : `E[E[Y|A=a,W]|V]` (categorical treatments)
-4. Marginal structural models for the CATT : `E[CATE(W)|V, A=a] := E[E[Y|A=a,W] - E[Y|A=0,W]|V, A=a]` (categorical treatments)
+1. Working marginal structural models for the CATE: `E[CATE(W)|V] := E[E[Y|A=a,W] - E[Y|A=0,W]|V]` (categorical treatments)
+2. Working marginal structural models for the RR: `E[E[Y|A=a,W]|V]/E[E[Y|A=0,W]|V]` (categorical treatments)
+3. Working marginal structural models for the TSM : `E[E[Y|A=a,W]|V]` (categorical treatments)
+4. Working marginal structural models for the CATT : `E[CATE(W)|V, A=a] := E[E[Y|A=a,W] - E[Y|A=0,W]|V, A=a]` (categorical treatments)
  
 
 causalglm consists of five main functions: 
  
-1. `spglm` for semiparametric estimation of correctly specified parametric models for the `CATE`, `RR` and `OR`
-2. `npglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
-3. `msmglm` for robust nonparametric estimation of user-specified (approximate) marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
-4. `causalglmnet` for semiparametric estimation with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
-5. `contglm` for robust nonparametric estimation of user-specified approximation models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
+1. `spglm` for semiparametric estimation and inference for correctly specified parametric models for the `CATE`, `RR` and `OR`
+2. `npglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
+3. `msmglm` for robust nonparametric estimation and inference for user-specified working marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
+4. `causalglmnet` for semiparametric estimation and inference with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
+5. `contglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
 
  
 
@@ -88,7 +88,7 @@ Here is a summary of the methods:
 | ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
 |--------------------------------------|-----------------------|------|---------|-------|---------|--------------|-----|
 | Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Robust nonparametric inference |   Y  |      Y  |    Y    |   N   |    Y    |     Y        |  N  |            
+| Robust nonparametric working-model-based inference |   Y  |      Y  |    Y    |   N   |    Y    |     Y        |  N  |            
 | Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
 | Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
 | Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
@@ -115,15 +115,18 @@ However, causalglmnet uses a customized LASSO learner that should perform better
 
 A rule of thumb for choosing between these methods is as follows:
 
-1. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (this method is closest to glm)
-2. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (e.g. is missing some variables)
-3. Use `msmglm` if you want to know how the treatment effect is causally affected by one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
-4. Use `causalglmnet` if the variables `W` for which to adjust are (very) high dimensional.
-5. Use `contglm` if your treatment is continuous or ordered and you are interested in the treatment effect per unit dose.
 
+1. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (e.g. is missing some variables )
+2. Use `msmglm` if you want to know how the treatment effect is causally affected by one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
+3. Use `contglm` if your treatment is continuous or ordered and you are interested in the treatment effect per unit dose.
+4. Use `causalglmnet` if the variables `W` for which to adjust are (very) high dimensional.
+5. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (not recommended in general)
+ 
 A longer answer is:
 
-`spglm` is a semiparametric method which means that it assumes the user-specified parametric model is correct for causal estimates and correct inference. This method should be used if you are very confident in your parametric model. `npglm` is a nonparametric method that views the user-specified parametric model as an approximation or working-model for the true nonparametric estimand. The estimands are the best causal approximation of the true conditional estimand (i.e. projections). Because of this model agnostic view, npglm provides interpretable estimates and correct inference under no conditions. The user-specified parametric model need not be correct or even a good approximation for inference! `npglm` should be used if you believe your parametric model is a good approximation but are not very confident that it is correct. Also, it never hurts to run both `spglm` and `npglm` for robustness! If the parametric model is close to correct then the two methods should give similar estimates. Finally, `msmglm` deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables `V` adjusting for all the available confounders `W` that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having `V` be a single variable) and allows for nice plots (see `plot_msm`).
+ `npglm` is a nonparametric method that views the user-specified parametric model as an approximation or working-model for the true nonparametric estimand. The estimands are the best causal approximation of the true conditional estimand (i.e. projections). NOTE: estimates from conventional parametric estimators like `glm` are not causal approximations when the parametric model is incorrect! The estimates provided by glm are confounded! Because of this model agnostic view, npglm provides interpretable estimates and correct inference under no conditions. The user-specified parametric model need not be correct or even a good approximation for inference! `npglm` should especially be used if you believe your parametric model is a good approximation but are not very confident that it is correct. Because of these features, you can specify many different parametric models/formulas for the conditional estimand in `npglm` while still ensuring the estimates are interpretable as causal approximations and that the inference is correct. This allows you to rigorously add and remove variables to and from your working model without worrying about biased inference due to statistical model selection, since inference is always derived from the nonparametric statistical model (this is one of the powers of working models). `msmglm` deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables `V` adjusting for all the available confounders `W` that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having `V` be a single variable) and allows for nice plots (see `plot_msm`). `contglm` is a version of `npglm` that implements for timands for condflexible working-model-based es
+ 
+ `spglm` is a semiparametric method which means that it assumes the user-specified parametric model is correct for causal estimates and correct inference. Also, it never hurts to run both `spglm` and `npglm` for robustness! If the parametric model is close to correct then the two methods should give similar estimates. Finally, `msmglm` deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables `V` adjusting for all the available confounders `W` that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having `V` be a single variable) and allows for nice plots (see `plot_msm`).
 
  
 ### User-friendly interface
