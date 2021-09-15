@@ -86,7 +86,7 @@ The outputs of the methods include:
 Here is a summary of the methods:
 
 | ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
-|--------------------------------|------|---------|-------|---------|--------------|-----|
+|--------------------------------------|-----------------------|------|---------|-------|---------|--------------|-----|
 | Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
 | Robust nonparametric inference |   Y  |      Y  |    Y    |   N   |    Y    |     Y        |  N  |            
 | Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
