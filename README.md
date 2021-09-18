@@ -4,7 +4,7 @@
 # causalglm : interpretable and model-robust causal inference for heterogeneous treatment effects
 
 
-It is possible to get robust and efficient inference for causal quantities using machine-learning. In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and model misspecificaton, they can give biased answers. One way of mitigating this challenge is to only parametrically model the feature of the data-generating distribution that you care about. It is not even necessary to assume your parametric model is correct! Instead, view it as a "working" or "approximation" model and define your estimand as the best causal approximation of the true nonparametric estimand with respect to your parametric working model. This allows for causal estimates and robust inference under no parametric assumptions on the functional form of any feature of the data generating distribution. Alternatively, you can assume a semiparametric model that only assumes the parametric form of the relevant part of the data distribution is correct. Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
+In the search for answers to causal questions, assuming parametric models can be dangerous. With even a seemingly small amount of confounding and model misspecificaton, they can give biased answers. One way of mitigating this challenge is to only parametrically model the feature of the data-generating distribution that you care about. It is not even necessary to assume your parametric model is correct! Instead, view it as a "working" or "approximation" model and define your estimand as the best causal approximation of the true nonparametric estimand with respect to your parametric working model. This allows for causal estimates and robust inference under no parametric assumptions on the functional form of any feature of the data generating distribution. Alternatively, you can assume a semiparametric model that only assumes the parametric form of the relevant part of the data distribution is correct. Let the data speak for itself and use machine-learning to model the nuisance features of the data that are not directly related to your causal question.  It is in fact possible to get robust and efficient inference for causal quantities using machine-learning. Why worry about things that don't matter for your question? It is not worth the risk of being wrong.
 
 
 This package fully utilizes the powerful `tlverse/tmle3` generalized targeted learning framework as well as the machine-learning frameworks `tlverse/sl3` and `tlverse/hal9001`. We recommend taking a look at these packages and the rest of the `tlverse`! 
@@ -14,12 +14,10 @@ For theoretical details and methods descriptions, see the writeup `causalglm.pdf
 For a walk-through guide with example code, check out `vignette.Rmd` in the "vignette" folder.
 
 ## Installing
-NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
+NOTE: This package is actively in development and is subject to continuous change. Feel free to contact me personally or through the Issues tab.
 
  
  
-
-
 To install this package, install the devtools CRAN package and run:
 
 ``` r
@@ -29,7 +27,7 @@ if(!require(devtools)) {
 devtools::install_github("tlverse/causalglm")
 ```
 
-This package also requires the following github packages which should be installed automatically.
+This package also requires the following github packages. Make sure to update the version of these packages upon installation.
 ``` r
 devtools::install_github("tlverse/hal9001@devel")
 devtools::install_github("tlverse/tmle3@general_submodels_devel")
@@ -40,7 +38,7 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 ## What is causalglm?
 
 
-causalglm is an R package for robust generalized linear working working models and interpretable causal inference for heterogeneous (or conditional) treatment effects. Specifically, causalglm very significantly relaxes the assumptions needed for useful causal estimates and correct inference by employing semi and nonparametric statistical models and adaptive machine-learning through targeted maximum likelihood estimation (TMLE) (van der Laan, Rose, 2011). By viewing user-specified parametric forms for the conditional estimands as approximations or working models, `causalglm`  allows for interpretable coefficient-based conditional inference while still maximally adjusting for confounding (ensuring that the parametric approximations are truly causal). Because of this, `causalglm` methods can (and often do in real-world settings) significantly reduce bias and improve inference relative to conventional fully parametric methods like `glm`, and the cost in variance/confidence-interval-width is negligible. As another consequence, causalglm can be used in high dimensional settings and provides valid inference even when adaptive variable selection is used with, for example, the LASSO. See the writeup causalglm.pdf for a more theoretical overview of the methods implemented in this package. Also see the vignette for an overview of all the functionalities of causalglm. 
+`causalglm` is an all-purpose and user-friendly package for interpretable and robust causal inference for heterogeneous treatment effects using generalized linear working model and machine-learning. Unlike parametric methods based on generalized linear models and semiparametric methods based on partially-linear models, the methods implemented in `causalglm` do not assume that any user-specified parametric models are correctly specified. That is, \pkg{causalglm} does not assume that the true data-generating distribution satisfies the parametric model. Instead, the user-specified parametric model is viewed as an approximation or "working model", and an interpretable estimand is defined as a projection of the true conditional treatment effect estimand onto the working model. Moreover, `causalglm`, unlike `glm`, only requires a user-specified parametric working model for the causal estimand of interest. All nuisance components of the data-generating distribution are left unspecified and data-adaptively learned using machine-learning. Thus, \pkg{causalglm} provides not only nonparametrically robust inference but also provides estimates (different from `glm`) for causally interpretable estimands that maximally adjust for confounding. To allow for valid inference with the use of variable-selection and machine-learning, Targeted Maximum Likelihood Estimation (van der Laan, Rose, 2011) is employed.  
 
 Throughout the development of causalglm, we greatly focused on making this package and all its methods as easy to use and understand as possible. Our goal is that this package can be used by a wide audience including amateurs, practioners, statisticians, causal-inference experts and nonexperts.
 
