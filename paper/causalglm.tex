@@ -549,28 +549,28 @@ R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from npglm for the estimand CATE with formula: 
-CATE(W) = 1.02 * (Intercept) + 0.979 * poly(W1, degree = 2, raw = TRUE)1 + 1.98 * poly(W1, degree = 2, raw = TRUE)2 + 1.05 * W2
+CATE(W) = 0.994 * (Intercept) + 0.98 * poly(W1, degree = 2, raw = TRUE)1 + 1.96 * poly(W1, degree = 2, raw = TRUE)2 + 0.986 * W2
 
 Coefficient estimates and inference:
    type                             param  tmle_est         se     lower
-1: CATE                       (Intercept) 1.0209493 0.05471526 0.9137094
-2: CATE poly(W1, degree = 2, raw = TRUE)1 0.9786549 0.06346015 0.8542753
-3: CATE poly(W1, degree = 2, raw = TRUE)2 1.9774734 0.12547989 1.7315374
-4: CATE                                W2 1.0495338 0.06382252 0.9244440
+1: CATE                       (Intercept) 0.9938889 0.05758149 0.8810312
+2: CATE poly(W1, degree = 2, raw = TRUE)1 0.9798206 0.06131563 0.8596442
+3: CATE poly(W1, degree = 2, raw = TRUE)2 1.9609781 0.12258688 1.7207122
+4: CATE                                W2 0.9855420 0.06023754 0.8674786
       upper  Z_score p_value
-1: 1.128189 295.0297       0
-2: 1.103035 243.8364       0
-3: 2.223409 249.1762       0
-4: 1.174624 260.0115       0
+1: 1.106747 272.9135       0
+2: 1.099997 252.6652       0
+3: 2.201244 252.9291       0
+4: 1.103605 258.6890       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> head(predict(output, data = data))[1:3,c(5,7,8,9,10)]
 \end{CodeInput}
 \begin{CodeOutput}
-       CATE(W)    CI_left  CI_right    Z-score p-value
-1  1.057501602  0.9489171 1.1660861 19.0883963 0.00000
-2  0.009840597 -0.1436945 0.1633756  0.1256232 0.90003
-3 -0.031330635 -0.1901844 0.1275231  0.3865697 0.69907
+      CATE(W)    CI_left  CI_right    Z-score p-value
+1  1.65143133  1.4978264 1.8050362 21.0722766 0.00000
+2  2.12740580  1.9730811 2.2817305 27.0191019 0.00000
+3 -0.03630946 -0.1935011 0.1208821  0.4527376 0.65074
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -602,26 +602,26 @@ R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from msmglm for the estimand CATE with formula: 
-E[CATE(W)|V] = 0.908 * (Intercept) + 0.695 * poly(W1, degree = 2, raw = TRUE)1 + 2.32 * poly(W1, degree = 2, raw = TRUE)2
+E[CATE(W)|V] = 0.871 * (Intercept) + 1.16 * poly(W1, degree = 2, raw = TRUE)1 + 2.45 * poly(W1, degree = 2, raw = TRUE)2
 
 Coefficient estimates and inference:
    type                             param  tmle_est        se     lower
-1: CATE                       (Intercept) 0.9083540 0.1564530 0.6017118
-2: CATE poly(W1, degree = 2, raw = TRUE)1 0.6948623 0.1982297 0.3063392
-3: CATE poly(W1, degree = 2, raw = TRUE)2 2.3206648 0.3610101 1.6130980
-      upper   Z_score p_value
-1: 1.214996  91.79972       0
-2: 1.083385  55.42427       0
-3: 3.028232 101.63962       0
+1: CATE                       (Intercept) 0.8713572 0.1829986 0.5126865
+2: CATE poly(W1, degree = 2, raw = TRUE)1 1.1637067 0.2053202 0.7612866
+3: CATE poly(W1, degree = 2, raw = TRUE)2 2.4485078 0.4117646 1.6414639
+      upper  Z_score p_value
+1: 1.230028 75.28672       0
+2: 1.566127 89.61526       0
+3: 3.255552 94.02047       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> head(predict(output, data = data))[1:3,c(-1,-2,-3,-5)]
 \end{CodeInput}
 \begin{CodeOutput}
-    CATE(W)   CI_left CI_right  Z-score    p-value
-1 0.8572590 0.5540882 1.160430 5.542181 2.9873e-08
-2 0.8822580 0.5758463 1.188670 5.643473 1.6665e-08
-3 0.8941382 0.5874837 1.200793 5.714936 1.0975e-08
+    CATE(W)   CI_left CI_right   Z-score    p-value
+1 2.7039601 2.3352744 3.072646 14.374742 0.0000e+00
+2 1.4797957 1.0333892 1.926202  6.497216 8.1820e-11
+3 0.7786026 0.4578669 1.099338  4.758002 1.9552e-06
 \end{CodeOutput}
 \begin{CodeInput}
 R> plot_msm(output)
@@ -648,7 +648,7 @@ items to replace is not a multiple of replacement length
 \begin{CodeOutput}
 A
  0  1  2 
-65 91 94 
+79 84 87 
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -682,21 +682,21 @@ R> summary(output_initial)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from npglm for the estimand CATT with formula: 
-CATT(W) = 1.02 * (Intercept) + 0.294 * poly(W1, degree = 3, raw = TRUE)1 + 1.99 * poly(W1, degree = 3, raw = TRUE)2 + 1.04 * poly(W1, degree = 3, raw = TRUE)3 + 1.03 * W2
+CATT(W) = 1.3 * (Intercept) + 1.36 * poly(W1, degree = 3, raw = TRUE)1 + 1.37 * poly(W1, degree = 3, raw = TRUE)2 + -0.866 * poly(W1, degree = 3, raw = TRUE)3 + 1.14 * W2
 
 Coefficient estimates and inference:
-   type                             param  tmle_est        se      lower
-1: CATT                       (Intercept) 1.0221228 0.1102688  0.8059999
-2: CATT poly(W1, degree = 3, raw = TRUE)1 0.2938301 0.3911505 -0.4728109
-3: CATT poly(W1, degree = 3, raw = TRUE)2 1.9915965 0.2874667  1.4281720
-4: CATT poly(W1, degree = 3, raw = TRUE)3 1.0357019 0.6404250 -0.2195079
-5: CATT                                W2 1.0324894 0.1465707  0.7452160
-      upper   Z_score p_value
-1: 1.238246 146.56167       0
-2: 1.060471  11.87743       0
-3: 2.555021 109.54278       0
-4: 2.290912  25.57034       0
-5: 1.319763 111.38028       0
+   type                             param   tmle_est        se      lower
+1: CATT                       (Intercept)  1.3029694 0.1141563  1.0792272
+2: CATT poly(W1, degree = 3, raw = TRUE)1  1.3572100 0.2975908  0.7739428
+3: CATT poly(W1, degree = 3, raw = TRUE)2  1.3669433 0.2429931  0.8906856
+4: CATT poly(W1, degree = 3, raw = TRUE)3 -0.8664143 0.4424171 -1.7335359
+5: CATT                                W2  1.1424358 0.1522778  0.8439768
+          upper   Z_score p_value
+1: 1.5267117151 180.46969       0
+2: 1.9404771646  72.11035       0
+3: 1.8432010797  88.94603       0
+4: 0.0007072294  30.96448       0
+5: 1.4408947239 118.62201       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> # Working model for E[Y|A=2,W] - E[Y|A=0,W]
@@ -713,19 +713,19 @@ R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from npglm for the estimand CATT with formula: 
-CATT(W) = 1.94 * (Intercept) + 1.8 * poly(W1, degree = 2, raw = TRUE)1 + 4.22 * poly(W1, degree = 2, raw = TRUE)2 + 2.16 * W2
+CATT(W) = 2.26 * (Intercept) + 2.03 * poly(W1, degree = 2, raw = TRUE)1 + 3.25 * poly(W1, degree = 2, raw = TRUE)2 + 2.27 * W2
 
 Coefficient estimates and inference:
    type                             param tmle_est        se    lower    upper
-1: CATT                       (Intercept) 1.937332 0.1445649 1.653990 2.220674
-2: CATT poly(W1, degree = 2, raw = TRUE)1 1.799968 0.1783153 1.450477 2.149460
-3: CATT poly(W1, degree = 2, raw = TRUE)2 4.223237 0.3304522 3.575563 4.870911
-4: CATT                                W2 2.164614 0.1683955 1.834565 2.494664
+1: CATT                       (Intercept) 2.258695 0.1502492 1.964212 2.553178
+2: CATT poly(W1, degree = 2, raw = TRUE)1 2.030291 0.2017277 1.634912 2.425670
+3: CATT poly(W1, degree = 2, raw = TRUE)2 3.245330 0.3768726 2.506674 3.983987
+4: CATT                                W2 2.270623 0.1780928 1.921568 2.619678
     Z_score p_value
-1: 211.8904       0
-2: 159.6049       0
-3: 202.0723       0
-4: 203.2451       0
+1: 237.6924       0
+2: 159.1339       0
+3: 136.1552       0
+4: 201.5899       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> # Lets use a different formula and reuse previous fits
@@ -744,12 +744,12 @@ R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from msmglm for the estimand CATT with formula: 
-E[CATE(W)|V, A=1] = 3.81 * (Intercept) + 1.86 * W2
+E[CATE(W)|V, A=1] = 3.59 * (Intercept) + 1.97 * W2
 
 Coefficient estimates and inference:
-   type       param tmle_est        se   lower    upper   Z_score p_value
-1: CATT (Intercept) 3.809115 0.2208943 3.37617 4.242060 272.65249       0
-2: CATT          W2 1.862513 0.3674519 1.14232 2.582705  80.14359       0
+   type       param tmle_est        se    lower    upper  Z_score p_value
+1: CATT (Intercept) 3.593794 0.2083286 3.185478 4.002111 272.7560       0
+2: CATT          W2 1.972773 0.3471382 1.292395 2.653151  89.8555       0
 \end{CodeOutput}
 \end{CodeChunk}
 
@@ -781,24 +781,24 @@ R> summary(output_A0)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
-E[TSM(W)|V] = 0.0651 * E[Y_{A=0}]: (Intercept)
+E[TSM(W)|V] = -0.0621 * E[Y_{A=0}]: (Intercept)
 
 Coefficient estimates and inference:
-   type                   param   tmle_est         se      lower     upper
-1:  TSM E[Y_{A=0}]: (Intercept) 0.06513606 0.09367549 -0.1184645 0.2487366
+   type                   param    tmle_est        se      lower    upper
+1:  TSM E[Y_{A=0}]: (Intercept) -0.06205392 0.0891011 -0.2366889 0.112581
     Z_score p_value
-1: 10.99425       0
+1: 11.01175       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> summary(output_A1)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
-E[TSM(W)|V] = 1.8 * E[Y_{A=1}]: (Intercept)
+E[TSM(W)|V] = 1.62 * E[Y_{A=1}]: (Intercept)
 
 Coefficient estimates and inference:
    type                   param tmle_est        se    lower    upper  Z_score
-1:  TSM E[Y_{A=1}]: (Intercept) 1.800613 0.1174023 1.570509 2.030717 242.5012
+1:  TSM E[Y_{A=1}]: (Intercept) 1.622245 0.1201923 1.386673 1.857818 213.4076
    p_value
 1:       0
 \end{CodeOutput}
@@ -807,11 +807,11 @@ R> summary(output_A2)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
-E[TSM(W)|V] = 3.46 * E[Y_{A=2}]: (Intercept)
+E[TSM(W)|V] = 3.1 * E[Y_{A=2}]: (Intercept)
 
 Coefficient estimates and inference:
    type                   param tmle_est        se    lower    upper  Z_score
-1:  TSM E[Y_{A=2}]: (Intercept) 3.455606 0.2291181 3.006543 3.904669 238.4706
+1:  TSM E[Y_{A=2}]: (Intercept) 3.102991 0.1777243 2.754658 3.451324 276.0601
    p_value
 1:       0
 \end{CodeOutput}
@@ -838,23 +838,25 @@ R> output <-
 +   )
 \end{CodeInput}
 \begin{CodeOutput}
-risk_change: -9.504942e-05 (max) epsilon: 2.499999e-02 max(abs(ED)): 2.237006e-02
-risk_change: -4.571703e-06 (max) epsilon: 8.898877e-03 max(abs(ED)): 2.752400e-03
+risk_change: -4.460382e-04 (max) epsilon: 2.499999e-02 max(abs(ED)): 1.229167e-01
+risk_change: -2.850583e-04 (max) epsilon: 2.499999e-02 max(abs(ED)): 6.883943e-02
+risk_change: -1.208668e-04 (max) epsilon: 2.499999e-02 max(abs(ED)): 1.253777e-02
+risk_change: -4.224314e-06 (max) epsilon: 5.151921e-03 max(abs(ED)): 6.584265e-04
 \end{CodeOutput}
 \begin{CodeInput}
 R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from npglm for the estimand OR with formula: 
-log OR(W) = 1.19 * (Intercept) + 1.12 * W
+log OR(W) = 1.03 * (Intercept) + 0.96 * W
 
 Coefficient estimates and inference:
-   type       param tmle_est        se       lower    upper  psi_exp lower_exp
-1:   OR (Intercept) 1.185699 0.3341322  0.53081238 1.840587 3.272975 1.7003131
-2:   OR           W 1.115677 0.6006845 -0.06164312 2.292997 3.051633 0.9402184
+   type       param  tmle_est        se       lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 1.0334665 0.2739423  0.49654934 1.570384 2.810792  1.643042
+2:   OR           W 0.9603387 0.5365255 -0.09123192 2.011909 2.612581  0.912806
    upper_exp  Z_score p_value
-1:  6.300232 56.10820       0
-2:  9.904576 29.36716       0
+1:  4.808492 59.64956       0
+2:  7.477581 28.30115       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> # relative risk
@@ -876,17 +878,17 @@ R> summary(output)
 \end{CodeInput}
 \begin{CodeOutput}
 A causalglm fit object obtained from npglm for the estimand RR with formula: 
-log RR(W) = 0.98 * (Intercept) + 1.19 * poly(W, degree = 2, raw = TRUE)1 + 2.25 * poly(W, degree = 2, raw = TRUE)2
+log RR(W) = 0.695 * (Intercept) + 1.28 * poly(W, degree = 2, raw = TRUE)1 + 2.93 * poly(W, degree = 2, raw = TRUE)2
 
 Coefficient estimates and inference:
    type                            param  tmle_est        se     lower    upper
-1:   RR                      (Intercept) 0.9796218 0.2127282 0.5626821 1.396562
-2:   RR poly(W, degree = 2, raw = TRUE)1 1.1862325 0.2681422 0.6606834 1.711782
-3:   RR poly(W, degree = 2, raw = TRUE)2 2.2535303 0.5467895 1.1818425 3.325218
-    psi_exp lower_exp upper_exp  Z_score p_value
-1: 2.663449  1.755374  4.041280 72.81206       0
-2: 3.274720  1.936115  5.538821 69.94789       0
-3: 9.521290  3.260376 27.805064 65.16482       0
+1:   RR                      (Intercept) 0.6950489 0.2371131 0.2303156 1.159782
+2:   RR poly(W, degree = 2, raw = TRUE)1 1.2758526 0.2287116 0.8275861 1.724119
+3:   RR poly(W, degree = 2, raw = TRUE)2 2.9270649 0.5007438 1.9456252 3.908505
+     psi_exp lower_exp upper_exp  Z_score p_value
+1:  2.003807  1.258997  3.189238 46.34786       0
+2:  3.581754  2.287790  5.607579 88.20279       0
+3: 18.672744  6.998005 49.824395 92.42443       0
 \end{CodeOutput}
 \begin{CodeInput}
 R> output <-

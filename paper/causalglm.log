@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  17 SEP 2021 20:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.5.8)  17 SEP 2021 20:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -711,16 +711,13 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [17]
-Underfull \hbox (badness 10000) in paragraph at lines 920--920
+Underfull \hbox (badness 10000) in paragraph at lines 922--922
 
  []
 
 LaTeX Font Info:    Font shape `T1/pzc/m/n' in size <13> not available
-(Font)              Font shape `T1/pzc/mb/it' tried instead on input line 920.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 920.
-
-Underfull \vbox (badness 5245) has occurred while \output is active []
-
+(Font)              Font shape `T1/pzc/mb/it' tried instead on input line 922.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 922.
 
 Overfull \hbox (10.94998pt too wide) has occurred while \output is active
 \T1/lmr/m/n/10.95 18 []
@@ -732,16 +729,16 @@ Overfull \hbox (10.94998pt too wide) has occurred while \output is active
  []
 
 [19]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 920.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 922.
 (./causalglm.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 920.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 920.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 922.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 922.
 Package rerunfilecheck Info: File `causalglm.out' has not changed.
 (rerunfilecheck)             Checksum: 3D2C6427E3041A09EA4FCE1D13DDEAEA;1662.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 920.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 922.
  ) 
 Here is how much of TeX's memory you used:
  7670 strings out of 492616
@@ -776,7 +773,7 @@ exlive/2019/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2019
 t/fonts/type1/public/lm/lmtto10.pfb></usr/local/texlive/2019/texmf-dist/fonts/t
 ype1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2019/texmf-dist/fon
 ts/type1/urw/zapfchan/uzcmi8a.pfb>
-Output written on causalglm.pdf (19 pages, 440953 bytes).
+Output written on causalglm.pdf (19 pages, 440943 bytes).
 PDF statistics:
  298 PDF objects out of 1000 (max. 8388607)
  249 compressed objects within 3 object streams
