@@ -462,7 +462,8 @@ output <-
 ```
 
 
-
+## Semiparametric efficient estimation with causalglmnet and spglm
+For completeness, this package also implements a semiparametric version of npglm called spglm for the estimands CATE, OR and RR. spglm assumes the user-specified parametric model is actually correct for inference and is therefore less robust than npglm. spglm is operated in essentially the same way as npglm and we refer to its documentation for additional optional arguments. "causalglmnet" is a wrapper for spglm that utilizes a custom LASSO learner for estimation of all nuisance functions, thereby allowing for fast estimation and inference in very high dimensions.
 
 
 

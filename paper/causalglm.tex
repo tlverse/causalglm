@@ -321,10 +321,10 @@ treatments.
 \subsection{Working-model-based nonparametric estimands for binary or categorical treatments}\label{section::estimandNPcat}
 
 Let \(a\) be a given treatment level of \(A\) that is of interest.
-Consider the least-squares projection estimand,
-\[\beta_{a,CATE} := \argmin_{\beta} E\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2\]
-where \(\beta_{a,CATE}^T \underline{f}(w)\) is the best linear
-approximation of the true \(CATE_a(W)\) relative to the average
+Consider the least-squares projection estimand, \begin{equation}
+\beta_{a,CATE} := \argmin_{\beta} E\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \label{eqn::estimandNPCATE}
+\end{equation} where \(\beta_{a,CATE}^T \underline{f}(w)\) is the best
+linear approximation of the true \(CATE_a(W)\) relative to the average
 squared-error loss. Clearly, when the parametric working-model
 \(\beta^T \underline{f}(w)\) is correctly specified, \(\beta_{a,CATE}\)
 reduces to the same estimand considered by the parametric and
@@ -363,9 +363,10 @@ working-model estimands for the conditional treatment-specific mean
 (TSM) and the conditional average treatment effect among the treated:
 
 \begin{equation}
-\beta_{a,CATT} := \argmin_{\beta} E\left\{\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \mid A =a \right\},
+\beta_{a,CATT} := \argmin_{\beta} E\left\{\left(CATE_a(W) - \beta^T \underline{f}(W) \right)^2 \mid A =a \right\}, \label{eqn::estimandNPCATT}
 \end{equation} \begin{equation}
 \beta_{a,TSM} := \argmin_{\beta} E\left(E[Y|A=a,W]- \beta^T \underline{f}(W) \right)^2.
+\label{eqn::estimandNPTSM}
 \end{equation}
 
 Both these working model estimands similarly reduce to projections of
@@ -381,6 +382,7 @@ conditional relative risk (RR) which will utilize projections based on
 the poisson (log-linear) log-likelihood loss function. Specifically,
 define the poisson-likelihood-type projection estimand: \begin{equation}
 \beta_{a,RR} := \argmin_{\beta} E \left\{E[Y|A=0,W] \cdot e^{\beta^T \underline{f}(W)} - E[Y|A=a,W] \cdot \beta^T \underline{f}(W) \right\}.
+\label{eqn::estimandNPRR}
 \end{equation} It can be verified when \(\beta^T \underline{f}(W)\) is
 correctly specified for the conditional relative risk that
 \(\beta_{a,RR}\) indeed reduces to the true coefficient vector. While
@@ -408,6 +410,7 @@ working-model
 Consider the estimand, \begin{equation}
 \beta_{a,OR} = \argmin_{\beta} -1 \cdot E\bigg\{P(Y=1|A=a,W)\log \left\{P_{\beta}(Y=1|A=a,W)\right\} $$
 $$+ P(Y=0|A=a,W)\log \left\{1-P_{\beta}(Y=1|A=a,W)\right\} \bigg\},
+\label{eqn::estimandNPOR}
 \end{equation} which is the log-likelihood projection of
 \(P(Y=1|A=a,W)\) onto the working model \(P_{\beta}(Y=1|A=a,W)\). Since
 \(P_{\beta}(Y=1|A=0,W) = P_{\beta}(Y=1|A=0,W)\) is correctly specified,
@@ -471,12 +474,432 @@ user-friendly front-end and only require the following arguments:
 Additionally, the following optional arguments are useful.
 
 \begin{enumerate}
-\item \textit{learning\_method} : A character string specifying one of the built-in machine-learning algorithms for nuisance function estimation. The nuisance functions are $P(A=1|W)$ and $E[Y|A,W]$.
+\item \textit{learning\_method} : A character string specifying one of the built-in machine-learning algorithms for nuisance function estimation. The nuisance functions are $P(A=1|W)$ and $E[Y|A,W]$. By default, the Highly Adaptive Lasso (Benkeser, van der Laan, 2016) using the package \pkg{tlverse/hal9001} (Coyle et al., 2021) is used.
 \item \textit{treatment\_level}: A value/level of the treatment $A$ that encodes the treatment arm of interest. (useful for categorical treatments )
 \item \textit{control\_level}: A value/level of the treatment $A$ that encodes the control arm. (useful for categorical treatments)
 \item $sl3\_Learner\_A$: A \pkg{sl3} learner object that specifies a custom estimator for the treatment-assignment probability $P(A=1|W)$. (Overrides \textit{learning\_method})
 \item $sl3\_Learner\_Y$: A \pkg{sl3} learner object that specifies a custom estimator for the true outcome conditional mean $E[Y|A,W]$. (Overrides \textit{learning\_method})
 \end{enumerate}
+
+Let's see npglm and msmglm in action! Let us start with estimation of
+the CATE estimand as defined by equation \label{eqn::estimandNPCATE}. We
+will use the following simulated dataset. Note the true conditional
+average treatment effect is
+\(CATE_1(W) = 1 + W_1 + 2 \cdot W_1^2 + W_2\).
+
+\begin{CodeChunk}
+\begin{CodeOutput}
+Loading required package: sl3
+\end{CodeOutput}
+\begin{CodeOutput}
+Loading required package: hal9001
+\end{CodeOutput}
+\begin{CodeOutput}
+Loading required package: Rcpp
+\end{CodeOutput}
+\begin{CodeOutput}
+hal9001 v0.4.0: The Scalable Highly Adaptive Lasso
+note: fit_hal defaults have changed. See ?fit_hal for details
+\end{CodeOutput}
+\begin{CodeOutput}
+Loading required package: data.table
+\end{CodeOutput}
+\begin{CodeOutput}
+Loading required package: R6
+\end{CodeOutput}
+\begin{CodeOutput}
+Loading required package: tmle3
+\end{CodeOutput}
+\begin{CodeOutput}
+
+Attaching package: 'tmle3'
+\end{CodeOutput}
+\begin{CodeOutput}
+The following object is masked from 'package:sl3':
+
+    loss_loglik_binomial
+\end{CodeOutput}
+\end{CodeChunk}
+
+Let us specify a correct working model for the CATE.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> formula_CATE <- ~ poly(W1, degree = 2, raw = TRUE) + W2
+R> output <- npglm(
++       formula_CATE, 
++       data,
++       W = c("W1", "W2"), A = "A", Y = "Y",
++       estimand = "CATE", 
++       learning_method = "HAL", # Default
++       verbose = FALSE
++       )
+\end{CodeInput}
+\end{CodeChunk}
+
+``output'' is a \textit{npglm} fit object which supports a number of
+useful extraction methods. Using the ``summary'' function, we can
+extract coefficient estimates, p-values, and 95\% confidence intervals.
+Using the ``predict'' function, we can obtain individual-level treatment
+effect predictions with 95\% confidence intervals.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from npglm for the estimand CATE with formula: 
+CATE(W) = 1.06 * (Intercept) + 0.901 * poly(W1, degree = 2, raw = TRUE)1 + 1.92 * poly(W1, degree = 2, raw = TRUE)2 + 0.964 * W2
+
+Coefficient estimates and inference:
+   type                             param  tmle_est         se     lower
+1: CATE                       (Intercept) 1.0606957 0.04888572 0.9648815
+2: CATE poly(W1, degree = 2, raw = TRUE)1 0.9007116 0.06172357 0.7797357
+3: CATE poly(W1, degree = 2, raw = TRUE)2 1.9151735 0.11548127 1.6888344
+4: CATE                                W2 0.9637044 0.05830190 0.8494347
+      upper  Z_score p_value
+1: 1.156510 343.0669       0
+2: 1.021688 230.7304       0
+3: 2.141513 262.2205       0
+4: 1.077974 261.3552       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> head(predict(output, data = data))[1:3,c(5,7,8,9,10)]
+\end{CodeInput}
+\begin{CodeOutput}
+   CATE(W)  CI_left CI_right  Z-score p-value
+1 1.493549 1.375063 1.612035 24.70634       0
+2 1.695161 1.534484 1.855838 20.67826       0
+3 1.621992 1.520979 1.723004 31.47238       0
+\end{CodeOutput}
+\end{CodeChunk}
+
+In some settings, we may only be interested in the relation between the
+variable \(V := W_1\) and the treatment effect. However, we would still
+like to adjust for the possible confounder \(W_2\). For this, the
+\textit{msmglm} function comes in handy. Let us specify an approximate
+working marginal structural model for the \(W_1\)-specific CATE.
+\textit{msmglm} requires the additional specification of the argument
+\(V\). The output object supports the summary and predict functions and
+also supports a useful plotting function ``plot\_msm'' when \(V\) is
+one-dimensional. plot\_msm plots the fit marginal structural working
+model as a function of \(V\) and provides 95\% pointwise confidence
+intervals.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> formula_msm <- ~ poly(W1, degree = 2, raw = TRUE)  
+R> output <- msmglm(
++       formula_msm, 
++       data,
++       V = c("W1"),
++       W = c("W1", "W2"), A = "A", Y = "Y",
++       estimand = "CATE", 
++       learning_method = "mars", # Lets use multivariate adaptive regression splines instead
++       verbose = FALSE
++       )
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from msmglm for the estimand CATE with formula: 
+E[CATE(W)|V] = 0.962 * (Intercept) + 0.88 * poly(W1, degree = 2, raw = TRUE)1 + 1.9 * poly(W1, degree = 2, raw = TRUE)2
+
+Coefficient estimates and inference:
+   type                             param  tmle_est        se     lower
+1: CATE                       (Intercept) 0.9623920 0.1649530 0.6390901
+2: CATE poly(W1, degree = 2, raw = TRUE)1 0.8802082 0.1783284 0.5306909
+3: CATE poly(W1, degree = 2, raw = TRUE)2 1.8982363 0.3499519 1.2123432
+      upper  Z_score p_value
+1: 1.285694 92.24903       0
+2: 1.229725 78.04315       0
+3: 2.584130 85.76536       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> head(predict(output, data = data))[1:3,c(-1,-2,-3,-5)]
+\end{CodeInput}
+\begin{CodeOutput}
+   CATE(W)   CI_left CI_right   Z-score    p-value
+1 2.061241 1.7696657 2.352816 13.855883 0.0000e+00
+2 1.632777 1.2609655 2.004588  8.607166 0.0000e+00
+3 1.118658 0.8103689 1.426947  7.112059 1.1433e-12
+\end{CodeOutput}
+\begin{CodeInput}
+R> plot_msm(output)
+\end{CodeInput}
+\begin{CodeOutput}
+Loading required package: ggplot2
+\end{CodeOutput}
+\begin{CodeOutput}
+`geom_smooth()` using method = 'loess' and formula 'y ~ x'
+\end{CodeOutput}
+
+
+\begin{center}\includegraphics{causalglm_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+\end{CodeChunk}
+
+Now, consider a similar dataset with a categorical treatment.
+
+\begin{CodeChunk}
+\begin{CodeOutput}
+Warning in A[A == 0] <- rbinom(n, size = 1, prob = plogis(W1 + W2)): number of
+items to replace is not a multiple of replacement length
+\end{CodeOutput}
+\begin{CodeOutput}
+A
+ 0  1  2 
+89 80 81 
+\end{CodeOutput}
+\end{CodeChunk}
+
+Let us compute the CATT and TSM estimands as defined in equations
+\ref{eqn::estimandNPCATT} and \ref{eqn::estimandNPTSM}. Since \(A\) is
+categorical, we need to specify the treatment and control levels of
+interest to fully specify the estimand. Note that a single call to npglm
+will fully fit all nuisance functions using machine-learning and it is
+therefore a waste to recall ``npglm'' or ``msmglm'' with new treatment
+and control levels. To leverage previous fits, we can pass a previous
+``npglm'' or ``msmglm'' object as the ``data''. argument. The data and
+variable names are extracted from the old object. This also allows us to
+fit multiple different working models quickly. Let us change the
+learning algorithm to CV-tuned ``xgboost''.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> # Working model for E[Y|A=1,W] - E[Y|A=0,W]
+R> formula_CATT <- ~ poly(W1, degree = 3, raw = TRUE) + W2
+R> output_initial <- npglm(
++       formula_CATT, 
++       data,
++       W = c("W1", "W2"), A = "A", Y = "Y",
++       estimand = "CATT", 
++       learning_method = "xgboost", # Lets use xgboost
++       treatment_level = 1, # Specify the treatment level
++       control_level = 0, # Specify the control level
++       verbose = FALSE
++       )
+R> summary(output_initial)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from npglm for the estimand CATT with formula: 
+CATT(W) = 1.08 * (Intercept) + 1.21 * poly(W1, degree = 3, raw = TRUE)1 + 1.7 * poly(W1, degree = 3, raw = TRUE)2 + 0.0636 * poly(W1, degree = 3, raw = TRUE)3 + 0.912 * W2
+
+Coefficient estimates and inference:
+   type                             param   tmle_est         se      lower
+1: CATT                       (Intercept) 1.08105424 0.09917232  0.8866801
+2: CATT poly(W1, degree = 3, raw = TRUE)1 1.20561642 0.33899983  0.5411890
+3: CATT poly(W1, degree = 3, raw = TRUE)2 1.69793193 0.29385781  1.1219812
+4: CATT poly(W1, degree = 3, raw = TRUE)3 0.06364645 0.64578438 -1.2020677
+5: CATT                                W2 0.91216219 0.10736666  0.7017274
+      upper   Z_score p_value
+1: 1.275428 172.35625 0.00000
+2: 1.870044  56.23150 0.00000
+3: 2.273883  91.35936 0.00000
+4: 1.329361   1.55832 0.11916
+5: 1.122597 134.32988 0.00000
+\end{CodeOutput}
+\begin{CodeInput}
+R> # Working model for E[Y|A=2,W] - E[Y|A=0,W]
+R> formula_CATT <- ~ poly(W1, degree = 2, raw = TRUE) + W2
+R> output <- npglm(
++       formula_CATT, 
++       data = output_initial, # replace data with previous output
++       estimand = "CATT", 
++       treatment_level = 2,  # Specify new treatment levels
++       control_level = 0,
++       verbose = FALSE
++       )
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from npglm for the estimand CATT with formula: 
+CATT(W) = 1.75 * (Intercept) + 2.01 * poly(W1, degree = 2, raw = TRUE)1 + 4.31 * poly(W1, degree = 2, raw = TRUE)2 + 1.94 * W2
+
+Coefficient estimates and inference:
+   type                             param tmle_est        se    lower    upper
+1: CATT                       (Intercept) 1.747801 0.1755916 1.403648 2.091954
+2: CATT poly(W1, degree = 2, raw = TRUE)1 2.008991 0.1935982 1.629546 2.388437
+3: CATT poly(W1, degree = 2, raw = TRUE)2 4.312550 0.4069402 3.514962 5.110138
+4: CATT                                W2 1.935197 0.2263647 1.491530 2.378863
+    Z_score p_value
+1: 157.3832       0
+2: 164.0766       0
+3: 167.5612       0
+4: 135.1719       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> # Lets use a different formula and reuse previous fits
+R> # We can even reuse fits across npglm and msmglm
+R> formula_CATT <- ~1 + W2  
+R> output <- msmglm(
++       formula_CATT, 
++       data = output_initial, # replace data with previous output
++       estimand = "CATT", 
++       V = "W2",
++       treatment_level = 2,  # Specify new treatment levels
++       control_level = 0,
++       verbose = FALSE
++       )
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from msmglm for the estimand CATT with formula: 
+E[CATE(W)|V, A=1] = 3.61 * (Intercept) + 2.22 * W2
+
+Coefficient estimates and inference:
+   type       param tmle_est        se    lower    upper   Z_score p_value
+1: CATT (Intercept) 3.606178 0.2557224 3.104971 4.107385 222.97097       0
+2: CATT          W2 2.219563 0.4634491 1.311220 3.127907  75.72433       0
+\end{CodeOutput}
+\end{CodeChunk}
+
+The TSM estimand is slightly different than other methods. It does not
+require specification of a control level. Instead, you can specify
+multiple treatment levels and conditional treatment-specific mean
+working-model estimates are returned for each level in the form of a
+list of ``msmglm'' objects.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> # Marginal structural model for TSM
+R> formula_TSM <- ~ 1  
+R> # Code is similar for npglm
+R> output <- msmglm( 
++       formula_TSM, 
++       output_initial,
++       V = c(),
++       estimand = "TSM", 
++       learning_method = "HAL", # Default
++       verbose = FALSE,
++       treatment_level = c(0,1,2) # Computes TSM for all treatment levels
++       )
+R> # The output is a list of msmglm objects for each treatment level in this case.
+R> output_A0 <- output[[1]]
+R> output_A1 <- output[[2]]
+R> output_A2 <- output[[3]]
+R> summary(output_A0)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
+E[TSM(W)|V] = 0.0446 * E[Y_{A=0}]: (Intercept)
+
+Coefficient estimates and inference:
+   type                   param   tmle_est         se      lower     upper
+1:  TSM E[Y_{A=0}]: (Intercept) 0.04463003 0.07974264 -0.1116627 0.2009227
+    Z_score p_value
+1: 8.849251       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> summary(output_A1)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
+E[TSM(W)|V] = 1.69 * E[Y_{A=1}]: (Intercept)
+
+Coefficient estimates and inference:
+   type                   param tmle_est        se    lower    upper  Z_score
+1:  TSM E[Y_{A=1}]: (Intercept)  1.68787 0.1118868 1.468576 1.907164 238.5229
+   p_value
+1:       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> summary(output_A2)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from msmglm for the estimand TSM with formula: 
+E[TSM(W)|V] = 3.16 * E[Y_{A=2}]: (Intercept)
+
+Coefficient estimates and inference:
+   type                   param tmle_est        se    lower    upper  Z_score
+1:  TSM E[Y_{A=2}]: (Intercept) 3.156503 0.2579457 2.650939 3.662068 193.4853
+   p_value
+1:       0
+\end{CodeOutput}
+\end{CodeChunk}
+
+The relative risk and odds ratio estimands defined in equations
+\ref{eqn::estimandNPRR} and \ref{eqn::estimandNPOR} can be estimated in
+the same way as above.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> # odds ratio
+R> n <- 250
+R> W <- runif(n, min = -1,  max = 1)
+R> A <- rbinom(n, size = 1, prob = plogis(W))
+R> Y <- rbinom(n, size =  1, prob = plogis(A + A * W + W + sin(5 * W)))
+R> data <- data.frame(W, A, Y)
+R> output <-
++   npglm(
++     ~1+W,
++     data,
++     W = c("W"), A = "A", Y = "Y",
++     estimand = "OR" 
++   )
+\end{CodeInput}
+\begin{CodeOutput}
+risk_change: -1.457448e-04 (max) epsilon: 2.499999e-02 max(abs(ED)): 2.216542e-02
+risk_change: -1.030274e-05 (max) epsilon: 8.039728e-03 max(abs(ED)): 2.067405e-03
+\end{CodeOutput}
+\begin{CodeInput}
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from npglm for the estimand OR with formula: 
+log OR(W) = 1.18 * (Intercept) + 0.936 * W
+
+Coefficient estimates and inference:
+   type       param  tmle_est        se      lower    upper  psi_exp lower_exp
+1:   OR (Intercept) 1.1767914 0.3095935  0.5699994 1.783584 3.243949 1.7682659
+2:   OR           W 0.9364417 0.5541994 -0.1497691 2.022653 2.550888 0.8609067
+   upper_exp  Z_score p_value
+1:  5.951144 60.10045       0
+2:  7.558347 26.71682       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> # relative risk
+R> n <- 250
+R> W <- runif(n, min = -1,  max = 1)
+R> A <- rbinom(n, size = 1, prob = plogis(W))
+R> Y <- rpois(n, lambda = exp( A * (1 + W + 2*W^2)  + sin(5 * W)))
+R> data <- data.frame(W, A, Y)
+R> formula = ~ poly(W, degree = 2, raw = TRUE) 
+R> output <-
++   npglm(
++     formula,
++     data,
++     W = "W", A = "A", Y = "Y",
++     estimand = "RR",
++     verbose = FALSE
++   )
+R> summary(output)
+\end{CodeInput}
+\begin{CodeOutput}
+A causalglm fit object obtained from npglm for the estimand RR with formula: 
+log RR(W) = 1.04 * (Intercept) + 1.35 * poly(W, degree = 2, raw = TRUE)1 + 2.59 * poly(W, degree = 2, raw = TRUE)2
+
+Coefficient estimates and inference:
+   type                            param tmle_est        se     lower    upper
+1:   RR                      (Intercept) 1.038828 0.2361680 0.5759473 1.501709
+2:   RR poly(W, degree = 2, raw = TRUE)1 1.351240 0.3810748 0.6043470 2.098133
+3:   RR poly(W, degree = 2, raw = TRUE)2 2.590657 0.7469773 1.1266085 4.054706
+     psi_exp lower_exp upper_exp  Z_score p_value
+1:  2.825903  1.778815  4.489355 69.54928       0
+2:  3.862211  1.830057  8.150936 56.06505       0
+3: 13.338534  3.085175 57.668196 54.83685       0
+\end{CodeOutput}
+\begin{CodeInput}
+R> output <-
++   msmglm(
++     formula,
++     data,
++     V = "W",
++     W = "W", A = "A", Y = "Y",
++     estimand = "RR",
++     verbose = FALSE
++   )
+\end{CodeInput}
+\end{CodeChunk}
 
 
 
