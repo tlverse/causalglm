@@ -14,12 +14,10 @@ For theoretical details and methods descriptions, see the writeup `causalglm.pdf
 For a walk-through guide with example code, check out `vignette.Rmd` in the "vignette" folder.
 
 ## Installing
-NOTE: This package is actively in development and is subject to continuous change. If you are unable to install it due to errors, try again in a day or two. Also, feel free to contact me personally or through the Issues tab.
+NOTE: This package is actively in development and is subject to continuous change. Feel free to contact me personally or through the Issues tab.
 
  
  
-
-
 To install this package, install the devtools CRAN package and run:
 
 ``` r
