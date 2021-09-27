@@ -29,7 +29,7 @@ devtools::install_github("tlverse/causalglm")
 
 This package also requires the following github packages. Make sure to update the version of these packages upon installation.
 ``` r
-devtools::install_github("tlverse/hal9001@devel")
+devtools::install_github("tlverse/hal9001@master")
 devtools::install_github("tlverse/tmle3@general_submodels_devel")
 devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 ```
