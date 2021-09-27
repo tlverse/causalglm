@@ -68,6 +68,7 @@ causalglm consists of 2 main functions:
 2. `contglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
 
 and 3 more specialized functions.
+
 4. `msmglm` for robust nonparametric estimation and inference for user-specified working marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
 5. `spglm` for semiparametric estimation and inference for correctly specified parametric models for the `CATE`, `RR` and `OR`
 6. `causalglmnet` for semiparametric estimation and inference with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
