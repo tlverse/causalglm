@@ -160,7 +160,7 @@ contglm <- function(formula_continuous, formula_binary = formula_continuous, dat
       submodel <- NULL
     } else if (estimand == "OR") {
       fA <- function(x) {
-        log(x) - log(1 - x)
+        log(x /(1 - x))
       }
       dfA <- function(x) {
         1 / (x * (1 - x))
@@ -168,6 +168,8 @@ contglm <- function(formula_continuous, formula_binary = formula_continuous, dat
       submodel <- "binomial"
     }
 
+    sl3_Learner_Y <- Lrnr_stratified$new(sl3_Learner_Y, variable_stratify = c("A_binary"))
+    
     tmle_spec_np <- tmle3_Spec_contglm$new(
       formula_continuous = formula_continuous, formula_binary = formula_binary,
       fA = fA, dfA = dfA,
