@@ -62,13 +62,17 @@ causalglm also supports the following working marginal structural model estimand
 4. Working marginal structural models for the CATT : `E[CATE(W)|V, A=a] := E[E[Y|A=a,W] - E[Y|A=0,W]|V, A=a]` (categorical treatments)
  
 
-causalglm consists of five main functions: 
+causalglm consists of 2 main functions: 
  
 1. `npglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
 2. `contglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `OR` and `RR` as a function of a continuous or ordered numeric treatment.
-3. `msmglm` for robust nonparametric estimation and inference for user-specified working marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
-4. `spglm` for semiparametric estimation and inference for correctly specified parametric models for the `CATE`, `RR` and `OR`
-5. `causalglmnet` for semiparametric estimation and inference with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
+
+and 3 more specialized functions.
+4. `msmglm` for robust nonparametric estimation and inference for user-specified working marginal structural models for the `CATE`, `CATT`, `TSM` or `RR`
+5. `spglm` for semiparametric estimation and inference for correctly specified parametric models for the `CATE`, `RR` and `OR`
+6. `causalglmnet` for semiparametric estimation and inference with high dimensional confounders `W` (a custom wrapper function for spglm focused on big data where standard ML may struggle)
+
+For most user applications with discrete treatments, `npglm` suffices. For continuous treatments, users may use `contglm`.
  
 
  
