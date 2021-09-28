@@ -38,11 +38,11 @@ devtools::install_github("tlverse/sl3@Larsvanderlaan-formula_fix")
 ## What is causalglm?
 
 
-`causalglm` is an all-purpose and user-friendly package for interpretable and robust causal inference for heterogeneous treatment effects using generalized linear working model and machine-learning. Unlike parametric methods based on generalized linear models and semiparametric methods based on partially-linear models, the methods implemented in `causalglm` do not assume that any user-specified parametric models are correctly specified. That is, \pkg{causalglm} does not assume that the true data-generating distribution satisfies the parametric model. Instead, the user-specified parametric model is viewed as an approximation or "working model", and an interpretable estimand is defined as a projection of the true conditional treatment effect estimand onto the working model. Moreover, `causalglm`, unlike `glm`, only requires a user-specified parametric working model for the causal estimand of interest. All nuisance components of the data-generating distribution are left unspecified and data-adaptively learned using machine-learning. Thus, \pkg{causalglm} provides not only nonparametrically robust inference but also provides estimates (different from `glm`) for causally interpretable estimands that maximally adjust for confounding. To allow for valid inference with the use of variable-selection and machine-learning, Targeted Maximum Likelihood Estimation (van der Laan, Rose, 2011) is employed.  
+`causalglm` is an all-purpose and user-friendly package for interpretable and robust causal inference for heterogeneous treatment effects using generalized linear working model and machine-learning. Unlike parametric methods based on generalized linear models and semiparametric methods based on partially-linear models, the methods implemented in `causalglm` do not assume that any user-specified parametric models are correctly specified. That is, `causalglm` does not assume that the true data-generating distribution satisfies the parametric model. Instead, the user-specified parametric model is viewed as an approximation or "working model", and an interpretable estimand is defined as a projection of the true conditional treatment effect estimand onto the working model. Moreover, `causalglm`, unlike `glm`, only requires a user-specified parametric working model for the causal estimand of interest. All nuisance components of the data-generating distribution are left unspecified and data-adaptively learned using machine-learning. Thus, `causalglm` provides not only nonparametrically robust inference but also provides estimates (different from `glm`) for causally interpretable estimands that maximally adjust for confounding. To allow for valid inference with the use of variable-selection and machine-learning, Targeted Maximum Likelihood Estimation (van der Laan, Rose, 2011) is employed.  
 
 Throughout the development of causalglm, we greatly focused on making this package and all its methods as easy to use and understand as possible. Our goal is that this package can be used by a wide audience including amateurs, practioners, statisticians, causal-inference experts and nonexperts.
 
-The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a binary, categorical or continuous treatment assignment, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V \subset W` that represents a subset of baseline variables that are of interest.
+The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a binary, categorical or continuous treatment assignment, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V` of `W` that represents a subset of baseline variables that are of interest.
 
 `causalglm` supports causal working-model-based estimands for the
 
@@ -86,35 +86,6 @@ The outputs of the methods include:
 3. 95% confidence intervals for coefficients
 4. Individual-level treatment-effect predictions and 95\% confidence (prediction) intervals can be extracted with the `predict` function and argument `data`.
 5. Plotting with `plot_msm` for objects returned by `msmglm`.
-
-Here is a summary of the methods:
-
-| ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
-|--------------------------------------|-----------------------|------|---------|-------|---------|--------------|-----|
-| Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Robust nonparametric working-model-based inference |   Y  |      Y  |    Y    |   N   |    Y    |     N        |  N  |            
-| Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
-| Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
-| Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
-| Marginal structural working models     |   Y  |       Y  |    Y    |   N   |    N    |     N        |  N  |
-| Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
-| Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
-| Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
-| Inference with High dimensional confounders  |   Y  |    Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
-| CATE |   Y   | Y | Y | Y |Y |Y | Y|
-| OR |   Y  | Y | Y | Y |Y |Y | Y|
-| RR |   Y   | Y | Y | Y |Y |Y | N*2 |
-| TSM |   Y   | Y | Y | N |N |N | Y |
-| CATT |   Y   | Y | Y | N |N |N |Y|
-| p-values and confidence intervals |   Y  |  Y | Y | Y |Y |Y | Y|
-| Individual treatment effects with confidence intervals |   Y  |  Y | Y | Y |Y |Y | N|
-
-*1: All methods but glm support the LASSO for estimation of all nuisance parameters and can thus be used in very high dimensions. 
-However, causalglmnet uses a customized LASSO learner that should perform better than the other methods in high dimensions.
-
-
-*2: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
-
 
 
 A rule of thumb for choosing between these methods is as follows:
@@ -571,6 +542,37 @@ Any confusion? Questions? Don't know which method to use? None of the methods ha
 
  
 ## References (see writeup)
+
+Here is a summary of the methods:
+
+| ----method (Top) / feature (Left) ---| causalglm (as a whole) |npglm | msmglm | spglm | contglm | causalglmnet | glm |
+|--------------------------------------|-----------------------|------|---------|-------|---------|--------------|-----|
+| Semiparametric inference       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Robust nonparametric working-model-based inference |   Y  |      Y  |    Y    |   N   |    Y    |     N        |  N  |            
+| Binary treatment               |   Y  |      Y  |    Y    |   Y   |    N    |     Y        |  Y  |
+| Categorical treatment          |   Y  |       Y  |    Y    |   N   |    N    |     N        |  Y  |
+| Continuous or ordered treatment|   Y  |       N  |    N    |   N   |    Y    |     N        |  Y  |
+| Marginal structural working models     |   Y  |       Y  |    Y    |   N   |    N    |     N        |  N  |
+| Interpretable estimates       |   Y  |      Y  |    Y    |   Y   |    Y    |     Y        |  Y  |
+| Causal (unconfounded) estimates  under model mispecification |  Y  |   Y  |    Y    |   N   |    Y    |     N        |  N  |
+| Supports inference with machine-learning and variable selection |   Y  |   Y  |    Y    |   Y   |    Y    |     Y        |  N  |
+| Inference with High dimensional confounders  |   Y  |    Y  |    Y    |   Y   |    Y    |     Y*1        |  N  |
+| CATE |   Y   | Y | Y | Y |Y |Y | Y|
+| OR |   Y  | Y | Y | Y |Y |Y | Y|
+| RR |   Y   | Y | Y | Y |Y |Y | N*2 |
+| TSM |   Y   | Y | Y | N |N |N | Y |
+| CATT |   Y   | Y | Y | N |N |N |Y|
+| p-values and confidence intervals |   Y  |  Y | Y | Y |Y |Y | Y|
+| Individual treatment effects with confidence intervals |   Y  |  Y | Y | Y |Y |Y | N|
+
+*1: All methods but glm support the LASSO for estimation of all nuisance parameters and can thus be used in very high dimensions. 
+However, causalglmnet uses a customized LASSO learner that should perform better than the other methods in high dimensions.
+
+
+*2: glm only supports correct inference for the RR when outcome error distribution is poisson. causalglm makes no assumptions on the error distribution and works for arbitrary binary, count and nonnegative outcomes
+
+
+
  
  
 
