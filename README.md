@@ -116,6 +116,8 @@ Other useful arguments are:
 5. `learning_method`: The machine-learning algorithm used to learn the nuisance function (default is HAL. See vignette and documentation)
 6. `treatment_level` for specifying what value of a possibly categorical `A` is the treatment of interest (`A=a`).
 7. `control_level` for specifying what value of a possibly categorical `A` is the control of interest (`A=0`).
+8. `formula_Y` for specifying the design matrix passed to glm, glmnet, earth or gam.
+9. `formula_HAL_Y` for specifying a custom functional form for the Highly Adaptive Lasso estimator (HAL) 
  
 
 ### Conditional average treatment effect estimation
