@@ -175,7 +175,7 @@ output <-
     W = "W", A = "A", Y = "Y",
     estimand = "CATE",
     learning_method = "glmnet",
-    formula_Y = ~ . ^2 # Optional formula for outcome model used to for glmnet estimation
+    formula_Y = ~ . ^2, # Optional formula for outcome model used to for glmnet estimation
     verbose = FALSE
   )
 
@@ -308,7 +308,7 @@ output <-
     estimand = "RR",
     estimand = "OR",
     learning_method = "SuperLearner", # Default SuperLearner ensemble using all methods
-    formula_Y = ~.^2 # formula used for glm, glmnet, gam and earth in SuperLearner
+    formula_Y = ~.^2, # formula used for glm, glmnet, gam and earth in SuperLearner
     verbose = FALSE
   )
 summary(output)
