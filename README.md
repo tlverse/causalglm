@@ -377,7 +377,38 @@ summary(output)
 plot_msm(output)
 ```
 
- 
+## Using tlverse/sl3 to specify custom learners.
+Custom learners can be specified for the conditional means of `A` and `Y` using the `sl3_Learner_A` and `sl3_Learner_Y` arguments. 
+``` r
+n <- 250
+W1 <- runif(n, min = -1, max = 1)
+W2 <- runif(n, min = -1, max = 1)
+A <- rbinom(n, size = 1, prob = plogis((W1 + W2  )/3))
+Y <- rnorm(n, mean = A * (1 + W1 + 2*W1^2) + sin(4 * W2) + sin(4 * W1), sd = 0.3)
+data <- data.frame(W1, W2,A,Y)
+
+# Use sl3
+library(sl3)
+# All sorts of options
+lrnr_A <- Lrnr_glm$new(formula = ~ .^2)
+lrnr_Y <- Lrnr_glmnet$new(formula = ~ .^2)
+lrnr_Y <- Lrnr_xgboost$new(max_depth  = 5)
+lrnr_Y <- Lrnr_gam$new()
+lrnr_Y <- Lrnr_earth$new()
+lrnr_stack <- make_learner(Stack, Lrnr_glmnet$new(), Lrnr_glm$new(), Lrnr_gam$new(), Lrnr_xgboost$new()) # Add as many learners as you want in the stack
+lrnr_sl <- make_learner(Pipeline, Lrnr_cv$new(lrnr_stack), Lrnr_cv_selector$new()) # CV selection
+
+# CATE estimation
+formula = ~ poly(W1, degree = 2, raw = TRUE)
+output <- npglm(formula,
+      data,
+      W = c("W1", "W2"), A = "A", Y = "Y",
+      estimand = "CATE",
+      sl3_Learner_A = lrnr_A,
+      sl3_Learner_Y = lrnr_Y)
+summary(output)
+
+```
 
 ## Learn working marginal structural models for conditional treatment effects with `msmglm`
 
