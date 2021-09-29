@@ -44,6 +44,8 @@ Throughout the development of causalglm, we greatly focused on making this packa
 
 The statistical data-structure used throughout this package is `O = (W,A,Y)` where `W` represents a random vector of baseline (pretreatment) covariates/confounders, `A` is a binary, categorical or continuous treatment assignment, and `Y` is some outcome variable. For marginal structural models, we also consider a subvector `V` of `W` that represents a subset of baseline variables that are of interest.
 
+### Estimands supported by `causalglm`
+
 `causalglm` supports causal working-model-based estimands for the
 
 1. Conditional average treatment effect (CATE) for arbitrary outcomes: `E[Y|A=a,W] - E[Y|A=0,W]` (categorical and continuous treatments)
@@ -62,6 +64,7 @@ causalglm also supports the following working marginal structural model estimand
 4. Working marginal structural models for the CATT : `E[CATE(W)|V, A=a] := E[E[Y|A=a,W] - E[Y|A=0,W]|V, A=a]` (categorical treatments)
  
 
+### Methods provided by `causalglm`
 causalglm consists of 2 main functions: 
  
 1. `npglm` for robust nonparametric estimation and inference for user-specified working models for the `CATE`, `CATT`, `TSM`, `RR` or `OR`
@@ -77,7 +80,7 @@ For most user applications with discrete treatments, `npglm` suffices. For conti
  
 
  
-
+### Outputs provided by all `causalglm` methods
 
 The outputs of the methods include:
 
@@ -88,14 +91,14 @@ The outputs of the methods include:
 5. Plotting with `plot_msm` for objects returned by `msmglm`.
 
 
+### Which method to use?
 A rule of thumb for choosing between these methods is as follows:
 
-
-1. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation but may not be correct (e.g. is missing some variables )
+1. Use `npglm` if you believe your parametric model for the treatment effect estimand is a good approximation
 2. Use `msmglm` if you want to know how the treatment effect is causally affected by one or a number of variables `V` (fully adjusting for the remaining variables `W`) (or to learn univariate confounder-adjusted variable importance measures!)
 3. Use `contglm` if your treatment is continuous or ordered and you are interested in the treatment effect per unit dose.
 4. Use `causalglmnet` if the variables `W` for which to adjust are (very) high dimensional.
-5. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (not recommended in general)
+5. Use `spglm` if you believe your parametric model for the treatment effect estimand is correct (not recommended)
  
 
 `msmglm` deals with marginal structural models for the conditional treatment effect estimands. This method is useful if you are only interested in modeling the causal treatment effect as a function of a subset of variables `V` adjusting for all the available confounders `W` that remain. This allows for parsimonious causal modeling, still maximally adjusting for confounding. This function can be used to understand the causal variable importance of individual variables (by having `V` be a single variable) and allows for nice plots (see `plot_msm`). `contglm` is a version of `npglm` that provides inference for working-model-based estimands for conditional treatment effects of continuous or ordered treatments.  
