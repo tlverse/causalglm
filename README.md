@@ -140,6 +140,7 @@ output <-
     W = "W", A = "A", Y = "Y",
     estimand = "CATE",
     learning_method = "HAL",
+    formula_HAL_Y = ~ h(W) + h(W,A), # Optional
     verbose = FALSE
   )
 
@@ -169,27 +170,14 @@ output <-
     V = "W",
     W = "W", A = "A", Y = "Y",
     estimand = "CATE",
-    learning_method = "HAL",
+    learning_method = "glmnet",
+    formula_Y = ~ . ^2 # Optional formula for outcome model used to for glmnet estimation
     verbose = FALSE
   )
 
 summary(output) 
 plot_msm(output)
 
-# Semiparametric
-formula <- ~ poly(W, degree = 2, raw = FALSE)
-output <-
-  spglm(
-    formula,
-    data,
-    W = "W", A = "A", Y = "Y",
-    estimand = "CATE",
-    learning_method = "HAL",
-    verbose = FALSE
-  )
-
-summary(output) 
-head(predict(output, data = data))
  
 ```
 
@@ -253,7 +241,9 @@ out <- contglm(
   formula_binary = ~ 1,
   data = data,
   W = "W", A = "A", Y = "Y",
-  estimand = "CATE"
+  estimand = "CATE",
+  learning_method = "gam",
+  formula_Y = ~ . + . * A # Optional: Feed design matrix based on formula to gam
 )
 
 summary(out)
@@ -281,19 +271,11 @@ output <-
     ~1+W,
     data,
     W = c("W"), A = "A", Y = "Y",
-    estimand = "OR" 
+    estimand = "OR",
+    learning_method = "xgboost" # Default xgboost ensemble
   )
 summary(output)
 
-# Semiparametric inference
-output <-
-  spglm(
-    ~1+W,
-    data,
-    W = c("W"), A = "A", Y = "Y",
-    estimand = "OR" 
-  )
-summary(output)
 ```
 
  
@@ -320,6 +302,9 @@ output <-
     data,
     W = "W", A = "A", Y = "Y",
     estimand = "RR",
+    estimand = "OR",
+    learning_method = "SuperLearner", # Default SuperLearner ensemble using all methods
+    formula_Y = ~.^2 # formula used for glm, glmnet, gam and earth in SuperLearner
     verbose = FALSE
   )
 summary(output)
@@ -343,6 +328,8 @@ output <-
     V = "W",
     W = "W", A = "A", Y = "Y",
     estimand = "RR",
+    learning_method = "HAL",
+    formula_HAL_Y = ~ h(.) + h(.,.),
     verbose = FALSE
   )
 summary(output)
