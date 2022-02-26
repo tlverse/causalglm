@@ -27,7 +27,7 @@ Depends:
   data.table,
   R6,
   tmle3
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Remotes: github::tlverse/hal9001@master, github::tlverse/sl3@Larsvanderlaan-formula_fix, github::tlverse/tmle3@categoricalNP
 Suggests: 
     testthat (>= 3.0.0)
