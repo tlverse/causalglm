@@ -188,7 +188,7 @@ npglm <- function(formula, data, W, A, Y, estimand = c("CATE", "CATT", "TSM", "O
     colnames(coefs) <- cur_names
   }
   n <- nrow(data)
-  Zscore <- abs(sqrt(n) * coefs$tmle_est / coefs$se)
+  Zscore <- abs( coefs$tmle_est / coefs$se)
   pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
