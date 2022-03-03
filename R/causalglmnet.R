@@ -24,7 +24,7 @@
 #' @param parallel See \code{\link[glmnet]{cv.glmnet}}
 #' @param ... Other arguments to pass to \code{\link[glmnet]{cv.glmnet}}
 #' @export
-causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), max_degree = 1, cross_fit = TRUE, constant_variance_CATE = FALSE, weights = NULL, parallel = TRUE, verbose = TRUE, ...) {
+causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"), max_degree = 1, cross_fit = TRUE, constant_variance_CATE = FALSE, weights = NULL, parallel = TRUE, verbose = FALSE, ...) {
   check_arguments(formula, data, W, A, Y)
   args <- list(formula = formula, data = data, W = W, A = A, Y = Y)
 
@@ -78,7 +78,7 @@ causalglmnet <- function(formula, data, W, A, Y, estimand = c("CATE", "OR", "RR"
     colnames(coefs) <- cur_names
   }
   n <- nrow(data)
-  Zscore <- abs(sqrt(n) * coefs$tmle_est / coefs$se)
+  Zscore <- abs(coefs$tmle_est / coefs$se)
   pvalue <- signif(2 * (1 - pnorm(Zscore)), 5)
   coefs$Z_score <- Zscore
   coefs$p_value <- pvalue
