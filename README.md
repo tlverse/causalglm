@@ -9,7 +9,7 @@ In the search for answers to causal questions, assuming parametric models can be
 
 This package fully utilizes the powerful `tlverse/tmle3` generalized targeted learning framework as well as the machine-learning frameworks `tlverse/sl3` and `tlverse/hal9001`. We recommend taking a look at these packages and the rest of the `tlverse`! 
 
-For in progress theoretical details and methods descriptions, see the writeup `causalglm.pdf` in the "writeup" folder.
+For in progress theoretical details and methods descriptions, see the writeup `causalglm.pdf` in the "paper" folder.
 
 For a walk-through guide with example code, check out `vignette.Rmd` in the "vignette" folder.
 
